@@ -1,6 +1,6 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.controller;
 
-import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
+import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSenderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rabbitmq")
 public class RabbitMQSendController {
 
-    RabbitMQSender rabbitMQSender;
+    RabbitMQSenderImpl rabbitMQSender;
 
     @Autowired
-    public RabbitMQSendController(RabbitMQSender rabbitMQSender) {
+    public RabbitMQSendController(RabbitMQSenderImpl rabbitMQSender) {
         this.rabbitMQSender = rabbitMQSender;
     }
 
