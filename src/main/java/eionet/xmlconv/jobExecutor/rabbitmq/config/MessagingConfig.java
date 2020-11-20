@@ -13,8 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MessagingConfig {
 
-    //@Value("${job.rabbitmq.queue}")
-    @Value("testConsumingConnection")
+    @Value("${job.rabbitmq.queue}")
     private String queue;
     @Value("${job.rabbitmq.exchange}")
     private String exchange;
