@@ -2,19 +2,19 @@
 
 JobExecutorApplication -> right click -> Run
 
-##Profiles
+###Installation Guide
+Create application-dev.properties file by copying the contents of application-prod.properties.
+
+###Build the jar
 ####You can either select the profile by maven profiles tab and run 
 $ mvn clean install
 
 ####or use the -P flag along with the profile id (dev or prod)
-e.g. mvn -Pprod clean install 
+e.g. mvn -Pdev clean install 
 
 ## Docker commands and actions
 
-###Build image 
-$ mvn -Pprod clean install <br>
-
-###Deploy to a docker repo 
+###Build image and deploy to a docker repo 
 ####First way
 -inside app root directory run dockerhub.sh file
 
