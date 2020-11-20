@@ -3,7 +3,7 @@
 JobExecutorApplication -> right click -> Run
 
 ### Installation Guide
-Create application-dev.properties file by copying the contents of application-prod.properties.
+Create application-dev.properties file by copying the contents of application-prod.properties file. 
 
 ### Build the jar
 #### You can either select the profile by maven profiles tab and run 
