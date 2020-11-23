@@ -2,10 +2,10 @@
 Create application-dev.properties file by copying the contents of application-prod.properties file. 
 
 ### Instructions to run application locally
-- dev profile is activated by default, so run <br>
+- dev profile (matches application-dev.properties file) is activated by default, so run <br>
 $ mvn clean install
 
-- or specify prod profile at build time using the -P flag <br>
+- or if you want to use prod profile (matches application-prod.properties), specify it at build time using the -P flag <br>
 $ mvn -Pdev clean install 
 
 - JobExecutorApplication -> right click -> Run
