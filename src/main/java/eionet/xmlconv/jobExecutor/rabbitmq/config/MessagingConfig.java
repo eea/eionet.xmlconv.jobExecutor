@@ -13,28 +13,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MessagingConfig {
 
-    //@Value("${job.rabbitmq.queue}")
-    @Value("testConsumingConnection")
+    @Value("${job.rabbitmq.queue}")
+    //@Value("testConsumingConnection")
     private String queue;
     @Value("${job.rabbitmq.exchange}")
     private String exchange;
     @Value("${job.rabbitmq.routingKey}")
     private String routingKey;
 
-    @Bean
-    public Queue queue() {
-        return new Queue(queue);
-    }
-
-    @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(exchange);
-    }
-
-    @Bean
-    public Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(routingKey);
-    }
 
     @Bean
     public MessageConverter jsonMessageConverter() {
