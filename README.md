@@ -2,13 +2,11 @@
 Create application-dev.properties file by copying the contents of application-prod.properties file. 
 
 ### Instructions to run application locally
-- Specify profile and build application <br>
-
-You can either select the profile by your IDE maven profiles tab and run <br>
+- dev profile is activated by default, so run <br>
 $ mvn clean install
 
-or specify profile at build time using the -P flag along with the profile id (dev or prod) <br>
-e.g. mvn -Pdev clean install 
+- or specify prod profile at build time using the -P flag <br>
+$ mvn -Pdev clean install 
 
 - JobExecutorApplication -> right click -> Run
 
