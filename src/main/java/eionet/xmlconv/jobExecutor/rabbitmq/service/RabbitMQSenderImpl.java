@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class RabbitMQSenderImpl implements RabbitMQSender {
 
-    @Value("${job.rabbitmq.exchange}")
+    @Value("${job.rabbitmq.jobsResultExchange}")
     private String exchange;
-    @Value("${job.rabbitmq.routingKey}")
+    @Value("${job.rabbitmq.jobsResultRoutingKey}")
     private String routingKey;
 
     RabbitTemplate rabbitTemplate;
