@@ -12,8 +12,9 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
 
     private RestTemplate restTemplate;
 
-    public ContainerInfoRetrieverImpl() {
-        this.restTemplate = new RestTemplate();
+    @Autowired
+    public ContainerInfoRetrieverImpl(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -21,9 +22,10 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         HttpEntity<String> entity = new HttpEntity<>(headers);
+        System.out.println("call rancher-metadata");
         Object resultObject = restTemplate.getForObject("http://rancher-metadata/2015-12-19/self/container | json_pp", Object.class);
-        Object result = restTemplate.exchange("http://rancher-metadata/2015-12-19/self/container | json_pp", HttpMethod.GET, entity, Object.class);
         System.out.println(resultObject);
+        Object result = restTemplate.exchange("http://rancher-metadata/2015-12-19/self/container | json_pp", HttpMethod.GET, entity, Object.class);
         System.out.println(result);
         return result;
     }
