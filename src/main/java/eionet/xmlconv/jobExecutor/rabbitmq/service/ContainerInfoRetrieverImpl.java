@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Service
 public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
 
     private RestTemplate restTemplate;
@@ -16,7 +18,7 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
     }
 
     @Override
-    public void getContainerId() {
+    public Object getContainerId() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -24,5 +26,6 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
         Object result = restTemplate.exchange("http://rancher-metadata/2015-12-19/self/container | json_pp", HttpMethod.GET, entity, Object.class);
         System.out.println(resultObject);
         System.out.println(result);
+        return result;
     }
 }
