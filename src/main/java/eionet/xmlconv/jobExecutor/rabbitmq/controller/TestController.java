@@ -19,7 +19,14 @@ public class TestController {
 
     @GetMapping("/retrieve")
     public void test() {
+        System.out.println("inside method test");
         Object result = containerInfoRetriever.getContainerId();
         System.out.println(result);
     }
 }
+
+
+
+
+
+
