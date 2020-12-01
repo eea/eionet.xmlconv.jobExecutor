@@ -17,11 +17,11 @@ public class AppConfig {
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
-        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));
-        messageConverters.add(converter);
-        restTemplate.setMessageConverters(messageConverters);
+//        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+//        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+//        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));
+//        messageConverters.add(converter);
+//        restTemplate.setMessageConverters(messageConverters);
         return restTemplate;
     }
 }
