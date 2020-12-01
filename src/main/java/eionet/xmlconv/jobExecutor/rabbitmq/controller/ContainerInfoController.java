@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/container")
 public class ContainerInfoController {
 
-//    private ContainerInfoRetriever containerInfoRetriever;
-//
-//    @Autowired
-//    public ContainerInfoController(ContainerInfoRetriever containerInfoRetriever) {
-//        this.containerInfoRetriever = containerInfoRetriever;
-//    }
+    private ContainerInfoRetriever containerInfoRetriever;
+
+    @Autowired
+    public ContainerInfoController(ContainerInfoRetriever containerInfoRetriever) {
+        this.containerInfoRetriever = containerInfoRetriever;
+    }
 
     @GetMapping("/info")
     public void getInfo() {
-        System.out.println("inside method test");
-//        Object result = containerInfoRetriever.getContainerId();
-//        System.out.println(result);
+        System.out.println("inside method getInfo");
+        Object result = containerInfoRetriever.getContainerId();
+        System.out.println(result);
     }
 }
