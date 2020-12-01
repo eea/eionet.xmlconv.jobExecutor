@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/container")
+@RequestMapping({"", "/rancher"})
 public class ContainerInfoController {
 
     private ContainerInfoRetriever containerInfoRetriever;
@@ -18,7 +18,7 @@ public class ContainerInfoController {
         this.containerInfoRetriever = containerInfoRetriever;
     }
 
-    @PostMapping("/info")
+    @GetMapping("/container/info")
     public String getInfo() {
         System.out.println("inside method test");
         Object result = containerInfoRetriever.getContainerId();
