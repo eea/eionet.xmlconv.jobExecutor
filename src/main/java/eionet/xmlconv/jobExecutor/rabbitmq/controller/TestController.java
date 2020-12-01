@@ -17,7 +17,7 @@ public class TestController {
         this.containerInfoRetriever = containerInfoRetriever;
     }
 
-    @GetMapping("retrieve")
+    @GetMapping("/retrieve")
     public void test() {
         Object result = containerInfoRetriever.getContainerId();
         System.out.println(result);
