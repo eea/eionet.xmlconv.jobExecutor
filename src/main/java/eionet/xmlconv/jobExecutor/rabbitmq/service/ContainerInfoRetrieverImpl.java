@@ -12,7 +12,6 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
 
     private RestTemplate restTemplate;
 
-    //@Autowired
     public ContainerInfoRetrieverImpl() {
         this.restTemplate = new RestTemplate();
     }
