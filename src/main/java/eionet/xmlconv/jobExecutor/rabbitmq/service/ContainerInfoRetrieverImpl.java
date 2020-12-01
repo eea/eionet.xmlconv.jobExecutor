@@ -25,7 +25,7 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
         System.out.println("call rancher-metadata");
         Object resultObject = restTemplate.getForObject("http://rancher-metadata/2015-12-19/self/container", Object.class);
         System.out.println(resultObject);
-        Object result = restTemplate.exchange("http://rancher-metadata/2015-12-19/self/container | json_pp", HttpMethod.GET, entity, Object.class);
+        Object result = restTemplate.exchange("http://rancher-metadata/2015-12-19/self/container", HttpMethod.GET, entity, Object.class);
         System.out.println(result);
         return result;
     }
