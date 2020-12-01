@@ -1,4 +1,4 @@
-package eionet.xmlconv.jobExecutor.rabbitmq.config;
+package eionet.xmlconv.jobExecutor.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

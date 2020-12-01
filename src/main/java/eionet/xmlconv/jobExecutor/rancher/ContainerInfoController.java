@@ -1,6 +1,6 @@
-package eionet.xmlconv.jobExecutor.rabbitmq.controller;
+package eionet.xmlconv.jobExecutor.rancher;
 
-import eionet.xmlconv.jobExecutor.rabbitmq.service.ContainerInfoRetriever;
+import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +19,7 @@ public class ContainerInfoController {
 
     @GetMapping("/info")
     public void getInfo() {
-        Object result = containerInfoRetriever.getContainerId();
+        String result = containerInfoRetriever.getContainerName();
         System.out.println(result);
     }
 }
