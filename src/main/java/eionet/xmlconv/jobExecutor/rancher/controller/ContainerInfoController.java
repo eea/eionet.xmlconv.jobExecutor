@@ -1,4 +1,4 @@
-package eionet.xmlconv.jobExecutor.rancher;
+package eionet.xmlconv.jobExecutor.rancher.controller;
 
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import org.springframework.beans.factory.annotation.Autowired;
