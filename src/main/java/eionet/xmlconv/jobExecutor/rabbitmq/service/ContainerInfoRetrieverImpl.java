@@ -22,9 +22,6 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        System.out.println("call rancher-metadata");
-//        Object resultObject = restTemplate.getForObject("http://rancher-metadata/2015-12-19/self/container", Object.class);
-//        System.out.println(resultObject);
         Object result = restTemplate.exchange("http://rancher-metadata/2015-12-19/self/container", HttpMethod.GET, entity, Object.class);
         System.out.println(result);
         return result;
