@@ -19,7 +19,6 @@ public class ContainerInfoController {
 
     @GetMapping("/info")
     public void getInfo() {
-        System.out.println("inside method getInfo");
         Object result = containerInfoRetriever.getContainerId();
         System.out.println(result);
     }
