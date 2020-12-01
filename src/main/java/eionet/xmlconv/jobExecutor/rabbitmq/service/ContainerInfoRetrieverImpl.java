@@ -12,9 +12,9 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
 
     private RestTemplate restTemplate;
 
-    @Autowired
-    public ContainerInfoRetrieverImpl(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    //@Autowired
+    public ContainerInfoRetrieverImpl() {
+        this.restTemplate = new RestTemplate();
     }
 
     @Override
