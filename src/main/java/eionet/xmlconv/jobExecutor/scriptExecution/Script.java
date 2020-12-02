@@ -9,6 +9,8 @@ import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines.*;
 
 import java.io.OutputStream;
 
+/*This class was previously named XQScript*/
+
 /*This class is used as a parameter in the getResult method*/
 public class Script {
 
