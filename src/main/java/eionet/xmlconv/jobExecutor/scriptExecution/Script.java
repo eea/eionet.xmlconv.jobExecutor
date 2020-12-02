@@ -5,6 +5,7 @@ import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.objects.Schema;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptEngineService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines.*;
 
 import java.io.OutputStream;
 
@@ -94,17 +95,17 @@ public class Script {
         if (engine == null) {
             try {
                 if (Script.SCRIPT_LANG_XSL.equals(scriptType)) {
-                    engine = new XslEngineImpl();
+                    engine = new XslEngineServiceImpl();
                 } else if (Script.SCRIPT_LANG_XGAWK.equals(scriptType)) {
-                    engine = new XGawkQueryEngine();
+                    engine = new XGawkQueryEngineServiceImpl();
                 } else if (Script.SCRIPT_LANG_FME.equals(scriptType)) {
-                    engine = new FMEQueryEngine();
+                    engine = new FMEQueryEngineServiceImpl();
                 } else if (Script.SCRIPT_LANG_XQUERY3.equals(scriptType)) {
                     // XQUERY 3.0+
-                    engine = new BaseXLocalImpl();
+                    engine = new BaseXLocalEngineServiceImpl();
                 } else {
                     // LEGACY XQUERY 1.0
-                    engine = new SaxonImpl();
+                    engine = new SaxonEngineServiceImpl();
                 }
             } catch (Exception e) {
                 throw new ScriptExecutionException("Error initializing engine  " + e.toString());

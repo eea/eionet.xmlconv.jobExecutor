@@ -1,8 +1,16 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 
 
+import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.converters.ConvertStrategy;
+import eionet.xmlconv.jobExecutor.converters.XMLConverter;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.scriptExecution.Script;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.ConvertContextService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.HttpFileManagerService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.ConvertContextServiceImpl;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.HttpFileManagerServiceImpl;
+import eionet.xmlconv.jobExecutor.utils.UrlUtils;
 import eionet.xmlconv.jobExecutor.utils.Utils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
@@ -16,12 +24,12 @@ import java.io.OutputStream;
 import java.util.Map;
 
 @Service
-public class XslEngineServiceServiceImpl extends ScriptEngineServiceImpl {
+public class XslEngineServiceImpl extends ScriptEngineServiceImpl {
     /** */
-    private static final Logger LOGGER = LoggerFactory.getLogger(XslEngineServiceServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XslEngineServiceImpl.class);
 
     @Autowired
-    public XslEngineServiceServiceImpl() {
+    public XslEngineServiceImpl() {
     }
 
     @Override
@@ -30,7 +38,7 @@ public class XslEngineServiceServiceImpl extends ScriptEngineServiceImpl {
         FileInputStream fisXsl = null;
         String tmpXslFile = null;
         InputStream sourceStream = null;
-        HttpFileManager fileManager = new HttpFileManager();
+        HttpFileManagerService fileManager = new HttpFileManagerServiceImpl();
         try {
             // build InputSource for xsl
             if (!Utils.isNullStr(script.getScriptSource())) {
@@ -44,8 +52,8 @@ public class XslEngineServiceServiceImpl extends ScriptEngineServiceImpl {
             sourceStream = fileManager.getFileInputStream(script.getSrcFileUrl(), null, false);
             // execute xsl transformation
 
-            ConvertContext ctx =
-                    new ConvertContext(sourceStream, tmpXslFile == null ? script.getScriptFileName() : tmpXslFile,
+            ConvertContextService ctx =
+                    new ConvertContextServiceImpl(sourceStream, tmpXslFile == null ? script.getScriptFileName() : tmpXslFile,
                             result, null);
             ConvertStrategy cs = new XMLConverter();
 
@@ -68,4 +76,5 @@ public class XslEngineServiceServiceImpl extends ScriptEngineServiceImpl {
         }
 
     }
+
 }

@@ -3,12 +3,11 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.impl;
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.datadict.DataDictUtil;
-import eionet.xmlconv.jobExecutor.exceptions.DCMException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.exceptions.XmlconvApiException;
 import eionet.xmlconv.jobExecutor.objects.Schema;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.QAResultPostProcessorService;
-import eionet.xmlconv.jobExecutor.scriptExecution.services.SchemaRetrieverService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class QAResultPostProcessorServiceImpl implements QAResultPostProcessorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QAResultPostProcessorService.class);
-    private SchemaRetrieverService schemaRetriever = new SchemaRetrieverServiceImpl();
+    private DataRetrieverService dataRetrieverService = new DataRetrieverServiceImpl();
     private String warnMessage;
 
     @Autowired
@@ -119,7 +118,7 @@ public class QAResultPostProcessorServiceImpl implements QAResultPostProcessorSe
         Schema schema = null;
         String schemaId;
         try {
-            schema = schemaRetriever.retrieveSchemaByXmlUrl(xmlSchemaUrl);
+            schema = dataRetrieverService.retrieveSchemaByXmlUrl(xmlSchemaUrl);
         } catch (XmlconvApiException e) {
             LOGGER.error("Unable to find Schema information from database" + e.toString());
             e.printStackTrace();

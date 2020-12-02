@@ -23,10 +23,6 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
     private String encoding = null;
     private String outputType = null;
 
-    @Autowired
-    public ScriptEngineServiceImpl() {
-    }
-
     /**
      * Runs query
      * @param script Script to run
@@ -34,6 +30,17 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
      * @throws Exception If an error occurs.
      */
     protected abstract void runQuery(Script script, OutputStream result) throws Exception;
+
+    @Override
+    public void getResult(Script script, OutputStream out) throws ScriptExecutionException {
+        try {
+            setOutputType(script.getOutputType());
+            runQuery(script, out);
+        } catch (Exception e) {
+            throw new ScriptExecutionException(e.getMessage(), e);
+        }
+    }
+
 
     @Override
     public String getResult(Script script) throws ScriptExecutionException {
