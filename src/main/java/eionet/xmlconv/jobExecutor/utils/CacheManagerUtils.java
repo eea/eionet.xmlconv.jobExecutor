@@ -7,17 +7,23 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.*;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 
+@Component("cacheManager")
 public class CacheManagerUtils {
 
     /**
      * Public constructor
      */
+    @Autowired
     public CacheManagerUtils() {
         // do nothing
+        this.initializeCacheManager();
     }
     /**
      * Application (main) cache name.

@@ -23,6 +23,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +35,8 @@ import java.net.URL;
 import java.util.Hashtable;
 
 @Service
+@DependsOn("cacheManager")
+
 public class HttpFileManagerServiceImpl implements HttpFileManagerService{
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpFileManagerService.class);
     private CloseableHttpClient client;
