@@ -5,11 +5,13 @@ import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import com.ximpleware.*;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.XmlHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+@Service
 public class VtdHandlerServiceImpl implements XmlHandlerService {
 
     @Autowired

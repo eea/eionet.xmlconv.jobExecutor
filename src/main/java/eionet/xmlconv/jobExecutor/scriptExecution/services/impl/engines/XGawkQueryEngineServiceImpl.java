@@ -2,11 +2,18 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.utils.Utils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Iterator;
 import java.util.Map;
 
+@Service
 public class XGawkQueryEngineServiceImpl extends ExternalQueryEngineServiceImpl{
+
+    @Autowired
+    public XGawkQueryEngineServiceImpl() {
+    }
 
     @Override
     protected String getShellCommand(String dataFile, String scriptFile, Map<String, String> params) {

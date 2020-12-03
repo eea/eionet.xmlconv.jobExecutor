@@ -1,4 +1,4 @@
-package eionet.xmlconv.jobExecutor.scriptExecution;
+package eionet.xmlconv.jobExecutor.objects;
 
 
 import eionet.xmlconv.jobExecutor.Constants;
@@ -69,51 +69,6 @@ public class Script {
         scriptType = SCRIPT_LANG_XQUERY1;
     }
 
-    /**
-     * Result of the Script
-     * @throws ScriptExecutionException If an error occurs.
-     */
-    public String getResult() throws ScriptExecutionException {
-        initEngine();
-        return engine.getResult(this);
-    }
-
-    /**
-     * Gets result
-     * @param out Output Stream
-     * @throws ScriptExecutionException If an error occurs.
-     */
-    public void getResult(OutputStream out) throws ScriptExecutionException {
-        initEngine();
-        engine.getResult(this, out);
-    }
-
-    /**
-     * Initializes QA engine
-     * @throws ScriptExecutionException If an error occurs.
-     */
-    private void initEngine() throws ScriptExecutionException {
-
-        if (engine == null) {
-            try {
-                if (Script.SCRIPT_LANG_XSL.equals(scriptType)) {
-                    engine = new XslEngineServiceImpl();
-                } else if (Script.SCRIPT_LANG_XGAWK.equals(scriptType)) {
-                    engine = new XGawkQueryEngineServiceImpl();
-                } else if (Script.SCRIPT_LANG_FME.equals(scriptType)) {
-                    engine = new FMEQueryEngineServiceImpl();
-                } else if (Script.SCRIPT_LANG_XQUERY3.equals(scriptType)) {
-                    // XQUERY 3.0+
-                    engine = new BaseXLocalEngineServiceImpl();
-                } else {
-                    // LEGACY XQUERY 1.0
-                    engine = new SaxonEngineServiceImpl();
-                }
-            } catch (Exception e) {
-                throw new ScriptExecutionException("Error initializing engine  " + e.toString());
-            }
-        }
-    }
 
     /**
      * Returns original file URL.
@@ -212,5 +167,13 @@ public class Script {
 
     public void setJobId(String jobId) {
         this.jobId = jobId;
+    }
+
+    public ScriptEngineService getEngine() {
+        return engine;
+    }
+
+    public void setEngine(ScriptEngineService engine) {
+        this.engine = engine;
     }
 }

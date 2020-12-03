@@ -1,24 +1,23 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 
-import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
-import eionet.xmlconv.jobExecutor.scriptExecution.Script;
-import eionet.xmlconv.jobExecutor.scriptExecution.services.HttpFileManagerService;
-import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.HttpFileManagerServiceImpl;
-import eionet.xmlconv.jobExecutor.utils.CustomFileUtils;
-import eionet.xmlconv.jobExecutor.utils.UrlUtils;
-import eionet.xmlconv.jobExecutor.utils.Utils;
+import eionet.xmlconv.jobExecutor.objects.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.Map;
 
+@Service
 public abstract class ExternalQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     /** */
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalQueryEngineServiceImpl.class);
+
+    @Autowired
+    public ExternalQueryEngineServiceImpl() {
+    }
 
     /**
      * Gets shell command

@@ -1,7 +1,6 @@
 package eionet.xmlconv.jobExecutor.objects;
 
 import eionet.xmlconv.jobExecutor.Properties;
-import eionet.xmlconv.jobExecutor.scriptExecution.Script;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;

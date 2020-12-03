@@ -133,7 +133,7 @@
 			<artifactId>basex</artifactId>
 			<version>9.1.2</version>
 		</dependency>
-		<!-- extra basex libraries
+		<!-- extra basex libraries -->
 		<dependency>
 			<groupId>org.basex</groupId>
 			<artifactId>basex-api</artifactId>

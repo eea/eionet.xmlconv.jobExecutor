@@ -3,7 +3,7 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.FollowRedirectException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
-import eionet.xmlconv.jobExecutor.scriptExecution.Script;
+import eionet.xmlconv.jobExecutor.objects.Script;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.HttpFileManagerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.HttpFileManagerServiceImpl;
 import eionet.xmlconv.jobExecutor.utils.Utils;
@@ -25,11 +25,19 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import org.basex.core.cmd.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import static java.util.Objects.isNull;
 
+@Service
 public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseXLocalEngineServiceImpl.class);
+
+    @Autowired
+    public BaseXLocalEngineServiceImpl() {
+    }
 
     @Override
     protected void runQuery(Script script, OutputStream result) throws ScriptExecutionException {

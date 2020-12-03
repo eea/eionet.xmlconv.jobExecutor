@@ -5,7 +5,7 @@ import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.converters.ConvertStrategy;
 import eionet.xmlconv.jobExecutor.converters.XMLConverter;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
-import eionet.xmlconv.jobExecutor.scriptExecution.Script;
+import eionet.xmlconv.jobExecutor.objects.Script;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ConvertContextService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.HttpFileManagerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.ConvertContextServiceImpl;

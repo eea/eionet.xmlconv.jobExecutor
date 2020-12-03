@@ -1,7 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 
 import eionet.xmlconv.jobExecutor.Properties;
-import eionet.xmlconv.jobExecutor.scriptExecution.Script;
+import eionet.xmlconv.jobExecutor.objects.Script;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeJobStatus;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeServerCommunicator;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.impl.FmeServerCommunicatorImpl;
@@ -18,7 +18,10 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import eionet.xmlconv.jobExecutor.exceptions.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FMEQueryEngineServiceImpl.class);
@@ -48,6 +51,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
      * Default constructor.
      * @throws Exception If an error occurs.
      */
+    @Autowired
     public FMEQueryEngineServiceImpl() throws Exception {
         client_ = HttpClients.createDefault();
 

@@ -1,7 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services;
 
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
-import eionet.xmlconv.jobExecutor.scriptExecution.Script;
+import eionet.xmlconv.jobExecutor.objects.Script;
 
 import java.io.OutputStream;
 

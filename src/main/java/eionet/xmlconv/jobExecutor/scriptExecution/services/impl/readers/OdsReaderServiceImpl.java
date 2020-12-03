@@ -21,7 +21,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 import com.catcode.odf.OpenDocumentMetadata;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class OdsReaderServiceImpl implements SourceReaderService {
 
     /**Object containing OpenDocument file attributes. */
@@ -55,6 +58,10 @@ public class OdsReaderServiceImpl implements SourceReaderService {
     List<String> odsSheetNames = new ArrayList<String>();
     /** Ods file size. */
     private long inputFileLength = 0;
+
+    @Autowired
+    public OdsReaderServiceImpl() {
+    }
 
     @Override
     public String getXMLSchema() {
