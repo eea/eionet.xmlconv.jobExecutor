@@ -19,7 +19,7 @@ public class ScriptExecutionServiceImpl implements ScriptExecutionService {
     }
 
     public ScriptExecutionServiceImpl(Script script) {
-        script = script;
+        this.script = script;
     }
 
     /**
