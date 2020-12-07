@@ -19,10 +19,7 @@ import org.basex.query.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Reader;
+import java.io.*;
 import java.net.URL;
 import org.basex.core.cmd.Set;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +38,7 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
 
     @Override
     protected void runQuery(Script script, OutputStream result) throws ScriptExecutionException {
-
+        //TODO remove OutputStream result
         Context context = new Context();
         QueryProcessor proc = null;
         try {
@@ -89,7 +86,9 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
             Value res = proc.value();
 
             ArrayOutput A = res.serialize(opts);
-            result.write(A.toArray());
+            //result.write(A.toArray());
+            FileOutputStream fos = new FileOutputStream(script.getStrResultFile());
+            fos.write(A.toArray());
 
             //logger.info("proc info: " + proc.info());
             //logger.info( new String(A.buffer() , "UTF-8" ));

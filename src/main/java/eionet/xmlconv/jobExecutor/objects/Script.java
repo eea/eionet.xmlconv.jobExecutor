@@ -46,6 +46,9 @@ public class Script {
     // XQ Engine instance
     private ScriptEngineService engine;
 
+    public Script() {
+    }
+
     /**
      * @param script Script
      * @param scriptParams
@@ -85,7 +88,7 @@ public class Script {
     }
 
 
-    public void setResulFile(String fileName) {
+    public void setResultFile(String fileName) {
         strResultFile = fileName;
     }
 

@@ -1,9 +1,13 @@
 package eionet.xmlconv.jobExecutor.utils;
 
 import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.objects.Script;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -576,6 +580,38 @@ public final class Utils {
         }
 
         return ret;
+    }
+
+    public static Script convertJsonObjectToScript(JSONObject obj) throws JSONException{
+        Script script = new Script();
+        try {
+            script.setResultFile(obj.getString("strResultFile"));
+            script.setScriptSource(obj.getString("scriptSource"));
+            script.setOutputType(obj.getString("outputType"));
+            script.setScriptType(obj.getString("scriptType"));
+            script.setScriptFileName(obj.getString("scriptFileName"));
+            script.setSrcFileUrl(obj.getString("srcFileUrl"));
+            script.setJobId(obj.getString("jobId"));
+            script.setSrcFileDownloaded(obj.getBoolean("srcFileDownloaded"));
+
+            ArrayList<String> paramsList = new ArrayList();
+            JSONObject jo=new JSONObject(obj.getJSONObject("params"));
+            for(int i=0; i<jo.length(); i++){
+                paramsList.add(jo.getString("param"));
+            }
+            script.setParams(paramsList.toArray(new String[paramsList.size()]));
+
+           // script.setSchema();
+
+        } catch (Exception ex) {
+            throw new JSONException(ex.getMessage());
+        }
+
+        /*
+    private Schema schema;
+         */
+
+        return script;
     }
 
 }

@@ -72,9 +72,9 @@ public class Properties {
 
     static {
         // filesystem properties
-        queriesFolder = "https://localhost:8080/queries";//getStringProperty("queries.folder");
-        xslFolder = "https://localhost:8080/xsl"; //getStringProperty("xsl.folder");
-        tmpFolder = "https://localhost:8080/tmp"; //= getStringProperty("tmp.folder");
+        queriesFolder = "https://localhost:8078/queries";//getStringProperty("queries.folder");
+        xslFolder = "https://localhost:8078/xsl"; //getStringProperty("xsl.folder");
+        tmpFolder = "https://localhost:8078/tmp"; //= getStringProperty("tmp.folder");
         ddURL = "https://dd.ewxdevel1dub.eionet.europa.eu/"; //getStringProperty("dd.url");
         CACHE_TEMP_DIR = "/home/denia/Dev/EEA/eearun/cache";//getStringProperty("cache.temp.dir");
         CACHE_HTTP_SIZE = 2000; //getLongProperty("cache.http.size");
@@ -85,7 +85,7 @@ public class Properties {
         HTTP_CONNECT_TIMEOUT = 30000;//getIntProperty("http.connect.timeout");
         HTTP_MANAGER_TOTAL = 200;//getIntProperty("http.manager.total");
         HTTP_MANAGER_ROUTE = 50;//getIntProperty("http.manager.route");
-        xmlfileFolder = "https://localhost:8080/xmlfile";//getStringProperty("xmlfile.folder");
+        xmlfileFolder = "https://localhost:8078/xmlfile";//getStringProperty("xmlfile.folder");
         timeFormatPattern = "dd MMM yyyy HH:mm";//getStringProperty("time.format.pattern");
         // exteranal QA program
         xgawkCommand = "xgawk";//getStringProperty("external.qa.command.xgawk");
