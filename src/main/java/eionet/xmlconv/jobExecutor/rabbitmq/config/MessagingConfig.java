@@ -1,5 +1,6 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.config;
 
+import eionet.xmlconv.jobExecutor.Constants;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -22,5 +23,10 @@ public class MessagingConfig {
         final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
        rabbitTemplate.setMessageConverter(jsonMessageConverter());
        return rabbitTemplate;
+    }
+
+    @Bean
+    public Constants constants(){
+        return new Constants();
     }
 }

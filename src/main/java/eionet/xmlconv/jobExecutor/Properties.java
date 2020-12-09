@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import java.text.MessageFormat;
 
 @Configuration
-@Configurable(preConstruction=true, autowire = Autowire.BY_NAME)
 public class Properties {
     public static final Logger LOGGER = LoggerFactory.getLogger(Properties.class);
 
