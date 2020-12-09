@@ -9,7 +9,6 @@ import org.springframework.context.annotation.PropertySource;
 import java.text.MessageFormat;
 
 @Configuration
-@PropertySource("classpath:application-dev.properties")
 public class Properties {
     public static final Logger LOGGER = LoggerFactory.getLogger(Properties.class);
 
