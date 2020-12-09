@@ -36,4 +36,8 @@ public final class Constants {
 
     public static final String ERROR_CONVERSION_OBSOLETE_TEMPLATE = "error.conversion.obsolete.template";
     public static final String ERROR_CONVERSION_INVALID_TEMPLATE = "error.conversion.invalid.template";
+
+    public static final String WORKER_LOG_JOB_RECEIVED = "worker.log.job.received";
+    public static final String WORKER_LOG_JOB_SUCCESS = "worker.log.job.success";
+    public static final String WORKER_LOG_JOB_FAILURE = "worker.log.job.failure";
 }

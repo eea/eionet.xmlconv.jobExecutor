@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
 
-    @Value("${rancher.metadata.container.url}")
+   /* @Value("${rancher.metadata.container.url}")
     private String rancherMetadataUrl;
 
     private RestTemplate restTemplate;
@@ -21,16 +21,21 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
     @Autowired
     public ContainerInfoRetrieverImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }*/
+
+    @Autowired
+    public ContainerInfoRetrieverImpl() {
     }
 
     @Override
     public String getContainerName() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/json");
+        /*headers.set("Accept", "application/json");
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<ContainerInfo> result = restTemplate.exchange(rancherMetadataUrl, HttpMethod.GET, entity, ContainerInfo.class);
         ContainerInfo containerInfo = result.getBody();
-        return containerInfo.getName();
+        return containerInfo.getName();*/
+        return "containerTestName";
     }
 }
 
