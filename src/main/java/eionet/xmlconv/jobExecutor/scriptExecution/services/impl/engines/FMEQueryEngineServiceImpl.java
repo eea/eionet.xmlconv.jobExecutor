@@ -1,6 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 
 import eionet.xmlconv.jobExecutor.Properties;
+import eionet.xmlconv.jobExecutor.SpringApplicationContext;
 import eionet.xmlconv.jobExecutor.objects.Script;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeJobStatus;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeServerCommunicator;
@@ -69,7 +70,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         try {
 
 
-            FmeServerCommunicator fmeServerCommunicator = new FmeServerCommunicatorImpl();
+            FmeServerCommunicator fmeServerCommunicator = this.getFmeServerCommunicator();
             String jobId =     fmeServerCommunicator.submitJob(script,new SynchronousSubmitJobRequest(script.getOrigFileUrl(),folderName));
 
 
@@ -178,6 +179,10 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     public String getRandomStr() {
         return randomStr;
+    }
+
+    public FmeServerCommunicator getFmeServerCommunicator(){
+        return (FmeServerCommunicator) SpringApplicationContext.getBean(FmeServerCommunicator.class);
     }
 
 }

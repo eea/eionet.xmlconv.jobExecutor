@@ -55,11 +55,7 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
     private static final String APPLICATION_ZIP="application/zip";
     private static final String CONTENT_TYPE_FORM_URLENCODED="application/x-www-form-urlencoded";
 
-    //TODO fix this
     @Autowired
-    public FmeServerCommunicatorImpl() {
-    }
-
     public FmeServerCommunicatorImpl(@Qualifier("fmeApacheHttpClient") ApacheHttpClientWrapper clientWrapper) {
         this.clientWrapper = clientWrapper;
     }

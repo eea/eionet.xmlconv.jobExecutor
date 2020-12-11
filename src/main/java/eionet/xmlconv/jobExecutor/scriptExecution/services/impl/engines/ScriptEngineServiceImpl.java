@@ -57,7 +57,7 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
             LOGGER.error("Error while converting QA result" + e);
         }
         // add "red coloured warning" if script is expired
-        if (script.getOutputType().equals(Script.SCRIPT_RESULTTYPE_HTML) && script.getSchema() != null) {
+        if (script.getOutputType() != null && script.getOutputType().equals(Script.SCRIPT_RESULTTYPE_HTML) && script.getSchema() != null) {
             QAResultPostProcessorService postProcessor = new QAResultPostProcessorServiceImpl();
             res = postProcessor.processQAResult(res, script.getSchema());
         }
