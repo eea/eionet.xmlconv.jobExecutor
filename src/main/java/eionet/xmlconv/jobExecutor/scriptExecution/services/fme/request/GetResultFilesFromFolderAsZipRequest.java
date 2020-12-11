@@ -1,4 +1,4 @@
-package eionet.xmlconv.jobExecutor.scriptExecution.services.fme.request;
+wpackage eionet.xmlconv.jobExecutor.scriptExecution.services.fme.request;
 import eionet.xmlconv.jobExecutor.Properties;
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -2,13 +2,24 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.objects.Script;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.HttpFileManagerService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.SysCommandExecutorService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.HttpFileManagerServiceImpl;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.SysCommandExecutorServiceImpl;
+import eionet.xmlconv.jobExecutor.utils.CustomFileUtils;
+import eionet.xmlconv.jobExecutor.utils.StreamsUtils;
+import eionet.xmlconv.jobExecutor.utils.UrlUtils;
+import eionet.xmlconv.jobExecutor.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.Map;
+import eionet.xmlconv.jobExecutor.Constants;
 
 @Service
 public abstract class ExternalQueryEngineServiceImpl extends ScriptEngineServiceImpl{
@@ -31,7 +42,7 @@ public abstract class ExternalQueryEngineServiceImpl extends ScriptEngineService
     @Override
     protected void runQuery(Script script, OutputStream result) throws ScriptExecutionException {
         //TODO
-      /*  String tmpScriptFile = null;
+        String tmpScriptFile = null;
         HttpFileManagerService fileManager = new HttpFileManagerServiceImpl();
         try {
 
@@ -57,7 +68,7 @@ public abstract class ExternalQueryEngineServiceImpl extends ScriptEngineService
 
             LOGGER.debug("Execute command: " + cmd);
 
-            SysCommandExecutor cmdExecutor = new SysCommandExecutor();
+            SysCommandExecutorService cmdExecutor = new SysCommandExecutorServiceImpl();
             int exitStatus = cmdExecutor.runCommand(cmd);
             LOGGER.debug("Exit status: " + exitStatus);
 
@@ -69,10 +80,10 @@ public abstract class ExternalQueryEngineServiceImpl extends ScriptEngineService
             boolean throwError = false;
 
             if (Utils.isNullStr(cmdOutput) && !Utils.isNullStr(cmdError)) {
-                Streams.drain(new StringReader(cmdError), result);
+                StreamsUtils.drain(new StringReader(cmdError), result);
                 throwError = true;
             } else {
-                Streams.drain(new StringReader(cmdOutput), result);
+                StreamsUtils.drain(new StringReader(cmdOutput), result);
             }
 
             // clean tmp files
@@ -98,6 +109,6 @@ public abstract class ExternalQueryEngineServiceImpl extends ScriptEngineService
                 LOGGER.warn(e.getMessage());
             }
         }
-*/
+
     }
 }
