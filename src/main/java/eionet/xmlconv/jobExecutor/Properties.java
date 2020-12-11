@@ -73,6 +73,7 @@ public class Properties {
     public static String fmeResultFolder;
     public static String fmeDeleteFolderUrl;
     public static String jobExecutorApplicationUrl;
+    public static Integer qaTimeout;
 
     /**
      * Checks path
@@ -280,5 +281,10 @@ public class Properties {
     @Value( "${ods.folder}" )
     public void setOdsFolder(String odsFolder) {
         this.odsFolder = odsFolder;
+    }
+
+    @Value( "${external.qa.timeout}" )
+    public static void setQaTimeout(Integer qaTimeout) {
+        Properties.qaTimeout = qaTimeout;
     }
 }
