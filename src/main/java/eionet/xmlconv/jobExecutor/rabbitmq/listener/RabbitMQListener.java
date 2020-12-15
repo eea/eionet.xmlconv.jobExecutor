@@ -21,6 +21,7 @@ import eionet.xmlconv.jobExecutor.Properties;
 @Component
 public class RabbitMQListener {
 
+    @Autowired
     private ScriptExecutionService ses;
     private RabbitMQSender rabbitMQSender;
     private ContainerInfoRetriever containerInfoRetriever;
@@ -40,12 +41,12 @@ public class RabbitMQListener {
         String jobReceivedMessage = Properties.getMessage(Constants.WORKER_LOG_JOB_RECEIVED, new String[] {containerName, script.getJobId()});
         rabbitMQSender.sendMessage(jobReceivedMessage);
 
-        ses = new ScriptExecutionServiceImpl(script);
+        ses.setScript(script);
         String replyMessage = null;
         StopWatch timer = new StopWatch();
         timer.start();
         try{
-            ses.getResult();
+            String result = ses.getResult();
             timer.stop();
             replyMessage = Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[] {containerName, script.getJobId(), timer.toString()});
         }

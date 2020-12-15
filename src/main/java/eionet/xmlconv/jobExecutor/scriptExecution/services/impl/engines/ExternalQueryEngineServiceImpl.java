@@ -41,7 +41,6 @@ public abstract class ExternalQueryEngineServiceImpl extends ScriptEngineService
 
     @Override
     protected void runQuery(Script script, OutputStream result) throws ScriptExecutionException {
-        //TODO
         String tmpScriptFile = null;
         HttpFileManagerService fileManager = new HttpFileManagerServiceImpl();
         try {

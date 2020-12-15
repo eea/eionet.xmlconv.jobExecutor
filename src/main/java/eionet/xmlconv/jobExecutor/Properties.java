@@ -46,7 +46,7 @@ public class Properties {
     /** Folder for XML files. */
     public static String xmlfileFolder;
     /** Folder for OpenDocument helper files. */
-    public static String odsFolder = null;      //maybe this is not needed TODO
+    public static String odsFolder = null;
     /** Time pattern used for displaying time values on UI. */
     public static String timeFormatPattern;
 

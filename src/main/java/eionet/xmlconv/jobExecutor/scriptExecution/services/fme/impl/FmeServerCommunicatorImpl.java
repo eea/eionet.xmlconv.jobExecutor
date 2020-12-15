@@ -226,8 +226,6 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
             LOGGER.info("Files found in directory " + folderPath + " are: " + listFile);
 
             //Copy content of html file to OutputStream
-            //    InputStream fileContent = new FileInputStream(getTmpFolderProperty() + folderName + "/" + listFile.get(0));
-            //  IOUtils.copy(fileContent, result);
             IOUtils.copy(new FileInputStream(zipFile),result);
             LOGGER.info("Copied file " + listFile.get(0) + " to stream");
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.Iterator;
 import java.util.Map;
 
-@Service
+@Service("xgawkEngineService")
 public class XGawkQueryEngineServiceImpl extends ExternalQueryEngineServiceImpl{
 
     @Autowired

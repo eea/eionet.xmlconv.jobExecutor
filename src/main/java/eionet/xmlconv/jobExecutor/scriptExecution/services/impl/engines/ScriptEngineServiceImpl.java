@@ -65,20 +65,6 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
     }
 
     @Override
-    public String getEncoding() {
-        if (Utils.isNullStr(encoding)) {
-            encoding = DEFAULT_ENCODING;
-        }
-
-        return encoding;
-    }
-
-    @Override
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
-
-    @Override
     public String getOutputType() {
         if (Utils.isNullStr(outputType)) {
             outputType = DEFAULT_OUTPUTTYPE;

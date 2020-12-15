@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.net.URI;
 
-@Service
+@Service("saxonEngineService")
 public class SaxonEngineServiceImpl extends ScriptEngineServiceImpl {
 
     /** */

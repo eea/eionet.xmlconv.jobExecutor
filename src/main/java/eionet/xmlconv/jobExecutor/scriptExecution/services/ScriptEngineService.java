@@ -31,35 +31,6 @@ public interface ScriptEngineService {
     void getResult(Script script, OutputStream out) throws ScriptExecutionException;
 
     /**
-     * processes the XQuery.
-     *
-     * @param xqScript
-     *            the XQuery script
-     * @param params
-     *            XQuery parameter name value pairs in format {name1=value1, name2=value2, ... , nameN=valueN}
-     * @return the result of XQuery
-     * @throws eionet.gdem.XMLConvException
-     */
-    /*
-     * public String getResult(String xqScript, String params[]) throws XMLConvException;
-     *
-     * public void getResult(String xqScript, String params[], OutputStream out) throws XMLConvException;
-     */
-    /**
-     * get encoding for XQuery engine to use. If not set use default encoding UTF-8.
-     *
-     * @return
-     */
-    String getEncoding();
-
-    /**
-     * set encoding parameter for XQuery engine. If not set use default encoding UTF-8.
-     *
-     * @param encoding Encoding
-     */
-    void setEncoding(String encoding);
-
-    /**
      * get output type of the XQuery script result. Default is text/html.
      *
      * @return

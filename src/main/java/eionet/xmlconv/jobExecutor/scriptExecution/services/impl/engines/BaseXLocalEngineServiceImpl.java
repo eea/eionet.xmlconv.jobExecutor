@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;
 
-@Service
+@Service("basexEngineService")
 public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseXLocalEngineServiceImpl.class);
@@ -38,7 +38,6 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
 
     @Override
     protected void runQuery(Script script, OutputStream result) throws ScriptExecutionException {
-        //TODO remove OutputStream result
         Context context = new Context();
         QueryProcessor proc = null;
         try {
@@ -64,8 +63,6 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
             LOGGER.info("Script Source URL:"+script.getSrcFileUrl());
             proc.bind("source_url", script.getSrcFileUrl(), "xs:string");
 
-//            proc.bind("base_url", Properties.gdemURL + Properties.contextPath , "xs:string");
-
             // same serialization options with saxon
             SerializerOptions opts = new SerializerOptions();
 
@@ -86,12 +83,9 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
             Value res = proc.value();
 
             ArrayOutput A = res.serialize(opts);
-            //result.write(A.toArray());
             FileOutputStream fos = new FileOutputStream(script.getStrResultFile());
             fos.write(A.toArray());
 
-            //logger.info("proc info: " + proc.info());
-            //logger.info( new String(A.buffer() , "UTF-8" ));
         } catch (QueryException | IOException | FollowRedirectException e) {
             if (Thread.currentThread().isInterrupted()) {
                 throw new ScriptExecutionException(e.getMessage());

@@ -18,12 +18,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-@Service
+@Service("xslEngineService")
 public class XslEngineServiceImpl extends ScriptEngineServiceImpl {
     /** */
     private static final Logger LOGGER = LoggerFactory.getLogger(XslEngineServiceImpl.class);

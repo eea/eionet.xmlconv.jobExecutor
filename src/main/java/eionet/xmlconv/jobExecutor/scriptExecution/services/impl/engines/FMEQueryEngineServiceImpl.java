@@ -22,7 +22,7 @@ import eionet.xmlconv.jobExecutor.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("fmeEngineService")
 public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FMEQueryEngineServiceImpl.class);
