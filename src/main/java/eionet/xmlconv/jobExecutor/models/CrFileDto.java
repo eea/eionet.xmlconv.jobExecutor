@@ -1,4 +1,4 @@
-package eionet.xmlconv.jobExecutor.objects;
+package eionet.xmlconv.jobExecutor.models;
 
 
 import java.io.Serializable;

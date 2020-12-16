@@ -1,7 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services;
 
 import eionet.xmlconv.jobExecutor.exceptions.ConversionException;
-import eionet.xmlconv.jobExecutor.objects.ConversionResultDto;
+import eionet.xmlconv.jobExecutor.models.ConversionResultDto;
 
 import java.io.File;
 import java.io.OutputStream;

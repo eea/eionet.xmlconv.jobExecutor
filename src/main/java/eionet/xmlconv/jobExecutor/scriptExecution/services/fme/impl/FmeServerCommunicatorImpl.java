@@ -2,7 +2,7 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.fme.impl;
 
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.*;
-import eionet.xmlconv.jobExecutor.objects.Script;
+import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.ApacheHttpClientUtils;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.ApacheHttpClientWrapper;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeJobStatus;

@@ -2,11 +2,10 @@ package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 
 import eionet.xmlconv.jobExecutor.exceptions.RabbitMQException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
-import eionet.xmlconv.jobExecutor.objects.Script;
+import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptExecutionService;
-import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.ScriptExecutionServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

@@ -5,7 +5,7 @@ import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.converters.ConvertStrategy;
 import eionet.xmlconv.jobExecutor.converters.XMLConverter;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
-import eionet.xmlconv.jobExecutor.objects.Script;
+import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ConvertContextService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.HttpFileManagerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.ConvertContextServiceImpl;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;

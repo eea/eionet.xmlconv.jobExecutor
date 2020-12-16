@@ -1,7 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl;
 
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
-import eionet.xmlconv.jobExecutor.objects.Script;
+import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptEngineService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;

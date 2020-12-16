@@ -1,7 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl;
 
 import eionet.xmlconv.jobExecutor.exceptions.ConversionException;
-import eionet.xmlconv.jobExecutor.objects.RowColumnDefinition;
+import eionet.xmlconv.jobExecutor.models.RowColumnDefinition;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ExcelConversionService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ExcelStyleService;
 import org.apache.commons.io.IOUtils;

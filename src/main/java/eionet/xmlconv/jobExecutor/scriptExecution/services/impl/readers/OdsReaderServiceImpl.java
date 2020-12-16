@@ -5,7 +5,7 @@ import eionet.xmlconv.jobExecutor.datadict.DDElement;
 import eionet.xmlconv.jobExecutor.datadict.DDXmlElement;
 import eionet.xmlconv.jobExecutor.datadict.DD_XMLInstance;
 import eionet.xmlconv.jobExecutor.exceptions.ConversionException;
-import eionet.xmlconv.jobExecutor.objects.ConversionResultDto;
+import eionet.xmlconv.jobExecutor.models.ConversionResultDto;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ODFSpreadsheetAnalyzerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.OpenDocumentSpreadsheetService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.SourceReaderLoggerService;

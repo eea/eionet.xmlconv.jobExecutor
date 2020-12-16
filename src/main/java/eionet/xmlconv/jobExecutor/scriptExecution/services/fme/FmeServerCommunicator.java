@@ -1,7 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.fme;
 
 import eionet.xmlconv.jobExecutor.exceptions.*;
-import eionet.xmlconv.jobExecutor.objects.Script;
+import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.request.SubmitJobRequest;
 
 import java.io.OutputStream;

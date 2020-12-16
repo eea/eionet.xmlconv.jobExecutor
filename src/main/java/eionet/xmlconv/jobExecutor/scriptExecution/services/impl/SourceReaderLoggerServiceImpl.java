@@ -2,8 +2,8 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.impl;
 
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
-import eionet.xmlconv.jobExecutor.objects.ConversionLogDto;
-import eionet.xmlconv.jobExecutor.objects.ConversionResultDto;
+import eionet.xmlconv.jobExecutor.models.ConversionLogDto;
+import eionet.xmlconv.jobExecutor.models.ConversionResultDto;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.SourceReaderLoggerService;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;

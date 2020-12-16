@@ -2,8 +2,6 @@ package eionet.xmlconv.jobExecutor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -74,6 +72,13 @@ public class Properties {
     public static String fmeDeleteFolderUrl;
     public static String jobExecutorApplicationUrl;
     public static Integer qaTimeout;
+
+    /** XSL folder for generated conversions. */
+    public static String metaXSLFolder;
+    /** conversion.xml file location, listing all available generated conversions. */
+    public static String convFile;
+    /** Parent folder for other user folders. */
+    public static String appRootFolder;
 
     /**
      * Checks path
@@ -286,5 +291,10 @@ public class Properties {
     @Value( "${external.qa.timeout}" )
     public static void setQaTimeout(Integer qaTimeout) {
         Properties.qaTimeout = qaTimeout;
+    }
+
+    @Value( "${app.home}" )
+    public static void setAppRootFolder(String appRootFolder) {
+        Properties.appRootFolder = appRootFolder;
     }
 }

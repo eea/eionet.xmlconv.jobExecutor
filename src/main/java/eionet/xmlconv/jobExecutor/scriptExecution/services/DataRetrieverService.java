@@ -1,7 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services;
 
 import eionet.xmlconv.jobExecutor.exceptions.XmlconvApiException;
-import eionet.xmlconv.jobExecutor.objects.Schema;
+import eionet.xmlconv.jobExecutor.models.Schema;
 
 import java.util.Hashtable;
 

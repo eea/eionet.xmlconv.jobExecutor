@@ -1,6 +1,6 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl;
 
-import eionet.xmlconv.jobExecutor.objects.EnvironmentVar;
+import eionet.xmlconv.jobExecutor.models.EnvironmentVar;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.LogDeviceService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.SysCommandExecutorService;
 import eionet.xmlconv.jobExecutor.utils.AsyncStreamReader;

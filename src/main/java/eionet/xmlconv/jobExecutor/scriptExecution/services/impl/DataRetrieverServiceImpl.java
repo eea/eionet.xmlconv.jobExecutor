@@ -1,7 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl;
 
 import eionet.xmlconv.jobExecutor.exceptions.XmlconvApiException;
-import eionet.xmlconv.jobExecutor.objects.Schema;
+import eionet.xmlconv.jobExecutor.models.Schema;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

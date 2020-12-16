@@ -4,7 +4,7 @@ import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.exceptions.FollowRedirectException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.factories.HttpCacheClientFactory;
-import eionet.xmlconv.jobExecutor.objects.CustomURI;
+import eionet.xmlconv.jobExecutor.models.CustomURI;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.HttpFileManagerService;
 import eionet.xmlconv.jobExecutor.utils.Utils;

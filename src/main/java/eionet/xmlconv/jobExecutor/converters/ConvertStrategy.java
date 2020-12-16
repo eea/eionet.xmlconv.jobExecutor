@@ -97,8 +97,6 @@ public abstract class ConvertStrategy {
             XsltExecutable exp = comp.compile(transformerSource);
             XdmNode source = proc.newDocumentBuilder().build(new StreamSource(in));
             Serializer ser = proc.newSerializer(out);
-            //ser.setOutputProperty(Serializer.Property.METHOD, "html");
-            //ser.setOutputProperty(Serializer.Property.INDENT, "yes");
             XsltTransformer trans = exp.load();
             trans.setInitialContextNode(source);
             trans.setParameter(new QName(DD_DOMAIN_PARAM), new XdmAtomicValue(Properties.ddURL));
@@ -106,15 +104,6 @@ public abstract class ConvertStrategy {
             trans.setErrorListener(errors);
             trans.setDestination(ser);
             trans.transform();
-
-            //} catch (TransformerConfigurationException tce) {
-            //    throw new XMLConvException("Error transforming XML - incorrect stylesheet file: " + tce.toString(), tce);
-            //} catch (TransformerException tfe) {
-            //    throw new XMLConvException("Error transforming XML - it's not probably well-formed xml file: " + tfe.toString(), tfe);
-            //} catch (Throwable th) {
-            //    LOGGER.error("Error " + th.toString(), th);
-            //    th.printStackTrace(System.out);
-            //    throw new XMLConvException("Error transforming XML: " + th.toString());
         } catch (SaxonApiException e) {
             throw new ConversionException("Error transforming XML: " + e.getMessage(), e);
         }

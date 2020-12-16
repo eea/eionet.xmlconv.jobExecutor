@@ -1,4 +1,4 @@
-package eionet.xmlconv.jobExecutor.objects;
+package eionet.xmlconv.jobExecutor.models;
 
 public class EnvironmentVar {
     public String fName = null;

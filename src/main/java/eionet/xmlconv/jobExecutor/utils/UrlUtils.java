@@ -1,6 +1,6 @@
 package eionet.xmlconv.jobExecutor.utils;
 
-import eionet.xmlconv.jobExecutor.objects.CustomURI;
+import eionet.xmlconv.jobExecutor.models.CustomURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

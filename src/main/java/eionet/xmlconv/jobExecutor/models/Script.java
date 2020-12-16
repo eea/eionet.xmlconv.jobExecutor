@@ -1,13 +1,8 @@
-package eionet.xmlconv.jobExecutor.objects;
+package eionet.xmlconv.jobExecutor.models;
 
 
 import eionet.xmlconv.jobExecutor.Constants;
-import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
-import eionet.xmlconv.jobExecutor.objects.Schema;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptEngineService;
-import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines.*;
-
-import java.io.OutputStream;
 
 /*This class was previously named XQScript*/
 
