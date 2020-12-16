@@ -2,13 +2,11 @@ package eionet.xmlconv.jobExecutor.utils;
 
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
-import eionet.xmlconv.jobExecutor.TestUtils;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -19,19 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ContextConfiguration(classes = { Properties.class })
-@TestPropertySource("classpath:application-test.properties")
-@ActiveProfiles("test")
+@RunWith(SpringRunner.class)
 public class UtilsTest {
     /**
      * The methods test helper date formatting methods
      *
      * @throws Exception
      */
-
-    @Before
-    public void setUp() {
-        TestUtils.setUpProperties(this);
-    }
 
     @Test
     public void testDateTime() throws Exception {

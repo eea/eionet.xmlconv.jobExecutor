@@ -13,6 +13,6 @@ public interface DDXMLConverterService {
     ConversionResultDto convertDD_XML_split(OutputStream outStream, String sheetParam) throws ConversionException;
     DDXMLConverterService getConverter(File inFile, ConversionResultDto resultObject, String sheetParam) throws ConversionException;
     String getInvalidSchemaMessage(String xmlSchema) throws ConversionException;
-
-
+    String getSourceFormatName();
+    SourceReaderService getSourceReader();
 }

@@ -3,7 +3,10 @@ package eionet.xmlconv.jobExecutor.utils;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.TestConstants;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 
@@ -11,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@ContextConfiguration(classes = { Properties.class })
+@RunWith(SpringRunner.class)
 public class ZipUtilsTest {
     /**
      * Test ZipUtil unzip method. Exctract the seed...zip file into tmp directory and check that the unzipped file is well-formed

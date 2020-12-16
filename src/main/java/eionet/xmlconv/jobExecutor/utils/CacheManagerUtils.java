@@ -22,8 +22,6 @@ public class CacheManagerUtils {
      */
     @Autowired
     public CacheManagerUtils() {
-        // do nothing
-        this.initializeCacheManager();
     }
     /**
      * Application (main) cache name.
@@ -37,16 +35,12 @@ public class CacheManagerUtils {
 
     private static CacheManager cacheManager;
 
-    public static CacheManager getCacheManager() {
-        return cacheManager;
-    }
-
     /**
      * Updates Data Dictionary tables cache.
      * @param ddTables data dictionary tables
      */
     public static void updateDDTablesCache(final List<DDDatasetTable> ddTables) {
-        cacheManager.getCache(APPLICATION_CACHE).put(new Element(DD_TABLES_CACHE, ddTables));
+        getCacheManager().getCache(APPLICATION_CACHE).put(new Element(DD_TABLES_CACHE, ddTables));
     }
 
     /**
@@ -54,18 +48,18 @@ public class CacheManagerUtils {
      * @return last data dictionary tables entry.
      */
     public static List<DDDatasetTable> getDDTables() {
-        Element element = cacheManager.getCache(APPLICATION_CACHE) != null ? cacheManager.getCache(APPLICATION_CACHE).get(DD_TABLES_CACHE) : null;
+        Element element = getCacheManager().getCache(APPLICATION_CACHE) != null ? cacheManager.getCache(APPLICATION_CACHE).get(DD_TABLES_CACHE) : null;
         return element == null || element.getValue() == null ? Collections.EMPTY_LIST : (List<DDDatasetTable>) element.getValue();
     }
 
     public static Cache getHttpCache() {
-        return cacheManager.getCache(HTTP_CACHE);
+        return getCacheManager().getCache(HTTP_CACHE);
     }
 
     /**
      * Cache manager initializer. Used by Spring DI.
      */
-    public void initializeCacheManager() {
+    public static void initializeCacheManager() {
         if (cacheManager == null) {
             synchronized (CacheManager.class) {
                 if (cacheManager == null) {
@@ -94,6 +88,15 @@ public class CacheManagerUtils {
      * Used to destroy the cache manager. Used by Spring DI.
      */
     public void destroyCacheManager() {
-        cacheManager.shutdown();
+        getCacheManager().shutdown();
     }
+
+    public static CacheManager getCacheManager(){
+        if (cacheManager == null)
+        {
+            initializeCacheManager();
+        }
+        return cacheManager;
+    }
+
 }

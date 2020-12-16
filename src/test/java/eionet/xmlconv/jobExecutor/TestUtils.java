@@ -1,15 +1,13 @@
 package eionet.xmlconv.jobExecutor;
+
 import org.junit.Ignore;
 
 @Ignore
 public class TestUtils {
-    /**
-     * Set up test runtime properties
-     *
-     * @param obj
-     */
-    public static void setUpProperties(Object obj) {
-        Properties.metaXSLFolder = Properties.appRootFolder + "/dcm";
-        Properties.convFile = Properties.metaXSLFolder + "/conversions.xml";
+
+    public static String getSeedURL(String seedName, Object obj) {
+        //TODO
+       // return Properties.getStringProperty("test.httpd.url").concat(seedName);
+        return null;
     }
 }
