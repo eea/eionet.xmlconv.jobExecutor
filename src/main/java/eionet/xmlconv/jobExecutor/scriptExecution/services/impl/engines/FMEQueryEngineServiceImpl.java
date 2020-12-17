@@ -75,7 +75,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
             this.pollFmeServerWithRetries(jobId,script,fmeServerCommunicator);
 
-            fmeServerCommunicator.getResultFiles(folderName, result);
+            fmeServerCommunicator.getResultFiles(folderName, script.getStrResultFile());
             fmeServerCommunicator.deleteFolder(folderName);
         } catch (FmeAuthorizationException | FmeCommunicationException | GenericFMEexception | FMEBadRequestException |RetryCountForGettingJobResultReachedException | InterruptedException e) {
             String message = "Generic Exception handling. FME request error: " + e.getMessage();

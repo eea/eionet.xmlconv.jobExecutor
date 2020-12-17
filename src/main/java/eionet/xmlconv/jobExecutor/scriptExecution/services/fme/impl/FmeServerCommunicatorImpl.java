@@ -161,7 +161,7 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
     }
 
     @Override
-    public void getResultFiles(String folderName, OutputStream result) throws FmeAuthorizationException  , FMEBadRequestException , GenericFMEexception {
+    public void getResultFiles(String folderName, String resultFile) throws FmeAuthorizationException  , FMEBadRequestException , GenericFMEexception {
         LOGGER.info("Began downloading folder " + folderName);
         HttpPost postMethod = null;
         CloseableHttpResponse response = null;
@@ -209,29 +209,12 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
                 fos.write(inByte);
             fos.close();
 
-            //Extract folder in tmp folder and delete zip file
-            ZipUtils.unzip(folderPath+".zip", folderPath);
             File zipFile = new File(folderPath+".zip");
-            //   zipFile.delete();
-            LOGGER.info("Extracted and deleted " + folderPath + ".zip");
-
-            // Get all the names of the files present in the given directory
-            File folder = new File(folderPath);
-            if(!folder.isDirectory()){
-                String errorMsg = tmpFolderProperty + folderPath + " is not a directory";
-                throw new GenericFMEexception(errorMsg);
-            }
-            List<String> listFile = Arrays.asList(folder.list());
-            Collections.sort(listFile);
-            LOGGER.info("Files found in directory " + folderPath + " are: " + listFile);
-
-            //Copy content of html file to OutputStream
+            FileOutputStream result = new FileOutputStream(new File(resultFile));
             IOUtils.copy(new FileInputStream(zipFile),result);
-            LOGGER.info("Copied file " + listFile.get(0) + " to stream");
-
-            //Delete created folder
-            Utils.deleteFolder(folderPath);
-            LOGGER.info("Deleted folder " + folderPath);
+            LOGGER.info("Copied content of " + folderName + ".zip" + " to stream");
+            Utils.deleteFolder(folderPath+".zip");
+            LOGGER.info("Deleted folder " + folderPath + ".zip");
             LOGGER.info("Finished downloading folder " + folderName + " from FME");
 
         }  catch (URISyntaxException | HttpRequestHeaderInitializationException | IOException e) {

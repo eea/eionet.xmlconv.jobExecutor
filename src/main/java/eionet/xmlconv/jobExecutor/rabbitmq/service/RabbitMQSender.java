@@ -1,10 +1,12 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.service;
 
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkersRabbitMQResponse;
+
 public interface RabbitMQSender {
 
     /**
      * sends message to rabbitmq
-     * @param message
+     * @param response
      */
-    void sendMessage(String message);
+    void sendMessage(WorkersRabbitMQResponse response);
 }

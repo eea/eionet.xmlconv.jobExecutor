@@ -3,6 +3,7 @@ package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 import eionet.xmlconv.jobExecutor.exceptions.RabbitMQException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkersRabbitMQResponse;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptExecutionService;
@@ -33,30 +34,36 @@ public class RabbitMQListener {
     }
 
     @RabbitListener(queues = "${job.rabbitmq.listeningQueue}")
-    public void consumeMessage(Script script) throws RabbitMQException{
+    public void consumeMessage(Script script) {
         LOGGER.info("Received script with id " + script.getJobId());
-        String containerName = containerInfoRetriever.getContainerName();
 
-        String jobReceivedMessage = Properties.getMessage(Constants.WORKER_LOG_JOB_RECEIVED, new String[] {containerName, script.getJobId()});
-        rabbitMQSender.sendMessage(jobReceivedMessage);
+        String containerName = containerInfoRetriever.getContainerName();
+        WorkersRabbitMQResponse response = new WorkersRabbitMQResponse().setHasError(false)
+                .setXqScript(script).setJobStatus(Constants.XQ_WORKER_RECEIVED).setContainerName(containerName);
+        rabbitMQSender.sendMessage(response);
 
         ses.setScript(script);
-        String replyMessage = null;
         StopWatch timer = new StopWatch();
         timer.start();
         try{
-            String result = ses.getResult();
+            ses.getResult();
             timer.stop();
-            replyMessage = Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[] {containerName, script.getJobId(), timer.toString()});
+            LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[] {containerName, script.getJobId(), timer.toString()}));
+            response.setJobStatus(Constants.XQ_WORKER_SUCCESS);
         }
         catch(ScriptExecutionException e){
             timer.stop();
-            replyMessage = Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {containerName, script.getJobId(), timer.toString()}) + " Error message: " + e.getMessage();
+            LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {containerName, script.getJobId(), timer.toString()}));
+            response.setHasError(true).setErrorMessage(e.getMessage()).setJobStatus(Constants.XQ_WORKER_FATAL_ERR);
         }
         finally {
-            rabbitMQSender.sendMessage(replyMessage);
+            rabbitMQSender.sendMessage(response);
         }
         LOGGER.info(String.format("Execution of job %s was completed, total time of execution: %s", script.getJobId(), timer.toString()));
 
     }
 }
+
+
+
+

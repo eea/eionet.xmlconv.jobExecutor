@@ -11,7 +11,7 @@ public interface FmeServerCommunicator {
 
     String submitJob(Script script, SubmitJobRequest request) throws FmeAuthorizationException, FmeCommunicationException;
     FmeJobStatus getJobStatus(String jobId, Script script) throws FmeAuthorizationException, FmeCommunicationException , GenericFMEexception, FMEBadRequestException;
-    void getResultFiles(String folderName, OutputStream result) throws FmeAuthorizationException , FMEBadRequestException, GenericFMEexception;
+    void getResultFiles(String folderName, String resultFile) throws FmeAuthorizationException , FMEBadRequestException, GenericFMEexception;
     void deleteFolder(String folderName) throws FmeAuthorizationException , FMEBadRequestException ,GenericFMEexception ;
 
 
