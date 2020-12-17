@@ -7,7 +7,11 @@ public class TestUtils {
 
     public static String getSeedURL(String seedName, Object obj) {
         //TODO
-       // return Properties.getStringProperty("test.httpd.url").concat(seedName);
-        return null;
+        return Properties.testHttpdUrl.concat(seedName);
+    }
+
+    public static String getLocalURL(String filename) {
+        //TODO
+        return Properties.testHttpdUrl.concat(filename);
     }
 }

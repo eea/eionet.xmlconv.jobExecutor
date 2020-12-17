@@ -120,6 +120,7 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
         }
     }
 
+    @Override
     public String getSourceUrlWithTicket(String ticket, String sourceUrl, boolean isTrustedMode) throws URISyntaxException, ScriptExecutionException {
         CustomURI uri = new CustomURI(sourceUrl);
         String parsedURL = uri.getHttpURL();

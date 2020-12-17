@@ -6,4 +6,7 @@ public interface SysCommandExecutorService {
     int runCommand(String commandLine) throws Exception;
     String getCommandOutput();
     String getCommandError();
+    void setTimeout(long timeout);
+    void setOutputLogDevice(LogDeviceService logDevice);
+    void setErrorLogDevice(LogDeviceService logDevice);
 }

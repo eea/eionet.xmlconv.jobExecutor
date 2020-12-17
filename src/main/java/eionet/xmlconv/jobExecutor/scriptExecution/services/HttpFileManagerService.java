@@ -19,4 +19,5 @@ public interface HttpFileManagerService {
     byte[] getFileByteArray(String url, String ticket, boolean isTrustedMode) throws URISyntaxException, ScriptExecutionException, IOException;
     void closeQuietly();
     URL followUrlRedirectIfNeeded(URL url) throws FollowRedirectException;
+    String getSourceUrlWithTicket(String ticket, String sourceUrl, boolean isTrustedMode) throws URISyntaxException, ScriptExecutionException;
 }

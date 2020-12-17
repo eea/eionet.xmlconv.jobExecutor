@@ -11,7 +11,7 @@ public class Ods2XmlServiceImpl extends DDXMLConverterServiceImpl{
      * Class constructor.
      */
     @Autowired
-    Ods2XmlServiceImpl(){
+    public Ods2XmlServiceImpl(){
         super();
     }
 

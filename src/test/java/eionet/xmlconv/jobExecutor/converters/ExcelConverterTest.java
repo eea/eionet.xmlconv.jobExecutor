@@ -1,5 +1,6 @@
 package eionet.xmlconv.jobExecutor.converters;
 
+import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.TestConstants;
 import org.junit.Rule;
@@ -16,7 +17,7 @@ import java.io.InputStream;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @SpringBootTest
-@ContextConfiguration(classes = { Properties.class })
+@ContextConfiguration(classes = { Properties.class, Constants.class })
 @RunWith(SpringRunner.class)
 public class ExcelConverterTest {
 

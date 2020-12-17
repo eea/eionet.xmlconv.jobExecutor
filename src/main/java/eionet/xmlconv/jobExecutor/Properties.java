@@ -79,6 +79,9 @@ public class Properties {
     public static String convFile;
     /** Parent folder for other user folders. */
     public static String appRootFolder;
+    public static String convertersUrl;
+
+    public static String testHttpdUrl;
 
     /**
      * Checks path
@@ -289,12 +292,21 @@ public class Properties {
     }
 
     @Value( "${external.qa.timeout}" )
-    public static void setQaTimeout(Integer qaTimeout) {
-        Properties.qaTimeout = qaTimeout;
+    public void setQaTimeout(Integer qaTimeout) {
+        this.qaTimeout = qaTimeout;
     }
 
     @Value( "${app.home}" )
-    public static void setAppRootFolder(String appRootFolder) {
-        Properties.appRootFolder = appRootFolder;
+    public void setAppRootFolder(String appRootFolder) {
+        this.appRootFolder = appRootFolder;
+    }
+
+    @Value( "${env.converters.url}" )
+    public void setConvertersUrl(String convertersUrl) {
+        this.convertersUrl = convertersUrl;
+    }
+    @Value( "${test.httpd.url}" )
+    public void setTestHttpdUrl(String testHttpdUrl) {
+        this.testHttpdUrl = testHttpdUrl;
     }
 }

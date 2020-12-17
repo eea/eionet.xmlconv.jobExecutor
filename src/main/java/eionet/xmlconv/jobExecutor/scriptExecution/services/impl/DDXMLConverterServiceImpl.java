@@ -52,7 +52,7 @@ public abstract class DDXMLConverterServiceImpl implements DDXMLConverterService
      * Default constructor.
      */
     @Autowired
-    DDXMLConverterServiceImpl() {
+    public DDXMLConverterServiceImpl() {
     }
 
     /**

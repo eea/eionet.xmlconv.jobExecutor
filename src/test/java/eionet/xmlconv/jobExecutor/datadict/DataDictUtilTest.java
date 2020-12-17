@@ -1,5 +1,6 @@
 package eionet.xmlconv.jobExecutor.datadict;
 
+import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.TestConstants;
 import org.junit.Test;
@@ -14,7 +15,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 
 @SpringBootTest
-@ContextConfiguration(classes = { Properties.class })
+@ContextConfiguration(classes = { Properties.class, Constants.class })
 @RunWith(SpringRunner.class)
 public class DataDictUtilTest {
 

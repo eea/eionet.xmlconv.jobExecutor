@@ -1,5 +1,6 @@
 package eionet.xmlconv.jobExecutor.factories;
 
+import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.junit.Test;
@@ -11,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.junit.Assert.assertEquals;
 
 @SpringBootTest
-@ContextConfiguration(classes = { Properties.class })
+@ContextConfiguration(classes = { Properties.class, Constants.class })
 @RunWith(SpringRunner.class)
 public class HttpConnectionManagerFactoryTest {
     private PoolingHttpClientConnectionManager manager;

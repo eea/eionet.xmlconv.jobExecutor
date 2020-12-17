@@ -77,14 +77,17 @@ public class SysCommandExecutorServiceImpl implements SysCommandExecutorService 
         return timeout;
     }
 
+    @Override
     public void setTimeout(long timeout) {
         this.timeout = timeout;
     }
 
+    @Override
     public void setOutputLogDevice(LogDeviceService logDevice) {
         fOuputLogDevice = logDevice;
     }
 
+    @Override
     public void setErrorLogDevice(LogDeviceService logDevice) {
         fErrorLogDevice = logDevice;
     }

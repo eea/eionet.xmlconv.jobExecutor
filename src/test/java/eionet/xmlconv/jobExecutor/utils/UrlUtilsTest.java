@@ -1,5 +1,6 @@
 package eionet.xmlconv.jobExecutor.utils;
 
+import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@ContextConfiguration(classes = { Properties.class })
+@ContextConfiguration(classes = { Properties.class, Constants.class })
 @RunWith(SpringRunner.class)
 public class UrlUtilsTest {
 

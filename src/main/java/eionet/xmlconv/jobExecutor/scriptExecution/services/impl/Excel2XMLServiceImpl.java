@@ -11,7 +11,7 @@ public class Excel2XMLServiceImpl extends DDXMLConverterServiceImpl{
      * Class constructor.
      */
     @Autowired
-    Excel2XMLServiceImpl(){
+    public Excel2XMLServiceImpl(){
         super();
     }
 
