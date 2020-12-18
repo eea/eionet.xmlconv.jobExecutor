@@ -38,7 +38,7 @@ public class RabbitMQListener {
         LOGGER.info("Received script with id " + script.getJobId());
 
         String containerName = containerInfoRetriever.getContainerName();
-        WorkersRabbitMQResponse response = new WorkersRabbitMQResponse().setHasError(false)
+        WorkersRabbitMQResponse response = new WorkersRabbitMQResponse().setErrorExists(false)
                 .setXqScript(script).setJobStatus(Constants.XQ_WORKER_RECEIVED).setContainerName(containerName);
         rabbitMQSender.sendMessage(response);
 
@@ -54,7 +54,7 @@ public class RabbitMQListener {
         catch(ScriptExecutionException e){
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {containerName, script.getJobId(), timer.toString()}));
-            response.setHasError(true).setErrorMessage(e.getMessage()).setJobStatus(Constants.XQ_WORKER_FATAL_ERR);
+            response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobStatus(Constants.XQ_WORKER_FATAL_ERR);
         }
         finally {
             rabbitMQSender.sendMessage(response);
