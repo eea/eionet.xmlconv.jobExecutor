@@ -2,6 +2,9 @@ package eionet.xmlconv.jobExecutor.datadict;
 
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.ConversionException;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.XPathQueryService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.XmlCtxService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.DomContextServiceImpl;
 import org.apache.commons.lang3.Conversion;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -64,7 +67,7 @@ public class DataDictUtil {
      * @return Dataset release information.
      */
     public static Map<String, String> getDatasetReleaseInfo(String type, String dsId) {
-        //TODO endpoint
+        //TODO call endpoint public Hashtable getDatasetWithReleaseInfo(String objType, String objId) from datadict
         return null;
     }
     /**
@@ -94,8 +97,84 @@ public class DataDictUtil {
      * @param schemaUrl Schema URL
      */
     public static Map<String, DDElement> importDDTableSchemaElemDefs(String schemaUrl) {
-        //TODO
-        return null;
+        InputStream inputStream = null;
+        Map<String, DDElement> elemDefs = new HashMap<String, DDElement>();
+        try {
+
+            // load imported schema URLs
+            XmlCtxService ctx = new DomContextServiceImpl();
+            URL url = new URL(schemaUrl);
+            inputStream = url.openStream();
+            ctx.checkFromInputStream(inputStream);
+            XPathQueryService xQuery = ctx.getQueryManager();
+
+            // run recursively the same function for importing elem defs for imported schemas
+            List<String> schemas = xQuery.getSchemaImports();
+            Map<String, String> multiValueElements = xQuery.getSchemaElementWithMultipleValues();
+
+            for (int i = 0; i < schemas.size(); i++) {
+                String schema = schemas.get(i);
+                DataDictUtil.importDDElementSchemaDefs(elemDefs, schema);
+            }
+
+            for (Map.Entry<String, String> entry : multiValueElements.entrySet()) {
+                DDElement multiValueElement = null;
+                if (elemDefs.containsKey(entry.getKey())) {
+                    multiValueElement = elemDefs.get(entry.getKey());
+                } else {
+                    multiValueElement = new DDElement(entry.getKey());
+                }
+                multiValueElement.setHasMultipleValues(true);
+                multiValueElement.setDelimiter(entry.getValue());
+                elemDefs.put(entry.getKey(), multiValueElement);
+            }
+        } catch (Exception ex) {
+            LOGGER.error("Error reading schema file ", ex);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (Exception e) {
+            }
+        }
+        return elemDefs;
+    }
+
+    /**
+     * Import element definitions
+     * @param elemDefs Element definitions
+     * @param schemaUrl Schema URL
+     * @return
+     */
+    public static Map<String, DDElement> importDDElementSchemaDefs(Map<String, DDElement> elemDefs, String schemaUrl) {
+        InputStream inputStream = null;
+        if (elemDefs == null) {
+            elemDefs = new HashMap<String, DDElement>();
+        }
+
+        try {
+            XmlCtxService ctx = new DomContextServiceImpl();
+            URL url = new URL(schemaUrl);
+            inputStream = url.openStream();
+            ctx.checkFromInputStream(inputStream);
+
+            XPathQueryService xQuery = ctx.getQueryManager();
+            List<String> elemNames = xQuery.getSchemaElements();
+            for (int i = 0; i < elemNames.size(); i++) {
+                String elemName = elemNames.get(i);
+                DDElement element = elemDefs.containsKey(elemName) ? elemDefs.get(elemName) : new DDElement(elemName);
+                element.setSchemaDataType(xQuery.getSchemaElementType(elemName));
+                elemDefs.put(elemName, element);
+            }
+        } catch (Exception ex) {
+            LOGGER.error("Error reading schema file ", ex);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (Exception e) {
+            }
+        }
+        return elemDefs;
+
     }
 
     /**

@@ -24,7 +24,8 @@ import org.springframework.stereotype.Service;
 public class QAResultPostProcessorServiceImpl implements QAResultPostProcessorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QAResultPostProcessorService.class);
-    private DataRetrieverService dataRetrieverService = new DataRetrieverServiceImpl();
+    @Autowired
+    private DataRetrieverService dataRetrieverService;
     private String warnMessage;
 
     @Autowired

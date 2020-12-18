@@ -17,13 +17,13 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
 
     @Override
     public Schema retrieveSchemaByXmlUrl(String xmlUrl) throws XmlconvApiException {
-        //TODO
+        //TODO retrieve Schema from converters by using a query like select * from T_SCHEMA where XML_SCHEMA=xmlUrl
         return null;
     }
 
     @Override
     public Hashtable<String, String> getHostCredentials(String host) throws XmlconvApiException {
-        //TODO
+        //TODO returns a hashtable that contains the host's user_name and the pwd
         return null;
     }
 }

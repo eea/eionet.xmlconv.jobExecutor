@@ -41,7 +41,9 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpFileManagerService.class);
     private CloseableHttpClient client;
     private CloseableHttpResponse response;
-    private DataRetrieverService dataRetrieverService = new DataRetrieverServiceImpl();
+
+    @Autowired
+    private DataRetrieverService dataRetrieverService;
 
     @Autowired
     public HttpFileManagerServiceImpl() {

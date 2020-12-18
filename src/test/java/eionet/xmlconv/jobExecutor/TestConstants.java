@@ -15,4 +15,5 @@ public class TestConstants {
     public static final String SEED_MULTIVALUES_XLS = "seed-multivalues.xls";
     public static final String SEED_MULTIVALUES_XLSX = "seed-multivalues07.xlsx";
     public static final String SEED_VALIDATION_WARNINGS_XLS = "seed-validation-warnings.xls";
+    public static final String SEED_GW_CONTAINER_SCHEMA = "schema/seed-gw-schema-container.xsd";
 }
