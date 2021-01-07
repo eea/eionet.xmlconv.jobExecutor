@@ -22,8 +22,6 @@ public class Properties {
     public static String tmpFolder;
     /** Folder for QA scripts. */
     public static String queriesFolder;
-    /** XGawk program executable command. */
-    public static String xgawkCommand;
     /**
      * Data Dictionary URL, used when generating XSLs.
      */
@@ -155,11 +153,6 @@ public class Properties {
     @Value( "${queries.folder}" )
     public void setQueriesFolder(String queriesFolder) {
         this.queriesFolder = queriesFolder;
-    }
-
-    @Value( "${external.qa.command.xgawk}" )
-    public void setXgawkCommand(String xgawkCommand) {
-        this.xgawkCommand = xgawkCommand;
     }
 
     @Value( "${dd.url}" )

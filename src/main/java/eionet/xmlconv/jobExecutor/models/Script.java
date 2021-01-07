@@ -13,7 +13,7 @@ public class Script {
     private String strResultFile;
     private String scriptSource; // XQuery script
     private String outputType; // html, txt, xml, zip
-    private String scriptType; // xquery, xsl, xgawk
+    private String scriptType; // xquery, xsl
     private String scriptFileName; // full path of script file
     private String srcFileUrl;
     private Schema schema;
@@ -24,10 +24,9 @@ public class Script {
     public static final String SCRIPT_LANG_XQUERY1 = "xquery 1.0";
     public static final String SCRIPT_LANG_XQUERY3 = "xquery 3.0+";
     public static final String SCRIPT_LANG_XSL = "xsl";
-    public static final String SCRIPT_LANG_XGAWK = "xgawk";
     public static final String SCRIPT_LANG_FME = "fme";
 
-    public static final String[] SCRIPT_LANGS = {SCRIPT_LANG_XQUERY3, SCRIPT_LANG_XQUERY1, SCRIPT_LANG_XSL, SCRIPT_LANG_XGAWK, SCRIPT_LANG_FME };
+    public static final String[] SCRIPT_LANGS = {SCRIPT_LANG_XQUERY3, SCRIPT_LANG_XQUERY1, SCRIPT_LANG_XSL, SCRIPT_LANG_FME };
 
 
     public static final String SCRIPT_RESULTTYPE_XML = "XML";

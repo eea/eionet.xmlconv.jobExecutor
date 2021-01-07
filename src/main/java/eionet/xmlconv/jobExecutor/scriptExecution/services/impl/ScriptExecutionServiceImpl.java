@@ -23,10 +23,6 @@ public class ScriptExecutionServiceImpl implements ScriptExecutionService {
     private ScriptEngineService basexEngineService;
 
     @Autowired
-    @Qualifier("xgawkEngineService")
-    private ScriptEngineService xgawkEngineService;
-
-    @Autowired
     @Qualifier("saxonEngineService")
     private ScriptEngineService saxonEngineService;
 
@@ -52,8 +48,6 @@ public class ScriptExecutionServiceImpl implements ScriptExecutionService {
         String result = null;
         if (Script.SCRIPT_LANG_XSL.equals(script.getScriptType())) {
             result = xslEngineService.getResult(script);
-        } else if (Script.SCRIPT_LANG_XGAWK.equals(script.getScriptType())) {
-            result = xgawkEngineService.getResult(script);
         } else if (Script.SCRIPT_LANG_FME.equals(script.getScriptType())) {
             result = fmeEngineService.getResult(script);
         } else if (Script.SCRIPT_LANG_XQUERY3.equals(script.getScriptType())) {// XQUERY 3.0+
