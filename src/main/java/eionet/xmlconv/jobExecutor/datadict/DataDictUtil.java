@@ -2,18 +2,22 @@ package eionet.xmlconv.jobExecutor.datadict;
 
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.ConversionException;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.XPathQueryService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.XmlCtxService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.DataRetrieverServiceImpl;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.DomContextServiceImpl;
 import org.apache.commons.lang3.Conversion;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +29,7 @@ public class DataDictUtil {
     public static final String INSTANCE_SERVLET = "GetXmlInstance";
     public static final String SCHEMA_SERVLET = "GetSchema";
     public static final String CONTAINER_SCHEMA_SERVLET = "GetContainerSchema";
-
+    private static DataRetrieverService dataRetrieverService = new DataRetrieverServiceImpl();
     /**
      * Retreive dataset released information from Data Dictionary for XML schema. If it is not DD schema, then return null
      *
@@ -67,9 +71,14 @@ public class DataDictUtil {
      * @return Dataset release information.
      */
     public static Map<String, String> getDatasetReleaseInfo(String type, String dsId) {
-        //TODO call endpoint public Hashtable getDatasetWithReleaseInfo(String objType, String objId) from datadict
-        return null;
+        try {
+            return dataRetrieverService.getDatasetReleaseInfo(type,dsId);
+        } catch (Exception e) {
+           LOGGER.error("Could not retrieve release info for dataset " + dsId);
+           return null;
+        }
     }
+
     /**
      * Extract id parameter value from URL if available, otherwise return empty String.
      *

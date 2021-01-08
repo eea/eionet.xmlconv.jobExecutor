@@ -80,6 +80,7 @@ public class Properties {
     public static String convertersUrl;
 
     public static String testHttpdUrl;
+    public static String ddReleaseInfoUrl;
 
     /**
      * Checks path
@@ -301,5 +302,10 @@ public class Properties {
     @Value( "${test.httpd.url}" )
     public void setTestHttpdUrl(String testHttpdUrl) {
         this.testHttpdUrl = testHttpdUrl;
+    }
+
+    @Value( "${dd.release.info.url}" )
+    public void setDdReleaseInfoUrl(String ddReleaseInfoUrl) {
+        this.ddReleaseInfoUrl = ddReleaseInfoUrl;
     }
 }
