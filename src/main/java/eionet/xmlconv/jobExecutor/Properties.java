@@ -82,6 +82,7 @@ public class Properties {
     public static String testHttpdUrl;
     public static String ddReleaseInfoUrl;
     public static String convertersSchemaRetrievalUrl;
+    public static String convertersHostAuthenticationUrl;
 
     /**
      * Checks path
@@ -313,5 +314,10 @@ public class Properties {
     @Value( "${converters.schema.retrieval.url}" )
     public  void setConvertersSchemaRetrievalUrl(String convertersSchemaRetrievalUrl) {
         this.convertersSchemaRetrievalUrl = convertersSchemaRetrievalUrl;
+    }
+
+    @Value( "${converters.host.authentication.url}" )
+    public void setConvertersHostAuthenticationUrl(String convertersHostAuthenticationUrl) {
+        this.convertersHostAuthenticationUrl = convertersHostAuthenticationUrl;
     }
 }

@@ -266,16 +266,6 @@ public final class Utils {
         xmlEscapes.put('\u001A', "?");
     }
 
-
-    /**
-     * A method for encoding the BASIC auth for request header.
-     */
-    public static String getEncodedAuthentication(String user, String pwd) throws java.io.IOException {
-        String auth = user + ":" + pwd;
-        String ret = new String(Base64.encodeBase64(auth.getBytes()));
-        return ret;
-    }
-
     /**
      * generates unique temporary file name with full path.
      *

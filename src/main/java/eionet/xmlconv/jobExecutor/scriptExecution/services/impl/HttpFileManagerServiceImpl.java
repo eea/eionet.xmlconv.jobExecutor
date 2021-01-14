@@ -127,7 +127,7 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
         CustomURI uri = new CustomURI(sourceUrl);
         String parsedURL = uri.getHttpURL();
         if (Utils.isNullStr(ticket) && isTrustedMode) {
-            ticket = getHostCredentials(uri.getHost());
+            ticket = getHostAuthentication(uri.getHost());
         }
         StringBuffer url = new StringBuffer();
         if (isTrustedMode && !Utils.isNullStr(ticket)) {
@@ -172,7 +172,7 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
         }
         HttpURLConnection uc = (HttpURLConnection)url.openConnection();
         if (ticket == null && isTrustedMode) {
-            ticket = getHostCredentials(customURL.getHost());
+            ticket = getHostAuthentication(customURL.getHost());
         }
         uc.addRequestProperty("Accept", "*/*");
 
@@ -200,7 +200,7 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
         CustomURI customURL = new CustomURI(url);
         String parsedUrl = customURL.getHttpURL();
         if (ticket == null && isTrustedMode) {
-            ticket = getHostCredentials(customURL.getHost());
+            ticket = getHostAuthentication(customURL.getHost());
         }
         HttpEntity entity = getFileEntity(parsedUrl, ticket);
         if (entity != null) {
@@ -214,7 +214,7 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
         CustomURI customURL = new CustomURI(url);
         String parsedUrl = customURL.getHttpURL();
         if (ticket == null && isTrustedMode) {
-            ticket = getHostCredentials(customURL.getHost());
+            ticket = getHostAuthentication(customURL.getHost());
         }
         HttpEntity entity = getFileEntity(parsedUrl, ticket);
         if (entity != null) {
@@ -276,14 +276,11 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
         }
     }
 
-    private String getHostCredentials(String host) {
+    private String getHostAuthentication(String host) {
         try {
-            Hashtable h = dataRetrieverService.getHostCredentials(host);
-            String user = (String) h.get("user_name");
-            String pwd = (String) h.get("pwd");
-            return Utils.getEncodedAuthentication(user, pwd);
+            return dataRetrieverService.getHostAuthentication(host);
         } catch (Exception e) {
-            LOGGER.error("Error getting host data from the DB " + e.toString());
+            LOGGER.error("Error when retrieving host authentication from converters " + e.getMessage());
             LOGGER.error("Conversion proceeded");
         }
         return null;

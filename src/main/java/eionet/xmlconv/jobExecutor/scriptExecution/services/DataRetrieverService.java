@@ -10,7 +10,7 @@ import java.util.Map;
 public interface DataRetrieverService {
 
     Schema retrieveSchemaBySchemaUrl(String xmlUrl) throws XmlconvApiException, IOException;
-    Hashtable<String, String> getHostCredentials(String host) throws XmlconvApiException;
+    String getHostAuthentication(String host) throws XmlconvApiException, IOException;
     Map getDatasetReleaseInfo(String type, String id) throws Exception;
 
 }

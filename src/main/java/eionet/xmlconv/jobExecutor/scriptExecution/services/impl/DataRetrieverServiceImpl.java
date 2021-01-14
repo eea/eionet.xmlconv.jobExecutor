@@ -39,9 +39,13 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
     }
 
     @Override
-    public Hashtable<String, String> getHostCredentials(String host) throws XmlconvApiException {
-        //TODO returns a hashtable that contains the host's user_name and the pwd
-        return null;
+    public String getHostAuthentication(String host) throws XmlconvApiException, IOException {
+        String url = Properties.convertersUrl + Properties.convertersSchemaRetrievalUrl + host;
+        HttpGet request = new HttpGet(url);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpResponse response = httpClient.execute(request);
+        String authenticatedUser = EntityUtils.toString(response.getEntity());
+        return authenticatedUser;
     }
 
     @Override
