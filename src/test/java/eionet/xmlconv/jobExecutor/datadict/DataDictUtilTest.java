@@ -23,26 +23,26 @@ public class DataDictUtilTest {
     @Test
     public void testMultivalueElementsDefs() throws Exception {
         //TODO
-        /*String schemaUrl = TestUtils.getSeedURL(TestConstants.SEED_GW_SCHEMA, this);
+        String schemaUrl = TestUtils.getSeedURL(TestConstants.SEED_GW_SCHEMA, this);
 
         Map<String, DDElement> elemDefs = DataDictUtil.importDDTableSchemaElemDefs(schemaUrl);
 
         DDElement stratElement = elemDefs.get("Stratigraphy");
         assertTrue(stratElement.isHasMultipleValues());
-        assertEquals(";", stratElement.getDelimiter()); */
+        assertEquals(";", stratElement.getDelimiter());
 
     }
 
     @Test
     public void testNewSchemaDataset() {
-        String schemaUrl = "http://dd.eionet.europa.eu/v2/dataset/3381/schema-dst-3381.xsd";
+        String schemaUrl = "https://dd.ewxdevel1dub.eionet.europa.eu/v2/dataset/3381/schema-dst-3381.xsd";
         Map<String, String> map = DataDictUtil.getDatasetReleaseInfoForSchema(schemaUrl);
         assertNotNull(map);
     }
 
     @Test
     public void testNewSchemaTable() {
-        String schemaUrl = "http://dd.eionet.europa.eu/v2/dataset/3381/schema-tbl-11181.xsd";
+        String schemaUrl = "https://dd.ewxdevel1dub.eionet.europa.eu/v2/dataset/3381/schema-tbl-11181.xsd";
         Map<String, String> map = DataDictUtil.getDatasetReleaseInfoForSchema(schemaUrl);
         assertNotNull(map);
     }

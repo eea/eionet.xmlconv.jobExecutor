@@ -119,10 +119,9 @@ public class QAResultPostProcessorServiceImpl implements QAResultPostProcessorSe
         Schema schema = null;
         String schemaId;
         try {
-            schema = dataRetrieverService.retrieveSchemaByXmlUrl(xmlSchemaUrl);
-        } catch (XmlconvApiException e) {
+            schema = dataRetrieverService.retrieveSchemaBySchemaUrl(xmlSchemaUrl);
+        } catch (Exception e) {
             LOGGER.error("Unable to find Schema information from database" + e.toString());
-            e.printStackTrace();
         }
 
         if (schema == null && xmlSchemaUrl != null) {

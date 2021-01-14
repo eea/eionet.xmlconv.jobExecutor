@@ -1,6 +1,10 @@
 package eionet.xmlconv.jobExecutor.utils;
 
 import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.models.QAScript;
+import eionet.xmlconv.jobExecutor.models.Schema;
+import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.models.Stylesheet;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -609,16 +613,6 @@ public final class Utils {
     }
 
     public static Map convertJsonObjectToHashMap(JSONObject json){
-        /*HashMap<String, String> ht = new HashMap<String, String>();
-        Iterator<?> keys = json.keys();
-
-        while( keys.hasNext() ){
-            String key = (String)keys.next();
-            String value = json.getString(key);
-            ht.put(key, value);
-        }
-        return ht;*/
-
        return toMap(json);
     }
 
@@ -629,6 +623,9 @@ public final class Utils {
         while(keysItr.hasNext()) {
             String key = keysItr.next();
             Object value = object.get(key);
+            if(value.toString().equals("null")){
+                value = null;
+            }
 
             if(value instanceof JSONArray) {
                 value = toList((JSONArray) value);
@@ -656,6 +653,92 @@ public final class Utils {
             list.add(value);
         }
         return list;
+    }
+
+    public static Schema convertMapToSchema(Map schemaMap) throws JSONException {
+        Schema schema = new Schema();
+        schema.setId((String) schemaMap.get("id"));
+        schema.setSchema((String) schemaMap.get("schema"));
+
+        if (schemaMap.get("description") != null){
+            schema.setDescription((String) schemaMap.get("description"));
+        }
+        if (schemaMap.get("dtdPublicId") != null){
+            schema.setDtdPublicId((String) schemaMap.get("dtdPublicId"));
+        }
+        if (schemaMap.get("doValidation") != null){
+            schema.setDoValidation(Boolean.parseBoolean(String.valueOf(schemaMap.get("doValidation"))));
+        }
+        if (schemaMap.get("schemaLang") != null){
+            schema.setSchemaLang((String) schemaMap.get("schemaLang"));
+        }
+        if (schemaMap.get("expireDate") != null){
+            schema.setExpireDate(new Date(Long.parseLong(String.valueOf(schemaMap.get("expireDate")))));
+        }
+        if (schemaMap.get("blocker") != null){
+            schema.setBlocker(Boolean.parseBoolean(String.valueOf(schemaMap.get("blocker"))));
+        }
+        if (schemaMap.get("maxExecutionTime") != null){
+            schema.setMaxExecutionTime(Long.parseLong(String.valueOf(schemaMap.get("maxExecutionTime"))));
+        }
+        if (schemaMap.get("stylesheets") != null){
+            ArrayList stylesheets = (ArrayList) schemaMap.get("stylesheets");
+            schema.setStylesheets(convertJsonArrayToStylesheets(stylesheets));
+        }
+        if (schemaMap.get("qascripts") != null){
+            ArrayList scripts = (ArrayList) schemaMap.get("qascripts");
+            schema.setQascripts(convertJsonArrayToScripts(scripts));
+        }
+
+        return schema;
+    }
+
+    public static List<Stylesheet> convertJsonArrayToStylesheets(ArrayList array) throws JSONException {
+        List<Stylesheet> stylesheets = new ArrayList<>();
+        for (Object arrayItem : array){
+            Map mapItem = (Map) arrayItem;
+
+            Stylesheet stylesheet = new Stylesheet();
+            stylesheet.setConvId((String) mapItem.get("convId"));
+            stylesheet.setXsl((String) mapItem.get("xsl"));
+            stylesheet.setType((String) mapItem.get("type"));
+            stylesheet.setDescription((String) mapItem.get("description"));
+            stylesheet.setDdConv(Boolean.parseBoolean(String.valueOf(mapItem.get("ddConv"))));
+            stylesheet.setXslContent((String) mapItem.get("xslContent"));
+            stylesheet.setXslFileName((String) mapItem.get("xslFileName"));
+            stylesheet.setChecksum((String) mapItem.get("checksum"));
+            stylesheet.setDependsOn((String) mapItem.get("dependsOn"));
+            stylesheet.setModified((String) mapItem.get("modified"));
+            stylesheet.setLastModifiedTime(new Date(Long.parseLong(String.valueOf(mapItem.get("lastModifiedTime")))));
+
+            ArrayList schemaIds = (ArrayList) mapItem.get("schemaIds");
+            stylesheet.setSchemaIds(schemaIds);
+
+            stylesheets.add(stylesheet);
+        }
+        return stylesheets;
+    }
+
+    public static List<QAScript> convertJsonArrayToScripts(ArrayList array) throws JSONException {
+        List<QAScript> scripts = new ArrayList<>();
+        for (Object arrayItem : array){
+            Map<String, String> mapItem = (Map<String, String>) arrayItem;
+
+            QAScript script = new QAScript();
+            script.setScriptType(mapItem.get("scriptType"));
+            script.setScriptId(mapItem.get("id"));
+            script.setDescription(mapItem.get("description"));
+            script.setShortName(mapItem.get("name"));
+            script.setFileName(mapItem.get("query"));
+            script.setSchemaId(mapItem.get("schemaId"));
+            script.setResultType(mapItem.get("resultType"));
+            script.setUpperLimit(mapItem.get("runOnDemandMaxFileSizeMB"));
+            script.setUrl(mapItem.get("url"));
+            script.setActive(mapItem.get("isActive"));
+
+            scripts.add(script);
+        }
+        return scripts;
     }
 
 }

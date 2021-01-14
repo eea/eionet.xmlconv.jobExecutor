@@ -41,7 +41,7 @@ public class Schema implements Serializable {
     /** Uploaded XML Schema file name. */
     private String uplSchemaFileName;
     /** List of related QA scripts. */
-    private List<Script> qascripts;
+    private List<QAScript> qascripts;
     /** Uploaded Schema file object. */
     private UplSchema uplSchema;
     /** XML Schema expire date. */
@@ -73,11 +73,11 @@ public class Schema implements Serializable {
         this.uplSchema = uplSchema;
     }
 
-    public List<Script> getQascripts() {
+    public List<QAScript> getQascripts() {
         return qascripts;
     }
 
-    public void setQascripts(List<Script> qascripts) {
+    public void setQascripts(List<QAScript> qascripts) {
         this.qascripts = qascripts;
     }
 

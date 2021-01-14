@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -26,9 +26,16 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
     }
 
     @Override
-    public Schema retrieveSchemaByXmlUrl(String xmlUrl) throws XmlconvApiException {
-        //TODO retrieve Schema from converters by using a query like select * from T_SCHEMA where XML_SCHEMA=xmlUrl
-        return null;
+    public Schema retrieveSchemaBySchemaUrl(String xmlUrl) throws XmlconvApiException, IOException {
+        String url = Properties.convertersUrl + Properties.convertersSchemaRetrievalUrl + xmlUrl;
+        HttpGet request = new HttpGet(url);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpResponse response = httpClient.execute(request);
+        String jsonStr = EntityUtils.toString(response.getEntity());
+        JSONObject jsonObject = new JSONObject(jsonStr);
+        Map shemaMap = Utils.convertJsonObjectToHashMap(jsonObject);
+        Schema schema = Utils.convertMapToSchema(shemaMap);
+        return schema;
     }
 
     @Override

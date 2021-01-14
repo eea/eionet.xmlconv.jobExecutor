@@ -81,6 +81,7 @@ public class Properties {
 
     public static String testHttpdUrl;
     public static String ddReleaseInfoUrl;
+    public static String convertersSchemaRetrievalUrl;
 
     /**
      * Checks path
@@ -307,5 +308,10 @@ public class Properties {
     @Value( "${dd.release.info.url}" )
     public void setDdReleaseInfoUrl(String ddReleaseInfoUrl) {
         this.ddReleaseInfoUrl = ddReleaseInfoUrl;
+    }
+
+    @Value( "${converters.schema.retrieval.url}" )
+    public  void setConvertersSchemaRetrievalUrl(String convertersSchemaRetrievalUrl) {
+        this.convertersSchemaRetrievalUrl = convertersSchemaRetrievalUrl;
     }
 }
