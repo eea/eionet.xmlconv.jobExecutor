@@ -22,7 +22,6 @@ public class DataDictUtilTest {
 
     @Test
     public void testMultivalueElementsDefs() throws Exception {
-        //TODO
         String schemaUrl = TestUtils.getSeedURL(TestConstants.SEED_GW_SCHEMA, this);
 
         Map<String, DDElement> elemDefs = DataDictUtil.importDDTableSchemaElemDefs(schemaUrl);
