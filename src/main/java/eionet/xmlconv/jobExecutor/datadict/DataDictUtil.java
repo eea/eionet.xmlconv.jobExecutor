@@ -5,11 +5,11 @@ import eionet.xmlconv.jobExecutor.exceptions.ConversionException;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.XPathQueryService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.XmlCtxService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.DataRetrieverServiceImpl;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.DomContextServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -27,8 +27,7 @@ public class DataDictUtil {
     public static final String SCHEMA_SERVLET = "GetSchema";
     public static final String CONTAINER_SCHEMA_SERVLET = "GetContainerSchema";
 
-    @Autowired
-    private static DataRetrieverService dataRetrieverService;
+    private static DataRetrieverService dataRetrieverService = new DataRetrieverServiceImpl();
     /**
      * Retreive dataset released information from Data Dictionary for XML schema. If it is not DD schema, then return null
      *
