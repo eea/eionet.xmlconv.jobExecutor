@@ -689,19 +689,43 @@ public final class Utils {
             Map mapItem = (Map) arrayItem;
 
             Stylesheet stylesheet = new Stylesheet();
-            stylesheet.setConvId((String) mapItem.get("convId"));
-            stylesheet.setXsl((String) mapItem.get("xsl"));
-            stylesheet.setType((String) mapItem.get("type"));
-            stylesheet.setDescription((String) mapItem.get("description"));
-            stylesheet.setDdConv(Boolean.parseBoolean(String.valueOf(mapItem.get("ddConv"))));
-            stylesheet.setXslContent((String) mapItem.get("xslContent"));
-            stylesheet.setXslFileName((String) mapItem.get("xslFileName"));
-            stylesheet.setChecksum((String) mapItem.get("checksum"));
-            stylesheet.setDependsOn((String) mapItem.get("dependsOn"));
-            stylesheet.setModified((String) mapItem.get("modified"));
-            stylesheet.setLastModifiedTime(new Date(Long.parseLong(String.valueOf(mapItem.get("lastModifiedTime")))));
-
-            ArrayList schemaIds = (ArrayList) mapItem.get("schemaIds");
+            if (mapItem.get("convId") != null){
+                stylesheet.setConvId((String) mapItem.get("convId"));
+            }
+            if (mapItem.get("xsl") != null){
+                stylesheet.setXsl((String) mapItem.get("xsl"));
+            }
+            if (mapItem.get("type") != null){
+                stylesheet.setType((String) mapItem.get("type"));
+            }
+            if (mapItem.get("description") != null){
+                stylesheet.setDescription((String) mapItem.get("description"));
+            }
+            if (mapItem.get("ddConv") != null){
+                stylesheet.setDdConv(Boolean.parseBoolean(String.valueOf(mapItem.get("ddConv"))));
+            }
+            if (mapItem.get("xslContent") != null){
+                stylesheet.setXslContent((String) mapItem.get("xslContent"));
+            }
+            if (mapItem.get("xslFileName") != null){
+                stylesheet.setXslFileName((String) mapItem.get("xslFileName"));
+            }
+            if (mapItem.get("checksum") != null){
+                stylesheet.setChecksum((String) mapItem.get("checksum"));
+            }
+            if (mapItem.get("dependsOn") != null){
+                stylesheet.setDependsOn((String) mapItem.get("dependsOn"));
+            }
+            if (mapItem.get("modified") != null){
+                stylesheet.setModified((String) mapItem.get("modified"));
+            }
+            if (mapItem.get("lastModifiedTime") != null){
+                stylesheet.setLastModifiedTime(new Date(Long.parseLong(String.valueOf(mapItem.get("lastModifiedTime")))));
+            }
+            ArrayList schemaIds = new ArrayList();
+            if (mapItem.get("schemaIds") != null){
+                schemaIds = (ArrayList) mapItem.get("schemaIds");
+            }
             stylesheet.setSchemaIds(schemaIds);
 
             stylesheets.add(stylesheet);
@@ -715,17 +739,36 @@ public final class Utils {
             Map<String, String> mapItem = (Map<String, String>) arrayItem;
 
             QAScript script = new QAScript();
-            script.setScriptType(mapItem.get("scriptType"));
-            script.setScriptId(mapItem.get("id"));
-            script.setDescription(mapItem.get("description"));
-            script.setShortName(mapItem.get("name"));
-            script.setFileName(mapItem.get("query"));
-            script.setSchemaId(mapItem.get("schemaId"));
-            script.setResultType(mapItem.get("resultType"));
-            script.setUpperLimit(mapItem.get("runOnDemandMaxFileSizeMB"));
-            script.setUrl(mapItem.get("url"));
-            script.setActive(mapItem.get("isActive"));
-
+            if (mapItem.get("scriptType") != null){
+                script.setScriptType(mapItem.get("scriptType"));
+            }
+            if (mapItem.get("id") != null){
+                script.setScriptId(mapItem.get("id"));
+            }
+            if (mapItem.get("description") != null){
+                script.setDescription(mapItem.get("description"));
+            }
+            if (mapItem.get("name") != null){
+                script.setShortName(mapItem.get("name"));
+            }
+            if (mapItem.get("query") != null){
+                script.setFileName(mapItem.get("query"));
+            }
+            if (mapItem.get("schemaId") != null){
+                script.setSchemaId(mapItem.get("schemaId"));
+            }
+            if (mapItem.get("resultType") != null){
+                script.setResultType(mapItem.get("resultType"));
+            }
+            if (mapItem.get("runOnDemandMaxFileSizeMB") != null){
+                script.setUpperLimit(mapItem.get("runOnDemandMaxFileSizeMB"));
+            }
+            if (mapItem.get("url") != null){
+                script.setUrl(mapItem.get("url"));
+            }
+            if (mapItem.get("isActive") != null){
+                script.setActive(mapItem.get("isActive"));
+            }
             scripts.add(script);
         }
         return scripts;

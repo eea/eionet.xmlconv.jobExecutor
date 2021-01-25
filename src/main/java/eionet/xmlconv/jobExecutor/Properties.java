@@ -83,6 +83,7 @@ public class Properties {
     public static String ddReleaseInfoUrl;
     public static String convertersSchemaRetrievalUrl;
     public static String convertersHostAuthenticationUrl;
+    public static String convertersEndpointToken;
 
     /**
      * Checks path
@@ -319,5 +320,10 @@ public class Properties {
     @Value( "${converters.host.authentication.url}" )
     public void setConvertersHostAuthenticationUrl(String convertersHostAuthenticationUrl) {
         this.convertersHostAuthenticationUrl = convertersHostAuthenticationUrl;
+    }
+
+    @Value( "${converters.restapi.token}" )
+    public void setConvertersEndpointToken(String convertersEndpointToken) {
+        this.convertersEndpointToken = convertersEndpointToken;
     }
 }

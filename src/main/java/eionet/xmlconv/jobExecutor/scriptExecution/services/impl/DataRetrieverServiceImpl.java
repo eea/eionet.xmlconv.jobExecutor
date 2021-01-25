@@ -27,8 +27,10 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
 
     @Override
     public Schema retrieveSchemaBySchemaUrl(String xmlUrl) throws XmlconvApiException, IOException {
-        String url = Properties.convertersUrl + Properties.convertersSchemaRetrievalUrl + xmlUrl;
+        String url = Properties.convertersUrl + "restapi/" + Properties.convertersSchemaRetrievalUrl;
         HttpGet request = new HttpGet(url);
+        request.addHeader("schemaUrl", xmlUrl);
+        request.addHeader("Authorization", Properties.convertersEndpointToken);
         CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse response = httpClient.execute(request);
         String jsonStr = EntityUtils.toString(response.getEntity());
@@ -40,8 +42,10 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
 
     @Override
     public String getHostAuthentication(String host) throws XmlconvApiException, IOException {
-        String url = Properties.convertersUrl + Properties.convertersSchemaRetrievalUrl + host;
+        String url = Properties.convertersUrl + "restapi/" + Properties.convertersSchemaRetrievalUrl;
         HttpGet request = new HttpGet(url);
+        request.addHeader("hostName", host);
+        request.addHeader("Authorization", Properties.convertersEndpointToken);
         CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse response = httpClient.execute(request);
         String authenticatedUser = EntityUtils.toString(response.getEntity());
