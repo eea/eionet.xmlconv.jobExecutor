@@ -6,7 +6,7 @@ Create application-dev.properties file by copying the contents of application-pr
 $ mvn clean install
 
 - or if you want to use prod profile (matches application-prod.properties), specify it at build time using the -P flag <br>
-$ mvn -Pdev clean install 
+$ mvn -Pprod clean install
 
 - JobExecutorApplication -> right click -> Run
 

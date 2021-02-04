@@ -1,5 +1,6 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.service;
 
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkersRabbitMQResponse;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +22,8 @@ public class RabbitMQSenderImpl implements RabbitMQSender {
     }
 
     @Override
-    public void sendMessage(String message) {
-        rabbitTemplate.convertAndSend(exchange, routingKey, message);
-        System.out.println("sent message " + message);
+    public void sendMessage(WorkersRabbitMQResponse response) {
+        rabbitTemplate.convertAndSend(exchange, routingKey, response);
     }
 }
 
