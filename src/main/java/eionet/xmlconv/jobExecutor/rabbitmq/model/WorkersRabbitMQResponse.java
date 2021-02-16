@@ -4,7 +4,7 @@ import eionet.xmlconv.jobExecutor.models.Script;
 
 public class WorkersRabbitMQResponse {
 
-    private Script xqScript;
+    private Script script;
 
     private int jobStatus;
 
@@ -16,12 +16,12 @@ public class WorkersRabbitMQResponse {
 
     private String executionTime;
 
-    public Script getXqScript() {
-        return xqScript;
+    public Script getScript() {
+        return script;
     }
 
-    public WorkersRabbitMQResponse setXqScript(Script xqScript) {
-        this.xqScript = xqScript;
+    public WorkersRabbitMQResponse setScript(Script script) {
+        this.script = script;
         return this;
     }
 

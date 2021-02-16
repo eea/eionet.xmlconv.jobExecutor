@@ -1,6 +1,5 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 
-import eionet.xmlconv.jobExecutor.exceptions.RabbitMQException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkersRabbitMQResponse;
@@ -39,7 +38,7 @@ public class RabbitMQListener {
 
         String containerName = containerInfoRetriever.getContainerName();
         WorkersRabbitMQResponse response = new WorkersRabbitMQResponse().setErrorExists(false)
-                .setXqScript(script).setJobStatus(Constants.XQ_WORKER_RECEIVED).setContainerName(containerName);
+                .setScript(script).setJobStatus(Constants.WORKER_RECEIVED).setContainerName(containerName);
         rabbitMQSender.sendMessage(response);
 
         ses.setScript(script);
@@ -49,12 +48,12 @@ public class RabbitMQListener {
             ses.getResult();
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[] {containerName, script.getJobId(), timer.toString()}));
-            response.setJobStatus(Constants.XQ_WORKER_SUCCESS);
+            response.setJobStatus(Constants.WORKER_READY);
         }
         catch(ScriptExecutionException e){
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {containerName, script.getJobId(), timer.toString()}));
-            response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobStatus(Constants.XQ_WORKER_FATAL_ERR);
+            response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobStatus(Constants.WORKER_READY);
         }
         finally {
             rabbitMQSender.sendMessage(response);
