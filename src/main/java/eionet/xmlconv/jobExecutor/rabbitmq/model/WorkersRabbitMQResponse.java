@@ -16,6 +16,8 @@ public class WorkersRabbitMQResponse {
 
     private String executionTime;
 
+    private Integer jobExecutorStatus;
+
     public Script getScript() {
         return script;
     }
@@ -67,6 +69,15 @@ public class WorkersRabbitMQResponse {
 
     public WorkersRabbitMQResponse setExecutionTime(String executionTime) {
         this.executionTime = executionTime;
+        return this;
+    }
+
+    public Integer getJobExecutorStatus() {
+        return jobExecutorStatus;
+    }
+
+    public WorkersRabbitMQResponse setJobExecutorStatus(Integer jobExecutorStatus) {
+        this.jobExecutorStatus = jobExecutorStatus;
         return this;
     }
 }
