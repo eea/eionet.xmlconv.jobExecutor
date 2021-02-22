@@ -22,14 +22,14 @@ public class DataDictUtilTest {
 
     @Test
     public void testNewSchemaDataset() {
-        String schemaUrl = "https://dd.ewxdevel1dub.eionet.europa.eu/v2/dataset/3381/schema-dst-3381.xsd";
+        String schemaUrl = "http://dd.eionet.europa.eu/v2/dataset/3381/schema-dst-3381.xsd";
         Map<String, String> map = DataDictUtil.getDatasetReleaseInfoForSchema(schemaUrl);
         assertNotNull(map);
     }
 
     @Test
     public void testNewSchemaTable() {
-        String schemaUrl = "https://dd.ewxdevel1dub.eionet.europa.eu/v2/dataset/3381/schema-tbl-11181.xsd";
+        String schemaUrl = "http://dd.eionet.europa.eu/v2/dataset/3381/schema-tbl-11181.xsd";
         Map<String, String> map = DataDictUtil.getDatasetReleaseInfoForSchema(schemaUrl);
         assertNotNull(map);
     }
