@@ -56,6 +56,7 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
     public Map getDatasetReleaseInfo(String type, String id) throws Exception {
         String url = Properties.ddURL + Properties.ddReleaseInfoUrl + type + "/" + id;
         HttpGet request = new HttpGet(url);
+        request.addHeader("X-DD-API-KEY", Properties.ddEndpointToken);
         CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse response = httpClient.execute(request);
         String jsonStr = EntityUtils.toString(response.getEntity());

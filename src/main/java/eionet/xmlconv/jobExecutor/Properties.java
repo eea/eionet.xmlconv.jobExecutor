@@ -84,6 +84,7 @@ public class Properties {
     public static String convertersSchemaRetrievalUrl;
     public static String convertersHostAuthenticationUrl;
     public static String convertersEndpointToken;
+    public static String ddEndpointToken;
 
     /**
      * Checks path
@@ -325,5 +326,10 @@ public class Properties {
     @Value( "${converters.restapi.token}" )
     public void setConvertersEndpointToken(String convertersEndpointToken) {
         this.convertersEndpointToken = convertersEndpointToken;
+    }
+
+    @Value( "${dd.restapi.token}" )
+    public void setDdEndpointToken(String ddEndpointToken) {
+        this.ddEndpointToken = ddEndpointToken;
     }
 }
