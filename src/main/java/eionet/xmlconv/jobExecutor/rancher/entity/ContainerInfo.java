@@ -2,27 +2,17 @@ package eionet.xmlconv.jobExecutor.rancher.entity;
 
 public class ContainerInfo {
 
-    private String create_index;
     private String[] dns;
     private String[] dns_search;
     private String environment_uuid;
     private String external_id;
-    private String health_check;
     private String[] health_check_hosts;
     private String health_state;
     private String host_uuid;
-    private String hostname;
     private String[] ips;
-    private String links;
-    private String memory_reservation;
+    private Long memory_reservation;
     private String metadata_kind;
-    private String milli_cpu_reservation;
     private String name;
-    private String network_from_container_uuid;
-    private String network_uuid;
-    private String[] ports;
-    private String primary_ip;
-    private String primary_mac_address;
     private String service_index;
     private String service_name;
     private String service_uuid;
@@ -32,14 +22,6 @@ public class ContainerInfo {
     private String state;
     private boolean system;
     private String uuid;
-
-    public String getCreate_index() {
-        return create_index;
-    }
-
-    public void setCreate_index(String create_index) {
-        this.create_index = create_index;
-    }
 
     public String[] getDns() {
         return dns;
@@ -73,14 +55,6 @@ public class ContainerInfo {
         this.external_id = external_id;
     }
 
-    public String getHealth_check() {
-        return health_check;
-    }
-
-    public void setHealth_check(String health_check) {
-        this.health_check = health_check;
-    }
-
     public String[] getHealth_check_hosts() {
         return health_check_hosts;
     }
@@ -105,14 +79,6 @@ public class ContainerInfo {
         this.host_uuid = host_uuid;
     }
 
-    public String getHostname() {
-        return hostname;
-    }
-
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
-
     public String[] getIps() {
         return ips;
     }
@@ -121,19 +87,11 @@ public class ContainerInfo {
         this.ips = ips;
     }
 
-    public String getLinks() {
-        return links;
-    }
-
-    public void setLinks(String links) {
-        this.links = links;
-    }
-
-    public String getMemory_reservation() {
+    public Long getMemory_reservation() {
         return memory_reservation;
     }
 
-    public void setMemory_reservation(String memory_reservation) {
+    public void setMemory_reservation(Long memory_reservation) {
         this.memory_reservation = memory_reservation;
     }
 
@@ -145,60 +103,12 @@ public class ContainerInfo {
         this.metadata_kind = metadata_kind;
     }
 
-    public String getMilli_cpu_reservation() {
-        return milli_cpu_reservation;
-    }
-
-    public void setMilli_cpu_reservation(String milli_cpu_reservation) {
-        this.milli_cpu_reservation = milli_cpu_reservation;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getNetwork_from_container_uuid() {
-        return network_from_container_uuid;
-    }
-
-    public void setNetwork_from_container_uuid(String network_from_container_uuid) {
-        this.network_from_container_uuid = network_from_container_uuid;
-    }
-
-    public String getNetwork_uuid() {
-        return network_uuid;
-    }
-
-    public void setNetwork_uuid(String network_uuid) {
-        this.network_uuid = network_uuid;
-    }
-
-    public String[] getPorts() {
-        return ports;
-    }
-
-    public void setPorts(String[] ports) {
-        this.ports = ports;
-    }
-
-    public String getPrimary_ip() {
-        return primary_ip;
-    }
-
-    public void setPrimary_ip(String primary_ip) {
-        this.primary_ip = primary_ip;
-    }
-
-    public String getPrimary_mac_address() {
-        return primary_mac_address;
-    }
-
-    public void setPrimary_mac_address(String primary_mac_address) {
-        this.primary_mac_address = primary_mac_address;
     }
 
     public String getService_index() {
