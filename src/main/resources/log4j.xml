@@ -9,14 +9,12 @@
         <Sentry name="Sentry" />
     </Appenders>
     <Loggers>
-        <logger name="eionet" level="debug"/>
-        <logger name="org.apache" level="info"/>
-        <logger name="org.springframework" level="warn"/>
-        <logger name="org.displaytag" level="warn"/>
-        <logger name="net.sourceforge.stripes" level="warn"/>
-        <Root level="info">
+        <logger name="eionet" level="info"/>
+        <logger name="org.springframework.web" level="info"/>
+        <logger name="org.hibernate" level="info" />
+        <logger name="org.basex" level="info"/>
+        <Root level="INFO">
             <AppenderRef ref="console" />
-            <AppenderRef ref="Sentry" level="warn" />
         </Root>
     </Loggers>
 </Configuration>
