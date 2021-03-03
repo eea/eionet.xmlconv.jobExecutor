@@ -37,6 +37,7 @@ public class RabbitMQListener {
         LOGGER.info("Received script with id " + script.getJobId());
 
         String containerName = containerInfoRetriever.getContainerName();
+        LOGGER.info(String.format("Container name is %s", containerName));
         WorkersRabbitMQResponse response = new WorkersRabbitMQResponse().setErrorExists(false)
                 .setScript(script).setJobStatus(Constants.WORKER_RECEIVED).setContainerName(containerName);
         rabbitMQSender.sendMessage(response);

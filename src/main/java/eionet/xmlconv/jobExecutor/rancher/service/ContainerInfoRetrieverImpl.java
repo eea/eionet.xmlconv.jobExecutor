@@ -48,7 +48,7 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
         try {
             result = restTemplate.exchange(rancherMetadataUrl, HttpMethod.GET, entity, ContainerInfo.class);
         } catch (Exception e) {
-            LOGGER.info("Error retrieving rancher metadata");
+            LOGGER.info("Error retrieving rancher metadata: " + e.getMessage());
             return "";
         }
         ContainerInfo containerInfo = result.getBody();
