@@ -9,4 +9,6 @@ public interface RabbitMQSender {
      * @param response
      */
     void sendMessage(WorkersRabbitMQResponse response);
+
+    void sendOnDemandMessage(WorkersRabbitMQResponse response);
 }

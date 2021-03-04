@@ -14,6 +14,11 @@ public class RabbitMQSenderImpl implements RabbitMQSender {
     @Value("${job.rabbitmq.jobsResultRoutingKey}")
     private String routingKey;
 
+    @Value("${job.rabbitmq.onDemand.jobsResultExchange}")
+    private String onDemandExchange;
+    @Value("${job.rabbitmq.onDemand.jobsResultRoutingKey}")
+    private String onDemandRoutingKey;
+
     RabbitTemplate rabbitTemplate;
 
     @Autowired
@@ -24,6 +29,11 @@ public class RabbitMQSenderImpl implements RabbitMQSender {
     @Override
     public void sendMessage(WorkersRabbitMQResponse response) {
         rabbitTemplate.convertAndSend(exchange, routingKey, response);
+    }
+
+    @Override
+    public void sendOnDemandMessage(WorkersRabbitMQResponse response) {
+        rabbitTemplate.convertAndSend(onDemandExchange, onDemandRoutingKey, response);
     }
 }
 
