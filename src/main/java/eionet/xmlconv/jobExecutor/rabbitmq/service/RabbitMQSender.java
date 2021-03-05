@@ -10,5 +10,4 @@ public interface RabbitMQSender {
      */
     void sendMessage(WorkersRabbitMQResponse response);
 
-    void sendOnDemandMessage(WorkersRabbitMQResponse response);
 }
