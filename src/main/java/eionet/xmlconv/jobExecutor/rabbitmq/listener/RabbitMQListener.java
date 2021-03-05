@@ -1,33 +1,32 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 
+import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkersRabbitMQResponse;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptExecutionService;
+import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.apache.commons.lang.time.StopWatch;
-
-import eionet.xmlconv.jobExecutor.Constants;
-import eionet.xmlconv.jobExecutor.Properties;
 
 
 @Component
 public class RabbitMQListener {
 
-    @Autowired
     private ScriptExecutionService ses;
     private RabbitMQSender rabbitMQSender;
     private ContainerInfoRetriever containerInfoRetriever;
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQListener.class);
 
     @Autowired
-    public RabbitMQListener(RabbitMQSender rabbitMQSender, ContainerInfoRetriever containerInfoRetriever) {
+    public RabbitMQListener(ScriptExecutionService ses, RabbitMQSender rabbitMQSender, ContainerInfoRetriever containerInfoRetriever) {
+        this.ses = ses;
         this.rabbitMQSender = rabbitMQSender;
         this.containerInfoRetriever = containerInfoRetriever;
     }
