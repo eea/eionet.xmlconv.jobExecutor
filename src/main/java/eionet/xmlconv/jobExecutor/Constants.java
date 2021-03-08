@@ -18,6 +18,8 @@ public class Constants {
     public static final int WORKER_READY = 1;
     public static final int WORKER_FAILED = 2;
 
+    public static final int JOB_CANCELLED_BY_USER = 9;
+
     public static final String WARNING_QA_EXPIRED_DD_SCHEMA = "The reported XML file uses an obsolete version of Data Dictionary XML Schema. The last version of given dataset is released on {0} with ID={1}.";
     public static final String GETSOURCE_URL = "/s/getsource";
     public static final String SOURCE_URL_PARAM = "source_url";
