@@ -23,16 +23,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class RabbitMQListener {
 
-    private ScriptExecutionService ses;
+    private ScriptExecutionService scriptExecutionService;
     private RabbitMQSender rabbitMQSender;
     private ContainerInfoRetriever containerInfoRetriever;
     private DataRetrieverService dataRetrieverService;
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQListener.class);
 
     @Autowired
-    public RabbitMQListener(ScriptExecutionService ses, RabbitMQSender rabbitMQSender, ContainerInfoRetriever containerInfoRetriever,
+    public RabbitMQListener(ScriptExecutionService scriptExecutionService, RabbitMQSender rabbitMQSender, ContainerInfoRetriever containerInfoRetriever,
                             DataRetrieverService dataRetrieverService) {
-        this.ses = ses;
+        this.scriptExecutionService = scriptExecutionService;
         this.rabbitMQSender = rabbitMQSender;
         this.containerInfoRetriever = containerInfoRetriever;
         this.dataRetrieverService = dataRetrieverService;
@@ -53,11 +53,11 @@ public class RabbitMQListener {
                 .setScript(script).setJobStatus(Constants.WORKER_RECEIVED).setContainerName(containerName);
         rabbitMQSender.sendMessage(response);
 
-        ses.setScript(script);
+        scriptExecutionService.setScript(script);
         StopWatch timer = new StopWatch();
         timer.start();
         try{
-            ses.getResult();
+            scriptExecutionService.getResult();
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[] {containerName, script.getJobId(), timer.toString()}));
             response.setJobStatus(Constants.WORKER_READY);
