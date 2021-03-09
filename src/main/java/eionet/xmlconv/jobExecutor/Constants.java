@@ -14,9 +14,8 @@ public class Constants {
     public Constants() {
     }
 
-    public static final int WORKER_RECEIVED = 0;
-    public static final int WORKER_READY = 1;
-    public static final int WORKER_FAILED = 2;
+    public static final int RECEIVED = 0;
+    public static final int READY = 1;
 
     public static final int JOB_CANCELLED_BY_USER = 9;
 
