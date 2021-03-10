@@ -6,8 +6,6 @@ public class WorkersRabbitMQResponse {
 
     private Script script;
 
-    private int jobStatus;
-
     private boolean errorExists;
 
     private String errorMessage;
@@ -24,15 +22,6 @@ public class WorkersRabbitMQResponse {
 
     public WorkersRabbitMQResponse setScript(Script script) {
         this.script = script;
-        return this;
-    }
-
-    public int getJobStatus() {
-        return jobStatus;
-    }
-
-    public WorkersRabbitMQResponse setJobStatus(int jobStatus) {
-        this.jobStatus = jobStatus;
         return this;
     }
 

@@ -50,7 +50,7 @@ public class RabbitMQListener {
         String containerName = containerInfoRetriever.getContainerName();
         LOGGER.info(String.format("Container name is %s", containerName));
         WorkersRabbitMQResponse response = new WorkersRabbitMQResponse().setErrorExists(false)
-                .setScript(script).setJobStatus(Constants.RECEIVED).setJobExecutorStatus(Constants.RECEIVED).setContainerName(containerName);
+                .setScript(script).setJobExecutorStatus(Constants.RECEIVED).setContainerName(containerName);
         rabbitMQSender.sendMessage(response);
 
         scriptExecutionService.setScript(script);
@@ -60,12 +60,12 @@ public class RabbitMQListener {
             scriptExecutionService.getResult();
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[] {containerName, script.getJobId(), timer.toString()}));
-            response.setJobStatus(Constants.READY).setJobExecutorStatus(Constants.READY);
+            response.setJobExecutorStatus(Constants.READY);
         }
         catch(ScriptExecutionException e){
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {containerName, script.getJobId(), timer.toString()}));
-            response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobStatus(Constants.READY).setJobExecutorStatus(Constants.READY);
+            response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobExecutorStatus(Constants.READY);
         }
         finally {
             rabbitMQSender.sendMessage(response);
