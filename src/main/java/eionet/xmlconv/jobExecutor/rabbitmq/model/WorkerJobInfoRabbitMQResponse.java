@@ -2,7 +2,7 @@ package eionet.xmlconv.jobExecutor.rabbitmq.model;
 
 import eionet.xmlconv.jobExecutor.models.Script;
 
-public class WorkersRabbitMQResponse {
+public class WorkerJobInfoRabbitMQResponse {
 
     private Script script;
 
@@ -10,7 +10,7 @@ public class WorkersRabbitMQResponse {
 
     private String errorMessage;
 
-    private String containerName;
+    private String jobExecutorName;
 
     private String executionTime;
 
@@ -20,7 +20,7 @@ public class WorkersRabbitMQResponse {
         return script;
     }
 
-    public WorkersRabbitMQResponse setScript(Script script) {
+    public WorkerJobInfoRabbitMQResponse setScript(Script script) {
         this.script = script;
         return this;
     }
@@ -29,7 +29,7 @@ public class WorkersRabbitMQResponse {
         return errorExists;
     }
 
-    public WorkersRabbitMQResponse setErrorExists(boolean errorExists) {
+    public WorkerJobInfoRabbitMQResponse setErrorExists(boolean errorExists) {
         this.errorExists = errorExists;
         return this;
     }
@@ -38,17 +38,17 @@ public class WorkersRabbitMQResponse {
         return errorMessage;
     }
 
-    public WorkersRabbitMQResponse setErrorMessage(String errorMessage) {
+    public WorkerJobInfoRabbitMQResponse setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
         return this;
     }
 
-    public String getContainerName() {
-        return containerName;
+    public String getJobExecutorName() {
+        return jobExecutorName;
     }
 
-    public WorkersRabbitMQResponse setContainerName(String containerName) {
-        this.containerName = containerName;
+    public WorkerJobInfoRabbitMQResponse setJobExecutorName(String jobExecutorName) {
+        this.jobExecutorName = jobExecutorName;
         return this;
     }
 
@@ -56,7 +56,7 @@ public class WorkersRabbitMQResponse {
         return executionTime;
     }
 
-    public WorkersRabbitMQResponse setExecutionTime(String executionTime) {
+    public WorkerJobInfoRabbitMQResponse setExecutionTime(String executionTime) {
         this.executionTime = executionTime;
         return this;
     }
@@ -65,8 +65,9 @@ public class WorkersRabbitMQResponse {
         return jobExecutorStatus;
     }
 
-    public WorkersRabbitMQResponse setJobExecutorStatus(Integer jobExecutorStatus) {
+    public WorkerJobInfoRabbitMQResponse setJobExecutorStatus(Integer jobExecutorStatus) {
         this.jobExecutorStatus = jobExecutorStatus;
         return this;
     }
+
 }

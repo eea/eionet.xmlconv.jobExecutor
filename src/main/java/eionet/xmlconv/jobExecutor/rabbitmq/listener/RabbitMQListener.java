@@ -6,7 +6,7 @@ import eionet.xmlconv.jobExecutor.exceptions.ConvertersCommunicationException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.JobExecutionStatus;
 import eionet.xmlconv.jobExecutor.models.Script;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkersRabbitMQResponse;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponse;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
@@ -49,8 +49,8 @@ public class RabbitMQListener {
 
         String containerName = containerInfoRetriever.getContainerName();
         LOGGER.info(String.format("Container name is %s", containerName));
-        WorkersRabbitMQResponse response = new WorkersRabbitMQResponse().setErrorExists(false)
-                .setScript(script).setJobExecutorStatus(Constants.RECEIVED).setContainerName(containerName);
+        WorkerJobInfoRabbitMQResponse response = new WorkerJobInfoRabbitMQResponse().setErrorExists(false)
+                .setScript(script).setJobExecutorStatus(Constants.WORKER_RECEIVED).setJobExecutorName(containerName);
         rabbitMQSender.sendMessage(response);
 
         scriptExecutionService.setScript(script);
@@ -60,12 +60,12 @@ public class RabbitMQListener {
             scriptExecutionService.getResult();
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[] {containerName, script.getJobId(), timer.toString()}));
-            response.setJobExecutorStatus(Constants.READY);
+            response.setJobExecutorStatus(Constants.WORKER_READY);
         }
         catch(ScriptExecutionException e){
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {containerName, script.getJobId(), timer.toString()}));
-            response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobExecutorStatus(Constants.READY);
+            response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobExecutorStatus(Constants.WORKER_READY);
         }
         finally {
             rabbitMQSender.sendMessage(response);
