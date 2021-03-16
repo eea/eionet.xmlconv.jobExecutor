@@ -80,7 +80,7 @@ public class RabbitMQListener {
 
         JobExecutionStatus jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
         if (jobExecutionStatus.getStatusId()==Constants.JOB_CANCELLED_BY_USER) {
-            throw new AmqpRejectAndDontRequeueException("Job with id " + script.getJobId() + " and status cancelled_by_user was rejected");
+            channel.basicReject(deliveryTag, false);
         } else if (rabbitMQRequest.getJobExecutorName()!=null && !rabbitMQRequest.getJobExecutorName().equals(containerName)) {
             channel.basicReject(deliveryTag, true);
         }
