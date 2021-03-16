@@ -80,8 +80,10 @@ public class RabbitMQListener {
         JobExecutionStatus jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
         if (jobExecutionStatus.getStatusId()==Constants.JOB_CANCELLED_BY_USER) {
             channel.basicReject(deliveryTag, false);
+            return;
         } else if (rabbitMQRequest.getJobExecutorName()!=null && !rabbitMQRequest.getJobExecutorName().equals(containerName)) {
             channel.basicReject(deliveryTag, true);
+            return;
         }
 
         List<Integer> jobList = new ArrayList<>();
