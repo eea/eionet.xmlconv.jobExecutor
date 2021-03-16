@@ -18,6 +18,7 @@ public class QAScript implements Serializable {
     String upperLimit;
     String url;
     boolean active;
+    boolean asynchronousExecution;
 
     private boolean blocker = false;
 
@@ -162,6 +163,14 @@ public class QAScript implements Serializable {
      */
     public void setBlocker(boolean blocker) {
         this.blocker = blocker;
+    }
+
+    public boolean isAsynchronousExecution() {
+        return asynchronousExecution;
+    }
+
+    public void setAsynchronousExecution(boolean asynchronousExecution) {
+        this.asynchronousExecution = asynchronousExecution;
     }
 
 }

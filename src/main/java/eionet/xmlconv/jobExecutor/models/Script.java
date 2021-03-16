@@ -18,6 +18,7 @@ public class Script {
     private String srcFileUrl;
     private Schema schema;
     private String jobId;
+    private Boolean asynchronousExecution;
 
     private boolean srcFileDownloaded;
 
@@ -172,5 +173,13 @@ public class Script {
 
     public void setEngine(ScriptEngineService engine) {
         this.engine = engine;
+    }
+
+    public Boolean getAsynchronousExecution() {
+        return asynchronousExecution;
+    }
+
+    public void setAsynchronousExecution(Boolean asynchronousExecution) {
+        this.asynchronousExecution = asynchronousExecution;
     }
 }
