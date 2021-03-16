@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.RejectedExecutionException;
 
 import static org.springframework.amqp.support.AmqpHeaders.DELIVERY_TAG;
 
@@ -53,7 +52,7 @@ public class RabbitMQListener {
     }
 
     @RabbitListener(queues = "${jobExec.request.rabbitmq.listeningQueue}")
-    public void consumeMsg(@Header(DELIVERY_TAG) long deliveryTag, WorkerJobExecutionInfo jobExecInfo, Channel channel) throws IOException {
+    public void consumeMsgForJobStatus(@Header(DELIVERY_TAG) long deliveryTag, WorkerJobExecutionInfo jobExecInfo, Channel channel) throws IOException {
         String containerName = containerInfoRetriever.getContainerName();
         if (!jobExecInfo.getJobExecutorName().equals(containerName)) {
             channel.basicReject(deliveryTag, true);
