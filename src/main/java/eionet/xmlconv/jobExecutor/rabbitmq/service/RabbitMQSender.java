@@ -1,6 +1,6 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.service;
 
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobExecutionInfo;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessageInfo;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponse;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponse;
 
@@ -23,6 +23,6 @@ public interface RabbitMQSender {
      * executing a specific job
      * @param response
      */
-    void sendMessageForJobExecution(WorkerJobExecutionInfo response);
+    void sendHeartBeatMessageResponse(WorkerHeartBeatMessageInfo response);
 
 }

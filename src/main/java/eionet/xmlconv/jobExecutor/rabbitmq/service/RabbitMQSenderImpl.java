@@ -1,6 +1,6 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.service;
 
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobExecutionInfo;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessageInfo;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponse;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponse;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -17,8 +17,8 @@ public class RabbitMQSenderImpl implements RabbitMQSender {
     private String jobResultsRoutingKey;
     @Value("${job.rabbitmq.workerStatusRoutingKey}")
     private String workerStatusRoutingKey;
-    @Value("${jobExec.response.rabbitmq.routingKey}")
-    private String jobExecResponseRoutingKey;
+    @Value("${heartBeat.response.rabbitmq.routingKey}")
+    private String heartBeatResponseRoutingKey;
 
     RabbitTemplate rabbitTemplate;
 
@@ -38,8 +38,8 @@ public class RabbitMQSenderImpl implements RabbitMQSender {
     }
 
     @Override
-    public void sendMessageForJobExecution(WorkerJobExecutionInfo response) {
-        rabbitTemplate.convertAndSend(exchange, jobExecResponseRoutingKey, response);
+    public void sendHeartBeatMessageResponse(WorkerHeartBeatMessageInfo response) {
+        rabbitTemplate.convertAndSend(exchange, heartBeatResponseRoutingKey, response);
     }
 }
 
