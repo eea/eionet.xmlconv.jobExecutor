@@ -1,6 +1,7 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.config;
 
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkersRabbitMQResponse;
+import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponse;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import org.slf4j.Logger;
@@ -25,8 +26,8 @@ public class StatusInitializer {
     @EventListener(ApplicationReadyEvent.class)
     public void initializeWorkerStatusAfterStartup() {
         LOGGER.info(String.format("Container name is %s", containerInfoRetriever.getContainerName()));
-        WorkersRabbitMQResponse response = new WorkersRabbitMQResponse().setContainerName(containerInfoRetriever.getContainerName()).setJobExecutorStatus(1);
-        rabbitMQSender.sendMessage(response);
+        WorkerStateRabbitMQResponse response = new WorkerStateRabbitMQResponse(containerInfoRetriever.getContainerName(), Constants.WORKER_READY);
+        rabbitMQSender.sendWorkerStatus(response);
         LOGGER.info("Message for initializing JobExecutor status sent on rabbitmq");
     }
 }

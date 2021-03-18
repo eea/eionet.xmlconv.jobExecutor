@@ -14,8 +14,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,8 +30,6 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
 
     @Autowired
     private RestTemplate restTemplate;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataRetrieverServiceImpl.class);
 
     @Autowired
     public DataRetrieverServiceImpl() {
@@ -90,7 +86,6 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
         try {
             result = restTemplate.exchange(url, HttpMethod.GET, entity, JobResultInfo.class);
         } catch (Exception e) {
-            LOGGER.info("Error retrieving data from converters for job with id " + jobId + ": " + e.getMessage());
             throw new ConvertersCommunicationException("Error retrieving data from converters for job with id " + jobId + ", " + e.getMessage());
         }
         return result.getBody().getJobExecutionStatus();
