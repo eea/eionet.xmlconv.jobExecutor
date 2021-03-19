@@ -26,7 +26,7 @@ public class StatusInitializer {
     @EventListener(ApplicationReadyEvent.class)
     public void initializeWorkerStatusAfterStartup() {
         LOGGER.info(String.format("Container name is %s", containerInfoRetriever.getContainerName()));
-        WorkerStateRabbitMQResponse response = new WorkerStateRabbitMQResponse(containerInfoRetriever.getContainerName(), Constants.WORKER_READY);
+        WorkerStateRabbitMQResponse response = new WorkerStateRabbitMQResponse(containerInfoRetriever.getContainerName(), Constants.WORKER_READY).setQueueName(MessagingConfig.queue);
         rabbitMQSender.sendWorkerStatus(response);
         LOGGER.info("Message for initializing JobExecutor status sent on rabbitmq");
     }

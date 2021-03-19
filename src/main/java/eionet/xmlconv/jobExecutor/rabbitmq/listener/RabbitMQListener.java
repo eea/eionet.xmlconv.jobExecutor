@@ -6,6 +6,7 @@ import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.JobExecutionStatus;
 import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.rabbitmq.config.MessagingConfig;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessageInfo;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponse;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequest;
@@ -37,6 +38,7 @@ public class RabbitMQListener {
     private DataRetrieverService dataRetrieverService;
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQListener.class);
     private static volatile Map<String, Integer> workerJobStatus = new HashMap<>();
+    private String heartBeatListeningQueue = MessagingConfig.queue;
 
     @Autowired
     public RabbitMQListener(ScriptExecutionService scriptExecutionService, RabbitMQSender rabbitMQSender, ContainerInfoRetriever containerInfoRetriever,
@@ -47,7 +49,7 @@ public class RabbitMQListener {
         this.dataRetrieverService = dataRetrieverService;
     }
 
-    @RabbitListener(queues = "${heartBeat.request.rabbitmq.listeningQueue}")
+    @RabbitListener(queues = "demoJobExecutor-queue")
     public void consumeHeartBeatMsgRequest(@Header(DELIVERY_TAG) long deliveryTag, WorkerHeartBeatMessageInfo jobExecInfo, Channel channel) throws IOException {
         String containerName = containerInfoRetriever.getContainerName();
         Integer jobStatus = getWorkerJobStatus().get(jobExecInfo.getJobId().toString());
