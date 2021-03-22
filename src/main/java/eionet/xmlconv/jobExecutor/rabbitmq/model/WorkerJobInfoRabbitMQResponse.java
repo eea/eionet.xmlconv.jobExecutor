@@ -16,6 +16,8 @@ public class WorkerJobInfoRabbitMQResponse {
 
     private Integer jobExecutorStatus;
 
+    private String heartBeatQueue;
+
     public Script getScript() {
         return script;
     }
@@ -70,4 +72,12 @@ public class WorkerJobInfoRabbitMQResponse {
         return this;
     }
 
+    public String getHeartBeatQueue() {
+        return heartBeatQueue;
+    }
+
+    public WorkerJobInfoRabbitMQResponse setHeartBeatQueue(String heartBeatQueue) {
+        this.heartBeatQueue = heartBeatQueue;
+        return this;
+    }
 }

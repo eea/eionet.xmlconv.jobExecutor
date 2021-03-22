@@ -3,7 +3,10 @@ package eionet.xmlconv.jobExecutor.rabbitmq.config;
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.rabbitmq.listener.HeartBeatMessageListener;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.FanoutExchange;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
@@ -61,7 +64,6 @@ public class RabbitMQConfig {
         simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
         simpleMessageListenerContainer.setQueues(queue());
         simpleMessageListenerContainer.setMessageListener(heartBeatListenerAdapter());
-        simpleMessageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return simpleMessageListenerContainer;
     }
     @Bean
