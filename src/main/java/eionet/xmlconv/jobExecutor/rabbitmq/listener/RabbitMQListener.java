@@ -1,5 +1,7 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.rabbitmq.client.Channel;
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
@@ -16,6 +18,7 @@ import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptExecutionServic
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
@@ -72,6 +75,9 @@ public class RabbitMQListener {
         Script script = rabbitMQRequest.getScript();
         LOGGER.info("Received script with id " + script.getJobId());
 
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String scriptStr = ow.writeValueAsString(script);
+
         WorkerJobInfoRabbitMQResponse response = new WorkerJobInfoRabbitMQResponse();
         StopWatch timer = new StopWatch();
         String containerName = "";
@@ -80,7 +86,10 @@ public class RabbitMQListener {
             LOGGER.info(String.format("Container name is %s", containerName));
             JobExecutionStatus jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
             if (jobExecutionStatus.getStatusId() == Constants.JOB_CANCELLED_BY_USER) {
+                rabbitMQRequest.setErrorMsg("Job cancelled by user");
                 channel.basicReject(deliveryTag, false);
+                //Throwable throwable = new Throwable("Job cancelled by user");
+                //throw new AmqpRejectAndDontRequeueException(scriptStr, throwable);
             } else {
                 clearWorkerJobStatus();
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
@@ -106,9 +115,19 @@ public class RabbitMQListener {
             setWorkerJobStatus(script.getJobId(), Constants.JOB_FATAL_ERROR);
             sendResponseToConverters(script.getJobId(), response, timer);
             channel.basicAck(deliveryTag, true);
-        } catch (Exception e) {
+        }
+        catch (AmqpRejectAndDontRequeueException e) {
             LOGGER.info(e.getMessage());
-            channel.basicReject(deliveryTag, true);
+            throw e;
+        }catch (Exception e) {
+            String message = e.getMessage();
+            if(message == null){
+                message = "Unknown error";
+            }
+            LOGGER.info(message);
+            Throwable throwable = new Throwable(message);
+            throw new AmqpRejectAndDontRequeueException(scriptStr, true, throwable);
+            //channel.basicReject(deliveryTag, false);
         }
     }
 
