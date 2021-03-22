@@ -6,8 +6,6 @@ import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.JobExecutionStatus;
 import eionet.xmlconv.jobExecutor.models.Script;
-import eionet.xmlconv.jobExecutor.rabbitmq.config.MessagingConfig;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessageInfo;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponse;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequest;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
@@ -30,43 +28,22 @@ import static org.springframework.amqp.support.AmqpHeaders.DELIVERY_TAG;
 
 
 @Component
-public class RabbitMQListener {
+public class ScriptMessageListener {
 
     private ScriptExecutionService scriptExecutionService;
     private RabbitMQSender rabbitMQSender;
     private ContainerInfoRetriever containerInfoRetriever;
     private DataRetrieverService dataRetrieverService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptMessageListener.class);
     private static volatile Map<String, Integer> workerJobStatus = new HashMap<>();
-    private String heartBeatListeningQueue = MessagingConfig.queue;
 
     @Autowired
-    public RabbitMQListener(ScriptExecutionService scriptExecutionService, RabbitMQSender rabbitMQSender, ContainerInfoRetriever containerInfoRetriever,
-                            DataRetrieverService dataRetrieverService) {
+    public ScriptMessageListener(ScriptExecutionService scriptExecutionService, RabbitMQSender rabbitMQSender, ContainerInfoRetriever containerInfoRetriever,
+                                 DataRetrieverService dataRetrieverService) {
         this.scriptExecutionService = scriptExecutionService;
         this.rabbitMQSender = rabbitMQSender;
         this.containerInfoRetriever = containerInfoRetriever;
         this.dataRetrieverService = dataRetrieverService;
-    }
-
-    @RabbitListener(queues = "demoJobExecutor-queue")
-    public void consumeHeartBeatMsgRequest(@Header(DELIVERY_TAG) long deliveryTag, WorkerHeartBeatMessageInfo jobExecInfo, Channel channel) throws IOException {
-        String containerName = containerInfoRetriever.getContainerName();
-        Integer jobStatus = getWorkerJobStatus().get(jobExecInfo.getJobId().toString());
-        if (!jobExecInfo.getJobExecutorName().equals(containerName)) {
-            channel.basicReject(deliveryTag, true);
-        } else if (jobStatus==null) {
-            jobExecInfo.setJobStatus(Constants.JOB_NOT_FOUND);
-            sendHeartBeatResponse(deliveryTag, jobExecInfo, channel);
-        } else if (jobStatus!=null) {
-            jobExecInfo.setJobStatus(jobStatus);
-            sendHeartBeatResponse(deliveryTag, jobExecInfo, channel);
-        }
-    }
-
-    protected void sendHeartBeatResponse(long deliveryTag, WorkerHeartBeatMessageInfo jobExecInfo, Channel channel) throws IOException {
-        rabbitMQSender.sendHeartBeatMessageResponse(jobExecInfo);
-        channel.basicAck(deliveryTag, true);
     }
 
     @RabbitListener(queues = "${job.rabbitmq.listeningQueue}")
