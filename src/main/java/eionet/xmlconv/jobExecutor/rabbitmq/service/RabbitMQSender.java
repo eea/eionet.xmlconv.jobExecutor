@@ -2,6 +2,7 @@ package eionet.xmlconv.jobExecutor.rabbitmq.service;
 
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessageInfo;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponse;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequest;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponse;
 
 public interface RabbitMQSender {
@@ -24,5 +25,11 @@ public interface RabbitMQSender {
      * @param response
      */
     void sendHeartBeatMessageResponse(WorkerHeartBeatMessageInfo response);
+
+    /**
+     * sends message to dead letter queue which contains the script and the error message
+     * @param message
+     */
+    void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequest message);
 
 }
