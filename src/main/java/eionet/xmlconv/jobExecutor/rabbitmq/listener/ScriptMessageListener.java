@@ -1,5 +1,8 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.rabbitmq.client.Channel;
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
@@ -48,9 +51,12 @@ public class ScriptMessageListener {
     }
 
     @RabbitListener(queues = "${job.rabbitmq.listeningQueue}")
-    public void consumeMessage(@Header(DELIVERY_TAG) long deliveryTag, WorkerJobRabbitMQRequest rabbitMQRequest, Channel channel) throws IOException {
+    public void consumeMessage(WorkerJobRabbitMQRequest rabbitMQRequest) throws IOException {
         Script script = rabbitMQRequest.getScript();
         LOGGER.info("Received script with id " + script.getJobId());
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String scriptStr = ow.writeValueAsString(script);
 
         WorkerJobInfoRabbitMQResponse response = new WorkerJobInfoRabbitMQResponse();
         StopWatch timer = new StopWatch();
@@ -60,7 +66,8 @@ public class ScriptMessageListener {
             LOGGER.info(String.format("Container name is %s", containerName));
             JobExecutionStatus jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
             if (jobExecutionStatus.getStatusId() == Constants.JOB_CANCELLED_BY_USER) {
-                channel.basicReject(deliveryTag, false);
+                rabbitMQRequest.setErrorMsg("Job cancelled by user");
+                sendMessageToDeadLetterQueue(rabbitMQRequest);
             } else {
                 clearWorkerJobStatus();
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
@@ -76,7 +83,6 @@ public class ScriptMessageListener {
                 response.setJobExecutorStatus(Constants.WORKER_READY);
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_READY);
                 sendResponseToConverters(script.getJobId(), response, timer);
-                channel.basicAck(deliveryTag, true);
             }
         }
         catch(ScriptExecutionException e){
@@ -85,10 +91,15 @@ public class ScriptMessageListener {
             response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobExecutorStatus(Constants.WORKER_READY);
             setWorkerJobStatus(script.getJobId(), Constants.JOB_FATAL_ERROR);
             sendResponseToConverters(script.getJobId(), response, timer);
-            channel.basicAck(deliveryTag, true);
-        } catch (Exception e) {
-            LOGGER.info(e.getMessage());
-            channel.basicReject(deliveryTag, true);
+        }
+        catch (Exception e) {
+            String message = e.getMessage();
+            if(message == null){
+                message = "Unknown error";
+            }
+            LOGGER.info(message);
+            rabbitMQRequest.setErrorMsg(message);
+            sendMessageToDeadLetterQueue(rabbitMQRequest);
         }
     }
 
@@ -107,6 +118,10 @@ public class ScriptMessageListener {
 
     public static synchronized void clearWorkerJobStatus() {
         workerJobStatus.clear();
+    }
+
+    protected void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequest message) {
+        rabbitMQSender.sendMessageToDeadLetterQueue(message);
     }
 }
 

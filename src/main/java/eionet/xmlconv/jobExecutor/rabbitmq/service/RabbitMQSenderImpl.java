@@ -2,6 +2,7 @@ package eionet.xmlconv.jobExecutor.rabbitmq.service;
 
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessageInfo;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponse;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequest;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponse;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,11 @@ public class RabbitMQSenderImpl implements RabbitMQSender {
     private String workerStatusRoutingKey;
     @Value("${heartBeat.response.rabbitmq.routingKey}")
     private String heartBeatResponseRoutingKey;
+
+    @Value("${rabbitmq.dead.letter.exchange}")
+    private String deadLetterExchange;
+    @Value("${rabbitmq.dead.letter.routingKey}")
+    private String deadLetterRoutingKey;
 
     RabbitTemplate rabbitTemplate;
 
@@ -40,6 +46,11 @@ public class RabbitMQSenderImpl implements RabbitMQSender {
     @Override
     public void sendHeartBeatMessageResponse(WorkerHeartBeatMessageInfo response) {
         rabbitTemplate.convertAndSend(exchange, heartBeatResponseRoutingKey, response);
+    }
+
+    @Override
+    public void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequest message) {
+        rabbitTemplate.convertAndSend(deadLetterExchange, deadLetterRoutingKey, message);
     }
 }
 
