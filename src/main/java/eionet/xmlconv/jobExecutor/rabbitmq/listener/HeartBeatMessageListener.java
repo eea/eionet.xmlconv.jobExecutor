@@ -6,6 +6,7 @@ import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessageInfo;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
+import net.xqj.basex.bin.L;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
@@ -32,6 +33,7 @@ public class HeartBeatMessageListener implements MessageListener {
         WorkerHeartBeatMessageInfo response = null;
         try {
             response = mapper.readValue(message.getBody(), WorkerHeartBeatMessageInfo.class);
+            LOGGER.info("Received heart beat message for job " + response.getJobId());
         } catch (IOException e) {
             LOGGER.info("Error during processing of heart beat message, " + e.getMessage());
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
@@ -51,5 +53,6 @@ public class HeartBeatMessageListener implements MessageListener {
 
     protected void sendHeartBeatResponse(WorkerHeartBeatMessageInfo jobExecInfo) {
         rabbitMQSender.sendHeartBeatMessageResponse(jobExecInfo);
+        LOGGER.info("Response for heart beat message of job " + jobExecInfo.getJobId() + " sent");
     }
 }
