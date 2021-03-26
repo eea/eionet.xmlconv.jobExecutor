@@ -30,6 +30,6 @@ public interface RabbitMQSender {
      * sends message to dead letter queue which contains the script and the error message
      * @param message
      */
-    void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequest message);
+    void sendMessageToDeadLetterQueue(WorkerJobInfoRabbitMQResponse message);
 
 }
