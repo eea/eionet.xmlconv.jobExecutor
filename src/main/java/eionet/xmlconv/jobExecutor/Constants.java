@@ -21,10 +21,11 @@ public class Constants {
     public static final int JOB_PROCESSING = 2;
     public static final int JOB_READY = 3;
     public static final int JOB_FATAL_ERROR = 4;
+    public static final int JOB_CANCELLED_BY_CDR_BDR = 8;
     public static final int JOB_CANCELLED_BY_USER = 9;
     public static final int JOB_NOT_FOUND = 10;
     public static final int JOB_EXCEPTION_ERROR = 11;
-    public static final int JOB_DELETED_BY_USER = 12;
+
 
     public static final String WARNING_QA_EXPIRED_DD_SCHEMA = "The reported XML file uses an obsolete version of Data Dictionary XML Schema. The last version of given dataset is released on {0} with ID={1}.";
     public static final String GETSOURCE_URL = "/s/getsource";
