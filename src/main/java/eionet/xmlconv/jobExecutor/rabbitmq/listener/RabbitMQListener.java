@@ -86,8 +86,10 @@ public class RabbitMQListener {
             LOGGER.info(String.format("Container name is %s", containerName));
             JobExecutionStatus jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
             if (jobExecutionStatus.getStatusId() == Constants.JOB_CANCELLED_BY_USER) {
-                rabbitMQRequest.setErrorMsg("Job cancelled by user");
-                sendMessageToDeadLetterQueue(rabbitMQRequest);
+                response = createMessageForDeadLetterQueue(rabbitMQRequest,  response, "Job cancelled by user",
+                        Constants.JOB_CANCELLED_BY_USER, containerName);
+
+                sendMessageToDeadLetterQueue(response);
             } else {
                 clearWorkerJobStatus();
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
@@ -118,9 +120,22 @@ public class RabbitMQListener {
                 message = "Unknown error";
             }
             LOGGER.info(message);
-            rabbitMQRequest.setErrorMsg(message);
-            sendMessageToDeadLetterQueue(rabbitMQRequest);
+            response = createMessageForDeadLetterQueue(rabbitMQRequest,  response, message,
+                    Constants.JOB_EXCEPTION_ERROR, containerName);
+            sendMessageToDeadLetterQueue(response);
         }
+    }
+
+    private WorkerJobInfoRabbitMQResponse createMessageForDeadLetterQueue(WorkerJobRabbitMQRequest request, WorkerJobInfoRabbitMQResponse response,
+                                                 String errorMessage, Integer errorStatus, String containerName){
+        response.setScript(request.getScript());
+        response.setErrorExists(true);
+        response.setErrorMessage(errorMessage);
+        response.setErrorStatus(errorStatus);
+        response.setJobExecutionRetries(request.getJobExecutionRetries());
+        response.setJobExecutorName(containerName);
+        response.setJobExecutorStatus(Constants.JOB_READY);
+        return response;
     }
 
     protected void sendResponseToConverters(String jobId, WorkerJobInfoRabbitMQResponse response, StopWatch timer) {
@@ -140,7 +155,7 @@ public class RabbitMQListener {
         workerJobStatus.clear();
     }
 
-    protected void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequest message) {
+    protected void sendMessageToDeadLetterQueue(WorkerJobInfoRabbitMQResponse message) {
         rabbitMQSender.sendMessageToDeadLetterQueue(message);
     }
 }

@@ -49,7 +49,7 @@ public class RabbitMQSenderImpl implements RabbitMQSender {
     }
 
     @Override
-    public void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequest message) {
+    public void sendMessageToDeadLetterQueue(WorkerJobInfoRabbitMQResponse message) {
         rabbitTemplate.convertAndSend(deadLetterExchange, deadLetterRoutingKey, message);
     }
 }
