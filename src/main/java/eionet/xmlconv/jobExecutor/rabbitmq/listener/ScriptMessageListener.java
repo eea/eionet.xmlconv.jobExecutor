@@ -114,7 +114,8 @@ public class ScriptMessageListener {
         response.setErrorStatus(errorStatus);
         response.setJobExecutionRetries(request.getJobExecutionRetries());
         response.setJobExecutorName(containerName);
-        response.setJobExecutorStatus(Constants.JOB_READY);
+        response.setJobExecutorStatus(Constants.WORKER_FAILED);
+        response.setHeartBeatQueue(RabbitMQConfig.queue);
         return response;
     }
 
