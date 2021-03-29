@@ -6,7 +6,6 @@ import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessageInfo;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
-import net.xqj.basex.bin.L;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
