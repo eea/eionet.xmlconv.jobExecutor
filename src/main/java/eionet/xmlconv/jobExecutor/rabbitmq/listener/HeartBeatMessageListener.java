@@ -35,7 +35,7 @@ public class HeartBeatMessageListener implements MessageListener {
             response = mapper.readValue(message.getBody(), WorkerHeartBeatMessageInfo.class);
             LOGGER.info("Received heart beat message for job " + response.getJobId());
         } catch (IOException e) {
-            LOGGER.info("Error during processing of heart beat message, " + e.getMessage());
+            LOGGER.error("Error during processing of heart beat message, " + e.getMessage());
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
         String containerName = containerInfoRetriever.getContainerName();
