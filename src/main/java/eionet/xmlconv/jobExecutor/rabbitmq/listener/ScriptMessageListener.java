@@ -66,10 +66,10 @@ public class ScriptMessageListener {
             LOGGER.info(String.format("Container name is %s", containerName));
             JobExecutionStatus jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
             if (jobExecutionStatus.getStatusId() == Constants.JOB_CANCELLED_BY_USER) {
-                response = createMessageForDeadLetterQueue(rabbitMQRequest,  response, "Job cancelled by user",
+                rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
                         Constants.JOB_CANCELLED_BY_USER, containerName);
 
-                sendMessageToDeadLetterQueue(response);
+                sendMessageToDeadLetterQueue(rabbitMQRequest);
             } else {
                 clearWorkerJobStatus();
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
@@ -100,23 +100,22 @@ public class ScriptMessageListener {
                 message = "Unknown error";
             }
             LOGGER.info(message);
-            response = createMessageForDeadLetterQueue(rabbitMQRequest,  response, message,
+            rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, message,
                     Constants.JOB_EXCEPTION_ERROR, containerName);
-            sendMessageToDeadLetterQueue(response);
+            sendMessageToDeadLetterQueue(rabbitMQRequest);
         }
     }
 
-    private WorkerJobInfoRabbitMQResponse createMessageForDeadLetterQueue(WorkerJobRabbitMQRequest request, WorkerJobInfoRabbitMQResponse response,
+    private WorkerJobRabbitMQRequest createMessageForDeadLetterQueue(WorkerJobRabbitMQRequest request,
                                                  String errorMessage, Integer errorStatus, String containerName){
-        response.setScript(request.getScript());
-        response.setErrorExists(true);
-        response.setErrorMessage(errorMessage);
-        response.setErrorStatus(errorStatus);
-        response.setJobExecutionRetries(request.getJobExecutionRetries());
-        response.setJobExecutorName(containerName);
-        response.setJobExecutorStatus(Constants.WORKER_FAILED);
-        response.setHeartBeatQueue(RabbitMQConfig.queue);
-        return response;
+        request.setScript(request.getScript());
+        request.setErrorMessage(errorMessage);
+        request.setErrorStatus(errorStatus);
+        request.setJobExecutionRetries(request.getJobExecutionRetries());
+        request.setJobExecutorName(containerName);
+        request.setJobExecutorStatus(Constants.WORKER_FAILED);
+        request.setHeartBeatQueue(RabbitMQConfig.queue);
+        return request;
     }
 
     protected void sendResponseToConverters(String jobId, WorkerJobInfoRabbitMQResponse response, StopWatch timer) {
@@ -136,7 +135,7 @@ public class ScriptMessageListener {
         workerJobStatus.clear();
     }
 
-    protected void sendMessageToDeadLetterQueue(WorkerJobInfoRabbitMQResponse message) {
+    protected void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequest message) {
         rabbitMQSender.sendMessageToDeadLetterQueue(message);
     }
 }
