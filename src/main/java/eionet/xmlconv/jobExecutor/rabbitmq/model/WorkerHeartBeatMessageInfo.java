@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 public class WorkerHeartBeatMessageInfo {
 
-    private String id;
+    private Integer id;
     private String jobExecutorName;
     private Integer jobId;
     private Integer jobStatus;
@@ -18,11 +18,11 @@ public class WorkerHeartBeatMessageInfo {
         this.jobId = jobId;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
