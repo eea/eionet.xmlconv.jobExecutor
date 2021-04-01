@@ -70,7 +70,14 @@ public class ScriptMessageListener {
                         Constants.JOB_CANCELLED_BY_USER, containerName);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-            } else {
+            }
+            else if(jobExecutionStatus.getStatusId() == Constants.JOB_DELETED){
+                rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job was deleted",
+                        Constants.JOB_DELETED, containerName);
+
+                sendMessageToDeadLetterQueue(rabbitMQRequest);
+            }
+            else {
                 clearWorkerJobStatus();
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
                 response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_RECEIVED).setJobExecutorName(containerName).setHeartBeatQueue(RabbitMQConfig.queue);
