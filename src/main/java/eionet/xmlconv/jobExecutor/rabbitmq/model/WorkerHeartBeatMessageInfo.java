@@ -22,8 +22,9 @@ public class WorkerHeartBeatMessageInfo {
         return id;
     }
 
-    public void setId(Integer id) {
+    public WorkerHeartBeatMessageInfo setId(Integer id) {
         this.id = id;
+        return this;
     }
 
     public String getJobExecutorName() {
@@ -48,15 +49,17 @@ public class WorkerHeartBeatMessageInfo {
         return jobStatus;
     }
 
-    public void setJobStatus(Integer jobStatus) {
+    public WorkerHeartBeatMessageInfo setJobStatus(Integer jobStatus) {
         this.jobStatus = jobStatus;
+        return this;
     }
 
     public Timestamp getRequestTimestamp() {
         return requestTimestamp;
     }
 
-    public void setRequestTimestamp(Timestamp requestTimestamp) {
+    public WorkerHeartBeatMessageInfo setRequestTimestamp(Timestamp requestTimestamp) {
         this.requestTimestamp = requestTimestamp;
+        return this;
     }
 }
