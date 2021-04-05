@@ -18,8 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import eionet.xmlconv.jobExecutor.exceptions.*;
@@ -42,6 +44,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private String randomStr = RandomStringUtils.randomAlphanumeric(5);
 
+    private String synchronousToken = null;
+
 
     /* Variables for eionet.gdem.Properties*/
     private Integer fmeTimeoutProperty = Properties.fmeTimeout;
@@ -63,6 +67,12 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
         requestConfigBuilder = RequestConfig.custom();
         requestConfigBuilder.setSocketTimeout(this.getFmeTimeoutProperty());
+
+        try {
+            getConnectionInfo();
+        } catch (IOException e) {
+            throw new GenericFMEexception(e.toString());
+        }
     }
 
     @Override
@@ -90,7 +100,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         while (count < retries) {
             try {
                 java.net.URI uri = new URIBuilder(script.getScriptSource())
-                        .addParameter("token", getFmeTokenProperty())
+                        .addParameter("token", synchronousToken)
                         .addParameter("opt_showresult", "true")
                         .addParameter("opt_servicemode", "sync")
                         .addParameter("source_xml", script.getOrigFileUrl()) // XML file
@@ -199,6 +209,48 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         }
         throw new RetryCountForGettingJobResultReachedException("Retry count reached with no result");
     }
+
+    /**
+     * Gets a user token from the FME server.
+     *
+     * @throws Exception If an error occurs.
+     */
+    private void getConnectionInfo() throws Exception {
+
+        HttpPost method = null;
+        CloseableHttpResponse response = null;
+
+        try {
+            // We must first generate a security token for authentication
+            // purposes
+            fmeUrl = "https://" + Properties.fmeHost + ":" + Properties.fmePort
+                    + "/fmetoken/generate";
+
+            java.net.URI uri = new URIBuilder(fmeUrl)
+                    .addParameter("user", Properties.fmeUser)
+                    .addParameter("password", Properties.fmePassword)
+                    .addParameter("expiration", this.getFmeTokenExpirationProperty())
+                    .addParameter("timeunit", this.getFmeTokenTimeunitProperty()).build();
+            method = new HttpPost(uri);
+            response = client_.execute(method);
+            if (response.getStatusLine().getStatusCode() == 200) {
+                HttpEntity entity = response.getEntity();
+                InputStream stream = entity.getContent();
+                synchronousToken = new String(IOUtils.toByteArray(stream), StandardCharsets.UTF_8);
+                IOUtils.closeQuietly(stream);
+            } else {
+                LOGGER.error("FME authentication failed. Could not retrieve a Token");
+                throw new GenericFMEexception("FME authentication failed");
+            }
+        } catch (Exception e) {
+            throw new GenericFMEexception(e.toString());
+        } finally {
+            if (method != null) {
+                method.releaseConnection();
+            }
+        }
+    }
+
 
     protected CloseableHttpClient getClient_() {
         return client_;
