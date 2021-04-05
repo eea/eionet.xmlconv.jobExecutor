@@ -52,7 +52,7 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
 
     @Override
     public String getHostAuthentication(String host) throws XmlconvApiException, IOException {
-        String url = Properties.convertersUrl + "restapi/" + Properties.convertersSchemaRetrievalUrl;
+        String url = Properties.convertersUrl + "restapi/" + Properties.convertersHostAuthenticationUrl;
         HttpGet request = new HttpGet(url);
         request.addHeader("hostName", host);
         request.addHeader("Authorization", Properties.convertersEndpointToken);
