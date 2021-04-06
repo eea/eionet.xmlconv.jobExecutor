@@ -70,6 +70,10 @@ public class ScriptMessageListener {
                         Constants.JOB_CANCELLED_BY_USER, containerName);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
+            } else if (jobExecutionStatus.getStatusId() == Constants.JOB_INTERRUPTED) {
+                rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job was interrupted because duration exceeded schema's maxExecutionTime",
+                        Constants.JOB_INTERRUPTED, containerName);
+                sendMessageToDeadLetterQueue(rabbitMQRequest);
             }
             else if(jobExecutionStatus.getStatusId() == Constants.JOB_DELETED){
                 rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job was deleted",
