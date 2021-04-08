@@ -68,18 +68,13 @@ public class Properties {
     public static String fmeResultFolderUrl;
     public static String fmeResultFolder;
     public static String fmeDeleteFolderUrl;
-    public static String jobExecutorApplicationUrl;
-    public static Integer qaTimeout;
 
     /** XSL folder for generated conversions. */
     public static String metaXSLFolder;
     /** conversion.xml file location, listing all available generated conversions. */
     public static String convFile;
-    /** Parent folder for other user folders. */
-    public static String appRootFolder;
     public static String convertersUrl;
 
-    public static String testHttpdUrl;
     public static String ddReleaseInfoUrl;
     public static String convertersSchemaRetrievalUrl;
     public static String convertersHostAuthenticationUrl;
@@ -274,11 +269,6 @@ public class Properties {
         this.fmeDeleteFolderUrl = fmeDeleteFolderUrl;
     }
 
-    @Value( "${job.execution.application.url}" )
-    public void setJobExecutorApplicationUrl(String jobExecutorApplicationUrl) {
-        this.jobExecutorApplicationUrl = jobExecutorApplicationUrl;
-    }
-
     @Value( "${fme_polling_url}" )
     public void setFmePollingUrl(String fmePollingUrl) {
         this.fmePollingUrl = fmePollingUrl;
@@ -289,23 +279,9 @@ public class Properties {
         this.odsFolder = odsFolder;
     }
 
-    @Value( "${external.qa.timeout}" )
-    public void setQaTimeout(Integer qaTimeout) {
-        this.qaTimeout = qaTimeout;
-    }
-
-    @Value( "${app.home}" )
-    public void setAppRootFolder(String appRootFolder) {
-        this.appRootFolder = appRootFolder;
-    }
-
     @Value( "${env.converters.url}" )
     public void setConvertersUrl(String convertersUrl) {
         this.convertersUrl = convertersUrl;
-    }
-    @Value( "${test.httpd.url}" )
-    public void setTestHttpdUrl(String testHttpdUrl) {
-        this.testHttpdUrl = testHttpdUrl;
     }
 
     @Value( "${dd.release.info.url}" )

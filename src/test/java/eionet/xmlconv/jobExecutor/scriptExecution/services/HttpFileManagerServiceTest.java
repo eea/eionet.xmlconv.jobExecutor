@@ -2,11 +2,8 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services;
 
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
-import eionet.xmlconv.jobExecutor.TestUtils;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
-import eionet.xmlconv.jobExecutor.scriptExecution.services.HttpFileManagerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.HttpFileManagerServiceImpl;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.After;
 import org.junit.Before;
@@ -16,14 +13,10 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
