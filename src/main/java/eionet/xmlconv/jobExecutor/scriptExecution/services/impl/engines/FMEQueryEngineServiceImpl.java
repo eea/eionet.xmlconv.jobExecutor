@@ -6,6 +6,7 @@ import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeJobStatus;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeServerCommunicator;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.request.SynchronousSubmitJobRequest;
+import eionet.xmlconv.jobExecutor.utils.Utils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
@@ -164,16 +165,35 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         } catch (FmeAuthorizationException | FmeCommunicationException | GenericFMEexception | FMEBadRequestException |RetryCountForGettingJobResultReachedException | InterruptedException e) {
             String message = "Generic Exception handling. FME request error: " + e.getMessage();
             LOGGER.error(message);
-            String resultString ="<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">The QC process failed. The id in the FME server is #" + jobId + ". Please try again. If the issue persists please contact the dataflow helpdesk.</span>The QC process failed. The id in the FME server is #" + jobId + ".  Please try again. If the issue persists please contact the dataflow helpdesk.</div>";
+            String resultStr = createErrorMessage(jobId, script.getScriptSource(), script.getOrigFileUrl(), e.getMessage());
+
             ZipOutputStream out = new ZipOutputStream(result);
             ZipEntry entry = new ZipEntry("output.html");
             out.putNextEntry(entry);
-            byte[] data = resultString.getBytes();
+            byte[] data = resultStr.getBytes();
             out.write(data, 0, data.length);
             out.closeEntry();
             out.close();
         }
     }
+
+    private String createErrorMessage (String fmeJobId, String scriptUrl, String sourceUrl, String exception){
+        String resultStringHtml = "<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">";
+        String resultStringMsg ="The QC process failed. ";
+        String resultStringSpecificMsg;
+        if (Utils.isNullStr(fmeJobId)){
+            resultStringSpecificMsg = "Job submission for script: " + scriptUrl + " and xml url " + sourceUrl + " failed. ";
+        }
+        else{
+            resultStringSpecificMsg = "The id in the FME server is #" + fmeJobId + ". ";
+        }
+        String fullResultString = resultStringHtml + resultStringMsg + resultStringSpecificMsg;
+        String resultStringMsgCont = "Please try again. If the issue persists please contact the dataflow helpdesk. ";
+        String exceptionMsg = "Exception message is: " + exception;
+        fullResultString += resultStringMsgCont + exceptionMsg +  "</span>" + resultStringMsg + resultStringSpecificMsg + resultStringMsgCont + exceptionMsg + "</div>";
+        return fullResultString;
+    }
+
 
     protected void pollFmeServerWithRetries(String jobId, Script script,FmeServerCommunicator fmeServerCommunicator) throws RetryCountForGettingJobResultReachedException, FMEBadRequestException, FmeCommunicationException, GenericFMEexception, FmeAuthorizationException, InterruptedException {
         int count = 0;
