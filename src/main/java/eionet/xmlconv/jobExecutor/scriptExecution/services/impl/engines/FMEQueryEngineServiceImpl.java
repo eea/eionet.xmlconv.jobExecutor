@@ -18,9 +18,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
@@ -167,7 +165,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             LOGGER.error(message);
             String resultStr = createErrorMessage(jobId, script.getScriptSource(), script.getOrigFileUrl(), e.getMessage());
 
-            ZipOutputStream out = new ZipOutputStream(result);
+            FileOutputStream zipFile = new FileOutputStream(script.getStrResultFile());
+            ZipOutputStream out = new ZipOutputStream(zipFile);
             ZipEntry entry = new ZipEntry("output.html");
             out.putNextEntry(entry);
             byte[] data = resultStr.getBytes();
