@@ -1,20 +1,29 @@
-<Configuration>
-    <Appenders>
-        <Console name="console">
-            <PatternLayout>
-                <Pattern>[%d] - [%p] [%c:%L] : %m%n</Pattern>
-            </PatternLayout>
-        </Console>
-        <!-- Configure the Sentry appender, overriding the logging threshold to the WARN level -->
-        <Sentry name="Sentry" />
-    </Appenders>
-    <Loggers>
-        <logger name="eionet" level="info"/>
-        <logger name="org.springframework.web" level="info"/>
-        <logger name="org.hibernate" level="info" />
-        <logger name="org.basex" level="info"/>
-        <Root level="INFO">
-            <AppenderRef ref="console" />
-        </Root>
-    </Loggers>
-</Configuration>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration>
+    <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } [%t] --- %-40.40logger{39} : %m%n"/>
+        </layout>
+    </appender>
+    <!--appender name="graylog" class="org.graylog2.log.GelfAppender">
+        <param name="graylogHost" value="0.0.0.0"/>
+        <param name="originHost" value="localhost"/>
+        <param name="graylogPort" value="12201"/>
+        <param name="extractStacktrace" value="true"/>
+        <param name="addExtendedInformation" value="true"/>
+        <param name="facility" value="log4j"/>
+        <param name="Threshold" value="DEBUG"/>
+        <param name="additionalFields" value="{'environment': 'DEV', 'application': 'GraylogDemoApplication'}"/>
+    </appender-->
+
+    <appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
+        <graylogHost>localhost</graylogHost>
+        <graylogPort>12201</graylogPort>
+    </appender>
+    <root>
+        <priority value="DEBUG"/>
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="GELF"/>
+    </root>
+</log4j:configuration>
