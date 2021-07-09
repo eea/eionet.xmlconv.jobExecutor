@@ -5,13 +5,13 @@ import eionet.xmlconv.jobExecutor.scriptExecution.services.QAResultPostProcessor
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptEngineService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.QAResultPostProcessorServiceImpl;
 import eionet.xmlconv.jobExecutor.utils.Utils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.HashMap;
 
 @Service
@@ -47,21 +47,14 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
 
 
     @Override
-    public String getResult(Script script) throws ScriptExecutionException {
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        String res = "";
-        getResult(script, result);
+    public void getResult(Script script) throws ScriptExecutionException {
+        FileOutputStream result = null;
         try {
-            res = result.toString(DEFAULT_ENCODING);
-        } catch (Exception e) {
-            LOGGER.error("Error while converting QA result" + e);
+            result = new FileOutputStream(new File(script.getStrResultFile()));
+        } catch (FileNotFoundException e) {
+            throw new ScriptExecutionException("Could not find result file " + script.getStrResultFile());
         }
-        // add "red coloured warning" if script is expired
-        if (script.getOutputType() != null && script.getOutputType().equals(Script.SCRIPT_RESULTTYPE_HTML) && script.getSchema() != null) {
-            QAResultPostProcessorService postProcessor = new QAResultPostProcessorServiceImpl();
-            res = postProcessor.processQAResult(res, script.getSchema());
-        }
-        return res;
+        getResult(script, result);
     }
 
     @Override
