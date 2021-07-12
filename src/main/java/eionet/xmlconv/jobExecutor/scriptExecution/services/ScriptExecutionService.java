@@ -5,5 +5,5 @@ import eionet.xmlconv.jobExecutor.models.Script;
 
 public interface ScriptExecutionService {
     void setScript(Script script);
-    String getResult() throws ScriptExecutionException;
+    void getResult() throws ScriptExecutionException;
 }

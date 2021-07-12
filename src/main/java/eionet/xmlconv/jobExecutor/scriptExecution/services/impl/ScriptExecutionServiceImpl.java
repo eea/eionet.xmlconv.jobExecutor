@@ -44,18 +44,16 @@ public class ScriptExecutionServiceImpl implements ScriptExecutionService {
      * @throws ScriptExecutionException If an error occurs.
      */
     @Override
-    public String getResult() throws ScriptExecutionException {
-        String result = null;
+    public void getResult() throws ScriptExecutionException {
         if (Script.SCRIPT_LANG_XSL.equals(script.getScriptType())) {
-            result = xslEngineService.getResult(script);
+            xslEngineService.getResult(script);
         } else if (Script.SCRIPT_LANG_FME.equals(script.getScriptType())) {
-            result = fmeEngineService.getResult(script);
+            fmeEngineService.getResult(script);
         } else if (Script.SCRIPT_LANG_XQUERY3.equals(script.getScriptType())) {// XQUERY 3.0+
-            result = basexEngineService.getResult(script);
+            basexEngineService.getResult(script);
         } else { // LEGACY XQUERY 1.0
-            result = saxonEngineService.getResult(script);
+            saxonEngineService.getResult(script);
         }
-        return result;
 
     }
 

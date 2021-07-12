@@ -20,7 +20,7 @@ public interface ScriptEngineService {
      * @return the result of XQuery
      * @throws ScriptExecutionException If an error occurs.
      */
-    String getResult(Script script) throws ScriptExecutionException;
+    void getResult(Script script) throws ScriptExecutionException;
 
     /**
      * Gets result
