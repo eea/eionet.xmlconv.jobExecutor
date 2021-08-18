@@ -3,8 +3,6 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.impl;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.ConvertersCommunicationException;
 import eionet.xmlconv.jobExecutor.exceptions.XmlconvApiException;
-import eionet.xmlconv.jobExecutor.models.JobExecutionStatus;
-import eionet.xmlconv.jobExecutor.models.JobResultInfo;
 import eionet.xmlconv.jobExecutor.models.Schema;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.utils.Utils;
@@ -76,19 +74,19 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
     }
 
     @Override
-    public JobExecutionStatus getJobStatus(String jobId) throws ConvertersCommunicationException {
+    public Integer getJobStatus(String jobId) throws ConvertersCommunicationException {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         headers.add("Authorization", "Bearer " + Properties.convertersEndpointToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<JobResultInfo> result;
-        String url = Properties.convertersUrl + "restapi/asynctasks/qajobs/" + jobId;
+        ResponseEntity<Integer> result;
+        String url = Properties.convertersUrl + "restapi/asynctasks/qajobs/status/" + jobId;
         try {
-            result = restTemplate.exchange(url, HttpMethod.GET, entity, JobResultInfo.class);
+            result = restTemplate.exchange(url, HttpMethod.GET, entity, Integer.class);
         } catch (Exception e) {
             throw new ConvertersCommunicationException("Error retrieving data from converters for job with id " + jobId + ", " + e.getMessage());
         }
-        return result.getBody().getJobExecutionStatus();
+        return result.getBody();
     }
 
 }

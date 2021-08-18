@@ -64,24 +64,28 @@ public class ScriptMessageListener {
         try{
             containerName = containerInfoRetriever.getContainerName();
             LOGGER.info(String.format("Container name is %s", containerName));
-            JobExecutionStatus jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
-            if (jobExecutionStatus.getStatusId() == Constants.JOB_CANCELLED_BY_USER) {
+            Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
+            if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
                 rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
                         Constants.JOB_CANCELLED_BY_USER, containerName);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-            } else if (jobExecutionStatus.getStatusId() == Constants.JOB_INTERRUPTED) {
+            } else if (jobExecutionStatus == Constants.JOB_INTERRUPTED) {
                 rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job was interrupted because duration exceeded schema's maxExecutionTime",
                         Constants.JOB_INTERRUPTED, containerName);
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
             }
-            else if(jobExecutionStatus.getStatusId() == Constants.JOB_DELETED){
+            else if(jobExecutionStatus == Constants.JOB_DELETED){
                 rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job was deleted",
                         Constants.JOB_DELETED, containerName);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-            }
-            else {
+            } else if(jobExecutionStatus == Constants.JOB_FATAL_ERROR || jobExecutionStatus == Constants.JOB_READY){
+                rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job has already been executed",
+                        Constants.JOB_READY, containerName);
+
+                sendMessageToDeadLetterQueue(rabbitMQRequest);
+            } else {
                 clearWorkerJobStatus();
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
                 response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_RECEIVED).setJobExecutorName(containerName).setHeartBeatQueue(RabbitMQConfig.queue);

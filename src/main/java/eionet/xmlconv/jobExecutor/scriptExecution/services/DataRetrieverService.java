@@ -13,5 +13,5 @@ public interface DataRetrieverService {
     Schema retrieveSchemaBySchemaUrl(String xmlUrl) throws XmlconvApiException, IOException;
     String getHostAuthentication(String host) throws XmlconvApiException, IOException;
     Map getDatasetReleaseInfo(String type, String id) throws Exception;
-    JobExecutionStatus getJobStatus(String jobId) throws ConvertersCommunicationException;
+    Integer getJobStatus(String jobId) throws ConvertersCommunicationException;
 }
