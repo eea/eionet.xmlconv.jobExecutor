@@ -54,7 +54,21 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
         } catch (FileNotFoundException e) {
             throw new ScriptExecutionException("Could not find result file " + script.getStrResultFile());
         }
-        getResult(script, result);
+        try {
+            getResult(script, result);
+        } catch (ScriptExecutionException see) {
+            StringBuilder errBuilder = new StringBuilder();
+            errBuilder.append("<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">Unexpected error occured!</span><h2>Unexpected error occured!</h2>");
+            errBuilder.append(Utils.escapeXML(see.toString()));
+            errBuilder.append("</div>");
+            try {
+                IOUtils.write(errBuilder.toString(), result, "UTF-8");
+            } catch (IOException ex) {
+                throw new ScriptExecutionException(see.getMessage() + " " + ex.getMessage());
+            }
+            throw see;
+        }
+
     }
 
     @Override
