@@ -12,10 +12,15 @@ import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+@ConditionalOnProperty(
+        value="rabbitmq.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 @Service
 public class HeartBeatMessageListener implements MessageListener {
 

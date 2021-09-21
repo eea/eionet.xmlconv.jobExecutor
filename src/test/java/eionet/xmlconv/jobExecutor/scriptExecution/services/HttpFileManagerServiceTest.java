@@ -5,10 +5,7 @@ import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.HttpFileManagerServiceImpl;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -46,7 +43,7 @@ public class HttpFileManagerServiceTest {
         String url = "http://trustedurl.com";
         String ticket = "ticketValue";
 
-        assertEquals("http://localhost:8080" + Constants.GETSOURCE_URL + "?ticket=" + ticket + "&source_url=" + url,
+        assertEquals(Properties.convertersUrl + Constants.GETSOURCE_URL + "?ticket=" + ticket + "&source_url=" + url,
                 manager.getSourceUrlWithTicket(ticket, url, true));
         assertEquals(url, manager.getSourceUrlWithTicket(null, url, false));
     }

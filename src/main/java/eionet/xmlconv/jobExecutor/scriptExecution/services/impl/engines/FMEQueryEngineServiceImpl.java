@@ -21,15 +21,19 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import eionet.xmlconv.jobExecutor.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.apache.commons.io.IOUtils;
 
 @Service("fmeEngineService")
 public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
+
+    private Environment env;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FMEQueryEngineServiceImpl.class);
 
@@ -56,19 +60,31 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     private Integer fmeRetryHoursProperty = Properties.fmeRetryHours;
     private String fmeTokenProperty = Properties.fmeToken;
 
+    private static final String TEST_PROFILE = "test";
+
     /**
      * Default constructor.
      * @throws Exception If an error occurs.
      */
     @Autowired
-    public FMEQueryEngineServiceImpl() throws Exception {
+    public FMEQueryEngineServiceImpl(Environment env) throws Exception {
+        this.env = env;
+        boolean skipFMEConnectionInfoCheck = false;
+        boolean testProfile = Arrays.asList(env.getActiveProfiles()).stream().allMatch(p -> p.equals(TEST_PROFILE));
+        if (testProfile) {
+            skipFMEConnectionInfoCheck = true;
+        }
+
         client_ = HttpClients.createDefault();
 
         requestConfigBuilder = RequestConfig.custom();
         requestConfigBuilder.setSocketTimeout(this.getFmeTimeoutProperty());
 
+        //fme connection should be skipped in case of tests execution
         try {
-            getConnectionInfo();
+            if (!skipFMEConnectionInfoCheck) {
+                getConnectionInfo();
+            }
         } catch (IOException e) {
             throw new GenericFMEexception(e.toString());
         }
