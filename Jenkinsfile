@@ -6,7 +6,7 @@ pipeline {
   environment {
     GIT_NAME = "eionet.xmlconv.jobExecutor"
     SONARQUBE_TAGS = "converters.jobExecutor"
-    registry = "eeacms/converters-jobExecutor"
+    registry = "eeacms/converters-jobexecutor"
     dockerImage = ''
     tagName = ''
     convertersTemplate = "templates/converters-jobExecutor"
