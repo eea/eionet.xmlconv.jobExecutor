@@ -6,48 +6,75 @@ public class WorkerStateRabbitMQResponse {
     private Integer jobExecutorStatus;
     private String healthState;
     private String heartBeatQueue;
+    private JobExecutorType jobExecutorType;
 
-    public WorkerStateRabbitMQResponse() {
+    public WorkerStateRabbitMQResponse(WorkerStateRabbitMQResponseBuilder builder) {
+        this.jobExecutorName = builder.jobExecutorName;
+        this.jobExecutorStatus = builder.jobExecutorStatus;
+        this.healthState = builder.healthState;
+        this.heartBeatQueue = builder.heartBeatQueue;
+        this.jobExecutorType = builder.jobExecutorType;
     }
 
-    public WorkerStateRabbitMQResponse(String jobExecutorName, Integer jobExecutorStatus) {
-        this.jobExecutorName = jobExecutorName;
-        this.jobExecutorStatus = jobExecutorStatus;
+    public static class WorkerStateRabbitMQResponseBuilder {
+        private String jobExecutorName;
+        private Integer jobExecutorStatus;
+        private String healthState;
+        private String heartBeatQueue;
+        private JobExecutorType jobExecutorType;
+
+        public WorkerStateRabbitMQResponseBuilder(String jobExecutorName, Integer jobExecutorStatus) {
+            this.jobExecutorName = jobExecutorName;
+            this.jobExecutorStatus = jobExecutorStatus;
+        }
+
+        public WorkerStateRabbitMQResponseBuilder setJobExecutorName(String jobExecutorName) {
+            this.jobExecutorName = jobExecutorName;
+            return this;
+        }
+
+        public WorkerStateRabbitMQResponseBuilder setJobExecutorStatus(Integer jobExecutorStatus) {
+            this.jobExecutorStatus = jobExecutorStatus;
+            return this;
+        }
+
+        public WorkerStateRabbitMQResponseBuilder setHealthState(String healthState) {
+            this.healthState = healthState;
+            return this;
+        }
+
+        public WorkerStateRabbitMQResponseBuilder setHeartBeatQueue(String heartBeatQueue) {
+            this.heartBeatQueue = heartBeatQueue;
+            return this;
+        }
+
+        public WorkerStateRabbitMQResponseBuilder setJobExecutorType(JobExecutorType jobExecutorType) {
+            this.jobExecutorType = jobExecutorType;
+            return this;
+        }
+
+        public WorkerStateRabbitMQResponse build() {
+            return new WorkerStateRabbitMQResponse(this);
+        }
     }
 
     public String getJobExecutorName() {
         return jobExecutorName;
     }
 
-    public WorkerStateRabbitMQResponse setJobExecutorName(String jobExecutorName) {
-        this.jobExecutorName = jobExecutorName;
-        return this;
-    }
-
     public Integer getJobExecutorStatus() {
         return jobExecutorStatus;
-    }
-
-    public WorkerStateRabbitMQResponse setJobExecutorStatus(Integer jobExecutorStatus) {
-        this.jobExecutorStatus = jobExecutorStatus;
-        return this;
     }
 
     public String getHealthState() {
         return healthState;
     }
 
-    public WorkerStateRabbitMQResponse setHealthState(String healthState) {
-        this.healthState = healthState;
-        return this;
-    }
-
     public String getHeartBeatQueue() {
         return heartBeatQueue;
     }
 
-    public WorkerStateRabbitMQResponse setHeartBeatQueue(String heartBeatQueue) {
-        this.heartBeatQueue = heartBeatQueue;
-        return this;
+    public JobExecutorType getJobExecutorType() {
+        return jobExecutorType;
     }
 }

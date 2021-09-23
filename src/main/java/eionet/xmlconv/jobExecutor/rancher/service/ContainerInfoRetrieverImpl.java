@@ -28,6 +28,7 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
 
     private static final String DEV_PROFILE = "dev";
     private static final String DEMO_CONTAINER_NAME = "demoJobExecutor";
+    private static final String DEMO_SERVICE_NAME = "demoService";
 
     @Autowired
     public ContainerInfoRetrieverImpl(RestTemplate restTemplate, Environment env) {
@@ -41,6 +42,19 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
         if (devProfile) {
             return DEMO_CONTAINER_NAME;
         }
+        ContainerInfo containerInfo = getContainerInfo();
+        return containerInfo.getName();
+    }
+
+    @Override
+    public ContainerInfo getContainerInfo() {
+        boolean devProfile = Arrays.asList(env.getActiveProfiles()).stream().allMatch(p -> p.equals(DEV_PROFILE));
+        if (devProfile) {
+            ContainerInfo devContainer = new ContainerInfo();
+            devContainer.setName(DEMO_CONTAINER_NAME);
+            devContainer.setService_name(DEMO_SERVICE_NAME);
+            return devContainer;
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -49,10 +63,9 @@ public class ContainerInfoRetrieverImpl implements ContainerInfoRetriever {
             result = restTemplate.exchange(rancherMetadataUrl, HttpMethod.GET, entity, ContainerInfo.class);
         } catch (Exception e) {
             LOGGER.info("Error retrieving rancher metadata: " + e.getMessage());
-            return "";
+            return new ContainerInfo();
         }
-        ContainerInfo containerInfo = result.getBody();
-        return containerInfo.getName();
+        return result.getBody();
     }
 }
 
