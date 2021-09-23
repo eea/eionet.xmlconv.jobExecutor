@@ -37,10 +37,9 @@ public class StatusInitializer {
     @EventListener(ApplicationReadyEvent.class)
     public void initializeWorkerStatusAfterStartup() {
         ContainerInfo containerInfo = containerInfoRetriever.getContainerInfo();
-        String containerServiceName = containerInfo.getService_name();
         LOGGER.info(String.format("Container name is %s", containerInfo.getName()));
         WorkerStateRabbitMQResponse response = new WorkerStateRabbitMQResponse.WorkerStateRabbitMQResponseBuilder(containerInfoRetriever.getContainerName(), Constants.WORKER_READY)
-                .setJobExecutorType(containerServiceName.equals(rancherHeavyServiceName) ? JobExecutorType.Heavy : JobExecutorType.Light).setHeartBeatQueue(RabbitMQConfig.queue).build();
+                .setJobExecutorType(containerInfo.getService_name().equals(rancherHeavyServiceName) ? JobExecutorType.Heavy : JobExecutorType.Light).setHeartBeatQueue(RabbitMQConfig.queue).build();
         rabbitMQSender.sendWorkerStatus(response);
         LOGGER.info("Message for initializing JobExecutor status sent on rabbitmq");
     }

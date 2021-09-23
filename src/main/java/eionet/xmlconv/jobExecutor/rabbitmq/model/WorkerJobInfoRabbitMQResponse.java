@@ -22,6 +22,8 @@ public class WorkerJobInfoRabbitMQResponse {
 
     private Integer jobExecutionRetries;
 
+    private JobExecutorType jobExecutorType;
+
 
     public Script getScript() {
         return script;
@@ -81,23 +83,35 @@ public class WorkerJobInfoRabbitMQResponse {
         return heartBeatQueue;
     }
 
-    public void setHeartBeatQueue(String heartBeatQueue) {
+    public WorkerJobInfoRabbitMQResponse setHeartBeatQueue(String heartBeatQueue) {
         this.heartBeatQueue = heartBeatQueue;
+        return this;
     }
 
     public Integer getErrorStatus() {
         return errorStatus;
     }
 
-    public void setErrorStatus(Integer errorStatus) {
+    public WorkerJobInfoRabbitMQResponse setErrorStatus(Integer errorStatus) {
         this.errorStatus = errorStatus;
+        return this;
     }
 
     public Integer getJobExecutionRetries() {
         return jobExecutionRetries;
     }
 
-    public void setJobExecutionRetries(Integer jobExecutionRetries) {
+    public WorkerJobInfoRabbitMQResponse setJobExecutionRetries(Integer jobExecutionRetries) {
         this.jobExecutionRetries = jobExecutionRetries;
+        return this;
+    }
+
+    public JobExecutorType getJobExecutorType() {
+        return jobExecutorType;
+    }
+
+    public WorkerJobInfoRabbitMQResponse setJobExecutorType(JobExecutorType jobExecutorType) {
+        this.jobExecutorType = jobExecutorType;
+        return this;
     }
 }
