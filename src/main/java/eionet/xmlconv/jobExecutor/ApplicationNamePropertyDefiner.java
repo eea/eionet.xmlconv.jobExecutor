@@ -19,10 +19,6 @@ public class ApplicationNamePropertyDefiner  extends PropertyDefinerBase {
     public static final String GENERIC_JOB_EXECUTOR_NAME="genericJobExecutor";
     public static final String RANCHER_METADATA_URL="http://rancher-metadata/2015-12-19/self/container";
 
-    private static final HttpClient httpClient = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_1_1)
-            .connectTimeout(Duration.ofSeconds(10))
-            .build();
 
     @Override
     public String getPropertyValue() {
