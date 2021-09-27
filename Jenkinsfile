@@ -25,7 +25,7 @@ pipeline {
   stages {
     stage('Project Build') {
       steps {
-          sh 'mvn -Ptest clean verify -Dmaven.test.skip=true'
+          sh 'mvn -Pprod clean verify -Dmaven.test.skip=true'
       }
       post {
           success {
