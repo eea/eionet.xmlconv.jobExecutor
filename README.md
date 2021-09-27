@@ -1,4 +1,4 @@
-## Installation Guide
+## Installation Guide 
 Create application-dev.properties file by copying the contents of application-prod.properties file. 
 
 ### Instructions to run application locally
