@@ -23,6 +23,17 @@ pipeline {
   }
 
   stages {
+    stage('Project Build') {
+        steps {
+             sh 'mvn -Pprod clean verify -Dmaven.test.skip=true'
+        }
+        post {
+             success {
+             archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                        }
+        }
+    }
+
     stage ('Unit Tests and Sonarqube') {
       when {
         not { buildingTag() }
@@ -53,17 +64,6 @@ pipeline {
         }
       }
     }
-
-        stage('Project Build') {
-          steps {
-              sh 'mvn -Pprod clean verify -Dmaven.test.skip=true'
-          }
-          post {
-              success {
-              archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-                        }
-          }
-        }
 
     stage ('Docker build and push') {
       when {
