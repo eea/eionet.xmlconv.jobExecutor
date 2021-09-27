@@ -25,12 +25,12 @@ pipeline {
   stages {
     stage('Project Build') {
         steps {
-             sh 'mvn -Pprod clean verify -Dmaven.test.skip=true'
+             sh 'mvn -Ptest clean verify -Dmaven.test.skip=true'
         }
         post {
              success {
-             archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-                        }
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+             }
         }
     }
 
