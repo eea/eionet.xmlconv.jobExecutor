@@ -49,11 +49,15 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private String synchronousToken = null;
 
+    private static final String FME_HOST_TEMPORARY_HARDCODED = "fme.discomap.eea.europa.eu";
+
+    private static final String FME_PORT_TEMPORARY_HARDCODED = "443";
+
 
     /* Variables for eionet.gdem.Properties*/
     private Integer fmeTimeoutProperty = Properties.fmeTimeout;
-    private String fmeHostProperty = Properties.fmeHost;
-    private String fmePortProperty = Properties.fmePort;
+    private String fmeHostProperty = FME_HOST_TEMPORARY_HARDCODED;
+    private String fmePortProperty = FME_PORT_TEMPORARY_HARDCODED;
     private String fmeTokenExpirationProperty = Properties.fmeTokenExpiration;
     private String fmeTokenTimeunitProperty = Properties.fmeTokenTimeunit;
     private String fmePollingUrlProperty = Properties.fmePollingUrl;
@@ -294,7 +298,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         try {
             // We must first generate a security token for authentication
             // purposes
-            fmeUrl = "https://" + Properties.fmeHost + ":" + Properties.fmePort
+            fmeUrl = "https://" + this.getFmeHostProperty()+ ":" + this.getFmePortProperty()
                     + "/fmetoken/generate";
 
             java.net.URI uri = new URIBuilder(fmeUrl)

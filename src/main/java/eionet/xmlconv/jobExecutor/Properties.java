@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import java.text.MessageFormat;
 
 @Configuration
-@AutoConfigureOrder(1)
 public class Properties {
     public static final Logger LOGGER = LoggerFactory.getLogger(Properties.class);
 
