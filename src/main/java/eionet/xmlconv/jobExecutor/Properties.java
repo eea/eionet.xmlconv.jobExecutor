@@ -3,11 +3,13 @@ package eionet.xmlconv.jobExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Configuration;
 
 import java.text.MessageFormat;
 
 @Configuration
+@AutoConfigureOrder(1)
 public class Properties {
     public static final Logger LOGGER = LoggerFactory.getLogger(Properties.class);
 
