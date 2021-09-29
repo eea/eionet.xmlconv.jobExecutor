@@ -26,6 +26,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import eionet.xmlconv.jobExecutor.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.apache.commons.io.IOUtils;
@@ -63,6 +64,14 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     private String fmePollingUrlProperty = Properties.fmePollingUrl;
     private Integer fmeRetryHoursProperty = Properties.fmeRetryHours;
     private String fmeTokenProperty = Properties.fmeToken;
+
+
+    @Value( "${fme_user}" )
+    private String fmeUser ;
+
+
+    @Value( "${fme_user_password}" )
+    private String fmePassword ;
 
     private static final String TEST_PROFILE = "test";
 
@@ -302,8 +311,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                     + "/fmetoken/generate";
 
             java.net.URI uri = new URIBuilder(fmeUrl)
-                    .addParameter("user", Properties.fmeUser)
-                    .addParameter("password", Properties.fmePassword)
+                    .addParameter("user", this.fmeUser)
+                    .addParameter("password", this.fmePassword)
                     .addParameter("expiration", this.getFmeTokenExpirationProperty())
                     .addParameter("timeunit", this.getFmeTokenTimeunitProperty()).build();
             method = new HttpPost(uri);
