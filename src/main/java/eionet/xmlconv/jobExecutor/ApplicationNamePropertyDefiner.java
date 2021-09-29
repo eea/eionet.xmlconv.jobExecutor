@@ -14,11 +14,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class ApplicationNamePropertyDefiner  extends PropertyDefinerBase {
-
-
+    //TODO externalize variables
     public static final String GENERIC_JOB_EXECUTOR_NAME="genericJobExecutor";
     public static final String RANCHER_METADATA_URL="http://rancher-metadata/2015-12-19/self/container";
-
 
     @Override
     public String getPropertyValue() {
