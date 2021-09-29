@@ -66,11 +66,11 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     private String fmeTokenProperty = Properties.fmeToken;
 
 
-    @Value( "${fme_user}" )
+   // @Value( "${fme_user}" )
     private String fmeUser ;
 
 
-    @Value( "${fme_user_password}" )
+   // @Value( "${fme_user_password}" )
     private String fmePassword ;
 
     private static final String TEST_PROFILE = "test";
@@ -82,6 +82,11 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     @Autowired
     public FMEQueryEngineServiceImpl(Environment env) throws Exception {
         this.env = env;
+        LOGGER.info("FME USERNAME from Properties:"+this.env.getProperty("fme_user"));
+        LOGGER.info("FME PASSWORD from Properties:"+this.env.getProperty("fme_user_password"));
+
+        this.fmeUser = this.env.getProperty("fme_user");
+        this.fmePassword = this.env.getProperty("fme_user_password");
         boolean skipFMEConnectionInfoCheck = false;
         boolean testProfile = Arrays.asList(env.getActiveProfiles()).stream().allMatch(p -> p.equals(TEST_PROFILE));
         if (testProfile) {
