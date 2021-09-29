@@ -305,6 +305,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             method = new HttpPost(uri);
             response = client_.execute(method);
             if (response.getStatusLine().getStatusCode() == 200) {
+                LOGGER.info("FME authentication SUCCESS");
+
                 HttpEntity entity = response.getEntity();
                 InputStream stream = entity.getContent();
                 synchronousToken = new String(IOUtils.toByteArray(stream), StandardCharsets.UTF_8);
