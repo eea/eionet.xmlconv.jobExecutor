@@ -9,6 +9,7 @@ import org.apache.http.impl.client.cache.CacheConfig;
 import org.apache.http.impl.client.cache.CachingHttpClients;
 import org.apache.http.impl.client.cache.ehcache.EhcacheHttpCacheStorage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class HttpCacheClientFactory {
     private HttpCacheClientFactory() {
@@ -20,17 +21,17 @@ public class HttpCacheClientFactory {
 
     private static CloseableHttpClient client;
 
-    public static CloseableHttpClient getInstance(String cacheTempDir) {
+    public static CloseableHttpClient getInstance(Environment environment) {
         if (client == null) {
-            EhcacheHttpCacheStorage ehcacheHttpCacheStorage = new EhcacheHttpCacheStorage(cacheManagerUtils.getHttpCache(cacheTempDir));
+            EhcacheHttpCacheStorage ehcacheHttpCacheStorage = new EhcacheHttpCacheStorage(cacheManagerUtils.getHttpCache(environment));
             CacheConfig cacheConfig = CacheConfig.custom()
                     .setSharedCache(false)
-                    .setMaxCacheEntries(Properties.HTTP_CACHE_ENTRIES)
-                    .setMaxObjectSize(Properties.HTTP_CACHE_OBJECTSIZE)
+                    .setMaxCacheEntries(Integer.parseInt(environment.getProperty("http.cache.entries")))
+                    .setMaxObjectSize(Long.parseLong(environment.getProperty("http.cache.objectsize")))
                     .build();
             RequestConfig requestConfig = RequestConfig.custom()
-                    .setSocketTimeout(Properties.HTTP_SOCKET_TIMEOUT)
-                    .setConnectTimeout(Properties.HTTP_CONNECT_TIMEOUT)
+                    .setSocketTimeout(Integer.parseInt(environment.getProperty("http.socket.timeout")))
+                    .setConnectTimeout(Integer.parseInt(environment.getProperty("http.connect.timeout")))
                     .build();
             client = CachingHttpClients.custom()
                     .setCacheConfig(cacheConfig)

@@ -1,6 +1,7 @@
 package eionet.xmlconv.jobExecutor.utils;
 
 import eionet.xmlconv.jobExecutor.Properties;
+import eionet.xmlconv.jobExecutor.SpringApplicationContext;
 import eionet.xmlconv.jobExecutor.datadict.DDDatasetTable;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -8,6 +9,7 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.config.*;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -40,7 +42,9 @@ public class CacheManagerUtils {
      * @param ddTables data dictionary tables
      */
     public static void updateDDTablesCache(final List<DDDatasetTable> ddTables) {
-        getCacheManager(Properties.CACHE_TEMP_DIR).getCache(APPLICATION_CACHE).put(new Element(DD_TABLES_CACHE, ddTables));
+
+
+        getCacheManager((Environment)  SpringApplicationContext.getBean("environment")).getCache(APPLICATION_CACHE).put(new Element(DD_TABLES_CACHE, ddTables));
     }
 
     /**
@@ -48,24 +52,24 @@ public class CacheManagerUtils {
      * @return last data dictionary tables entry.
      */
     public static List<DDDatasetTable> getDDTables() {
-        Element element = getCacheManager(Properties.CACHE_TEMP_DIR).getCache(APPLICATION_CACHE) != null ? cacheManager.getCache(APPLICATION_CACHE).get(DD_TABLES_CACHE) : null;
+        Element element = getCacheManager((Environment)  SpringApplicationContext.getBean("environment")).getCache(APPLICATION_CACHE) != null ? cacheManager.getCache(APPLICATION_CACHE).get(DD_TABLES_CACHE) : null;
         return element == null || element.getValue() == null ? Collections.EMPTY_LIST : (List<DDDatasetTable>) element.getValue();
     }
 
-    public static Cache getHttpCache(String cacheTempDir) {
-        return getCacheManager(cacheTempDir).getCache(HTTP_CACHE);
+    public static Cache getHttpCache(Environment environment) {
+        return getCacheManager(environment).getCache(HTTP_CACHE);
     }
 
     /**
      * Cache manager initializer. Used by Spring DI.
      */
-    public static void initializeCacheManager(String cacheTempDir) {
+    public static void initializeCacheManager(Environment environment) {
         if (cacheManager == null) {
             synchronized (CacheManager.class) {
                 if (cacheManager == null) {
                     Configuration cacheManagerConfig = new Configuration()
                             .diskStore(new DiskStoreConfiguration()
-                                    .path(cacheTempDir));
+                                    .path(environment.getProperty("cache.temp.dir")));
                     cacheManager = new CacheManager(cacheManagerConfig);
                     Cache appCache = new Cache(new CacheConfiguration(APPLICATION_CACHE, 2)
                             .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LRU)
@@ -74,9 +78,9 @@ public class CacheManagerUtils {
                     Cache httpCache = new Cache(new CacheConfiguration()
                             .name(HTTP_CACHE)
                             .maxEntriesLocalHeap(1)
-                            .maxBytesLocalDisk(Properties.CACHE_HTTP_SIZE, MemoryUnit.MEGABYTES)
+                            .maxBytesLocalDisk(Long.parseLong(environment.getProperty("cache.http.size")), MemoryUnit.MEGABYTES)
                             .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LRU)
-                            .diskExpiryThreadIntervalSeconds(Properties.CACHE_HTTP_EXPIRY)
+                            .diskExpiryThreadIntervalSeconds(Long.parseLong(environment.getProperty("cache.http.expiryinterval")))
                             .persistence(new PersistenceConfiguration().strategy(PersistenceConfiguration.Strategy.LOCALTEMPSWAP)));
                     cacheManager.addCache(httpCache);
                 }
@@ -88,13 +92,13 @@ public class CacheManagerUtils {
      * Used to destroy the cache manager. Used by Spring DI.
      */
     public void destroyCacheManager() {
-        getCacheManager(Properties.CACHE_TEMP_DIR).shutdown();
+        getCacheManager((Environment)  SpringApplicationContext.getBean("environment")).shutdown();
     }
 
-    public static CacheManager getCacheManager(String cacheTempDir){
+    public static CacheManager getCacheManager(Environment environment){
         if (cacheManager == null)
         {
-            initializeCacheManager(cacheTempDir);
+            initializeCacheManager(environment);
         }
         return cacheManager;
     }
