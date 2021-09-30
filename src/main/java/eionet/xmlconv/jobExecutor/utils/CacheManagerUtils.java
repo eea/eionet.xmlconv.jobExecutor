@@ -44,7 +44,7 @@ public class CacheManagerUtils {
     public static void updateDDTablesCache(final List<DDDatasetTable> ddTables) {
 
 
-        getCacheManager((Environment)  SpringApplicationContext.getBean("environment")).getCache(APPLICATION_CACHE).put(new Element(DD_TABLES_CACHE, ddTables));
+        getCacheManager((Environment)  SpringApplicationContext.getBean(Environment.class)).getCache(APPLICATION_CACHE).put(new Element(DD_TABLES_CACHE, ddTables));
     }
 
     /**
@@ -52,7 +52,7 @@ public class CacheManagerUtils {
      * @return last data dictionary tables entry.
      */
     public static List<DDDatasetTable> getDDTables() {
-        Element element = getCacheManager((Environment)  SpringApplicationContext.getBean("environment")).getCache(APPLICATION_CACHE) != null ? cacheManager.getCache(APPLICATION_CACHE).get(DD_TABLES_CACHE) : null;
+        Element element = getCacheManager((Environment)  SpringApplicationContext.getBean(Environment.class)).getCache(APPLICATION_CACHE) != null ? cacheManager.getCache(APPLICATION_CACHE).get(DD_TABLES_CACHE) : null;
         return element == null || element.getValue() == null ? Collections.EMPTY_LIST : (List<DDDatasetTable>) element.getValue();
     }
 
@@ -92,7 +92,7 @@ public class CacheManagerUtils {
      * Used to destroy the cache manager. Used by Spring DI.
      */
     public void destroyCacheManager() {
-        getCacheManager((Environment)  SpringApplicationContext.getBean("environment")).shutdown();
+        getCacheManager((Environment)  SpringApplicationContext.getBean(Environment.class)).shutdown();
     }
 
     public static CacheManager getCacheManager(Environment environment){

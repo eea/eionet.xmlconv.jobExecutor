@@ -57,20 +57,16 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     /* Variables for eionet.gdem.Properties*/
     private Integer fmeTimeoutProperty = Properties.fmeTimeout;
-    private String fmeHostProperty = FME_HOST_TEMPORARY_HARDCODED;
-    private String fmePortProperty = FME_PORT_TEMPORARY_HARDCODED;
-    private String fmeTokenExpirationProperty = Properties.fmeTokenExpiration;
-    private String fmeTokenTimeunitProperty = Properties.fmeTokenTimeunit;
+    private String fmeHostProperty = Properties.fmeHost;
+    private String fmePortProperty = Properties.fmePort;
+    private String fmeTokenExpirationProperty ;
+    private String fmeTokenTimeunitProperty;
     private String fmePollingUrlProperty = Properties.fmePollingUrl;
     private Integer fmeRetryHoursProperty = Properties.fmeRetryHours;
     private String fmeTokenProperty = Properties.fmeToken;
 
 
-   // @Value( "${fme_user}" )
     private String fmeUser ;
-
-
-   // @Value( "${fme_user_password}" )
     private String fmePassword ;
 
     private static final String TEST_PROFILE = "test";
@@ -82,11 +78,11 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     @Autowired
     public FMEQueryEngineServiceImpl(Environment env) throws Exception {
         this.env = env;
-        LOGGER.info("FME USERNAME from Properties:"+this.env.getProperty("fme_user"));
-        LOGGER.info("FME PASSWORD from Properties:"+this.env.getProperty("fme_user_password"));
 
         this.fmeUser = this.env.getProperty("fme_user");
         this.fmePassword = this.env.getProperty("fme_user_password");
+        this.fmeTokenExpirationProperty = this.env.getProperty("fme_token_expiration");
+        this.fmeTokenTimeunitProperty = this.env.getProperty("fme_token_timeunit");
         boolean skipFMEConnectionInfoCheck = false;
         boolean testProfile = Arrays.asList(env.getActiveProfiles()).stream().allMatch(p -> p.equals(TEST_PROFILE));
         if (testProfile) {

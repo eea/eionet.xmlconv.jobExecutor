@@ -53,7 +53,7 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
 
     @Autowired
     public HttpFileManagerServiceImpl() {
-      this.environment=(Environment)  SpringApplicationContext.getBean("environment");
+      this.environment=(Environment)  SpringApplicationContext.getBean(Environment.class);
         LOGGER.info("Cache Temp Dir:"+  this.environment.getProperty("cache.temp.dir"));
         this.client = HttpCacheClientFactory.getInstance(this.environment);
     }
