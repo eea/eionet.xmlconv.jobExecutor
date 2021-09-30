@@ -2,6 +2,7 @@ package eionet.xmlconv.jobExecutor.factories;
 
 import eionet.xmlconv.jobExecutor.Properties;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.springframework.core.env.Environment;
 
 public class HttpConnectionManagerFactory {
     private HttpConnectionManagerFactory() {
@@ -10,11 +11,11 @@ public class HttpConnectionManagerFactory {
 
     private static PoolingHttpClientConnectionManager manager;
 
-    public static PoolingHttpClientConnectionManager getInstance() {
+    public static PoolingHttpClientConnectionManager getInstance(Environment environment) {
         if (manager == null) {
             PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-            cm.setMaxTotal(Properties.HTTP_MANAGER_TOTAL);
-            cm.setDefaultMaxPerRoute(Properties.HTTP_MANAGER_ROUTE);
+            cm.setMaxTotal(Integer.parseInt(environment.getProperty("http.manager.total")));
+            cm.setDefaultMaxPerRoute(Integer.parseInt(environment.getProperty("http.manager.route")));
             manager = cm;
         }
         return manager;
