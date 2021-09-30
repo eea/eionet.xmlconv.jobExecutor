@@ -2,6 +2,7 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.impl;
 
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
+import eionet.xmlconv.jobExecutor.SpringApplicationContext;
 import eionet.xmlconv.jobExecutor.exceptions.FollowRedirectException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.factories.HttpCacheClientFactory;
@@ -24,7 +25,9 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
@@ -46,9 +49,13 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
     @Autowired
     private DataRetrieverService dataRetrieverService;
 
+    Environment environment;
+
     @Autowired
     public HttpFileManagerServiceImpl() {
-        this.client = HttpCacheClientFactory.getInstance();
+      this.environment=(Environment)  SpringApplicationContext.getBean("environment");
+        LOGGER.info("Cache Temp Dir:"+  this.environment.getProperty("cache.temp.dir"));
+        this.client = HttpCacheClientFactory.getInstance(this.environment.getProperty("cache.temp.dir"));
     }
 
     public HttpFileManagerServiceImpl(CloseableHttpClient client){

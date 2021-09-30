@@ -40,7 +40,7 @@ public class CacheManagerUtils {
      * @param ddTables data dictionary tables
      */
     public static void updateDDTablesCache(final List<DDDatasetTable> ddTables) {
-        getCacheManager().getCache(APPLICATION_CACHE).put(new Element(DD_TABLES_CACHE, ddTables));
+        getCacheManager(Properties.CACHE_TEMP_DIR).getCache(APPLICATION_CACHE).put(new Element(DD_TABLES_CACHE, ddTables));
     }
 
     /**
@@ -48,24 +48,24 @@ public class CacheManagerUtils {
      * @return last data dictionary tables entry.
      */
     public static List<DDDatasetTable> getDDTables() {
-        Element element = getCacheManager().getCache(APPLICATION_CACHE) != null ? cacheManager.getCache(APPLICATION_CACHE).get(DD_TABLES_CACHE) : null;
+        Element element = getCacheManager(Properties.CACHE_TEMP_DIR).getCache(APPLICATION_CACHE) != null ? cacheManager.getCache(APPLICATION_CACHE).get(DD_TABLES_CACHE) : null;
         return element == null || element.getValue() == null ? Collections.EMPTY_LIST : (List<DDDatasetTable>) element.getValue();
     }
 
-    public static Cache getHttpCache() {
-        return getCacheManager().getCache(HTTP_CACHE);
+    public static Cache getHttpCache(String cacheTempDir) {
+        return getCacheManager(cacheTempDir).getCache(HTTP_CACHE);
     }
 
     /**
      * Cache manager initializer. Used by Spring DI.
      */
-    public static void initializeCacheManager() {
+    public static void initializeCacheManager(String cacheTempDir) {
         if (cacheManager == null) {
             synchronized (CacheManager.class) {
                 if (cacheManager == null) {
                     Configuration cacheManagerConfig = new Configuration()
                             .diskStore(new DiskStoreConfiguration()
-                                    .path(Properties.CACHE_TEMP_DIR));
+                                    .path(cacheTempDir));
                     cacheManager = new CacheManager(cacheManagerConfig);
                     Cache appCache = new Cache(new CacheConfiguration(APPLICATION_CACHE, 2)
                             .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LRU)
@@ -88,13 +88,13 @@ public class CacheManagerUtils {
      * Used to destroy the cache manager. Used by Spring DI.
      */
     public void destroyCacheManager() {
-        getCacheManager().shutdown();
+        getCacheManager(Properties.CACHE_TEMP_DIR).shutdown();
     }
 
-    public static CacheManager getCacheManager(){
+    public static CacheManager getCacheManager(String cacheTempDir){
         if (cacheManager == null)
         {
-            initializeCacheManager();
+            initializeCacheManager(cacheTempDir);
         }
         return cacheManager;
     }

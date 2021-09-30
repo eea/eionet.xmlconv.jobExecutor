@@ -20,9 +20,9 @@ public class HttpCacheClientFactory {
 
     private static CloseableHttpClient client;
 
-    public static CloseableHttpClient getInstance() {
+    public static CloseableHttpClient getInstance(String cacheTempDir) {
         if (client == null) {
-            EhcacheHttpCacheStorage ehcacheHttpCacheStorage = new EhcacheHttpCacheStorage(cacheManagerUtils.getHttpCache());
+            EhcacheHttpCacheStorage ehcacheHttpCacheStorage = new EhcacheHttpCacheStorage(cacheManagerUtils.getHttpCache(cacheTempDir));
             CacheConfig cacheConfig = CacheConfig.custom()
                     .setSharedCache(false)
                     .setMaxCacheEntries(Properties.HTTP_CACHE_ENTRIES)

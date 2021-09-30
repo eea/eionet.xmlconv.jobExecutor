@@ -22,7 +22,7 @@ public class HttpCacheClientFactoryTest {
 
     @Test
     public void test() {
-        CloseableHttpClient client = HttpCacheClientFactory.getInstance();
+        CloseableHttpClient client = HttpCacheClientFactory.getInstance("/opt/cache");
         assertNotNull("Error while requesting client", client);
     }
 }
