@@ -57,8 +57,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     /* Variables for eionet.gdem.Properties*/
     private Integer fmeTimeoutProperty = Properties.fmeTimeout;
-    private String fmeHostProperty = Properties.fmeHost;
-    private String fmePortProperty = Properties.fmePort;
+    private String fmeHostProperty ;
+    private String fmePortProperty ;
     private String fmeTokenExpirationProperty ;
     private String fmeTokenTimeunitProperty;
     private String fmePollingUrlProperty = Properties.fmePollingUrl;
@@ -80,6 +80,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         this.env = env;
 
         this.fmeUser = this.env.getProperty("fme_user");
+        this.fmeHostProperty = this.env.getProperty("fme.host");
+        this.fmePortProperty = this.env.getProperty("fme.port");
         this.fmePassword = this.env.getProperty("fme_user_password");
         this.fmeTokenExpirationProperty = this.env.getProperty("fme_token_expiration");
         this.fmeTokenTimeunitProperty = this.env.getProperty("fme_token_timeunit");
