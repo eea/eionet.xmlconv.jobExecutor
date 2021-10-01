@@ -88,6 +88,21 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
                     createHeader(HttpHeaders.ACCEPT, MEDIA_TYPE_JSON).createHeader(HttpHeaders.AUTHORIZATION, FME_TOKEN_HEADER + fmeTokenProperty).build().getHeaders();
             postMethod.setHeaders(headers);
 
+            if(fmeTokenProperty == null){
+                LOGGER.info("Null FME Token");
+            }
+            else{
+                if(fmeTokenProperty.length() == 0){
+                    LOGGER.info("Empty FME Token");
+                }
+                else {
+                    char first = fmeTokenProperty.charAt(0);
+                    char last = fmeTokenProperty.charAt(fmeTokenProperty.length() - 1);
+                    LOGGER.info("FME token size " + fmeTokenProperty.length() + " first and last letters: " + first + " " + last + ".");
+                }
+            }
+
+
             StringEntity params6 = new StringEntity(submitJobRequest.buildBody());
             postMethod.setEntity(params6);
 
