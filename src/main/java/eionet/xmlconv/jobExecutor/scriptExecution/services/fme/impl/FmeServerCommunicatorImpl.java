@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -39,13 +40,15 @@ import java.util.List;
 @Service
 public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
 
+    private Environment env;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeServerCommunicatorImpl.class);
-    private String fmeTokenProperty = Properties.fmeToken;
-    private String fmePollingUrl = Properties.fmePollingUrl;
-    private String fmeResultFolderUrlProperty = Properties.fmeResultFolderUrl;
-    private String fmeResultFolderProperty = Properties.fmeResultFolder;
-    private String tmpFolderProperty = Properties.getTmpFolder() + File.separatorChar;
-    private String fmeDeleteFolderUrlProperty = Properties.fmeDeleteFolderUrl;
+    private String fmeTokenProperty;
+    private String fmePollingUrl;
+    private String fmeResultFolderUrlProperty;
+    private String fmeResultFolderProperty;
+    private String tmpFolderProperty;
+    private String fmeDeleteFolderUrlProperty;
 
     private ApacheHttpClientWrapper clientWrapper;
     private static final String JSON_STATUS_PARAM="status";
@@ -56,8 +59,17 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
     private static final String CONTENT_TYPE_FORM_URLENCODED="application/x-www-form-urlencoded";
 
     @Autowired
-    public FmeServerCommunicatorImpl(@Qualifier("fmeApacheHttpClient") ApacheHttpClientWrapper clientWrapper) {
+    public FmeServerCommunicatorImpl(@Qualifier("fmeApacheHttpClient") ApacheHttpClientWrapper clientWrapper, Environment env) {
         this.clientWrapper = clientWrapper;
+
+        this.env = env;
+
+        this.fmeTokenProperty = this.env.getProperty("fme_token");
+        this.fmePollingUrl = this.env.getProperty("fme_polling_url");
+        this.fmeResultFolderUrlProperty = this.env.getProperty("fme_result_folder_url");
+        this.fmeResultFolderProperty = this.env.getProperty("fme_result_folder");
+        this.tmpFolderProperty = this.env.getProperty("tmp.folder") + File.separatorChar;
+        this.fmeDeleteFolderUrlProperty = this.env.getProperty("fme_delete_folder_url");
     }
 
     @Override

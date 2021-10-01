@@ -56,14 +56,14 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
 
     /* Variables for eionet.gdem.Properties*/
-    private Integer fmeTimeoutProperty = Properties.fmeTimeout;
+    private Integer fmeTimeoutProperty;
     private String fmeHostProperty ;
     private String fmePortProperty ;
     private String fmeTokenExpirationProperty ;
     private String fmeTokenTimeunitProperty;
-    private String fmePollingUrlProperty = Properties.fmePollingUrl;
-    private Integer fmeRetryHoursProperty = Properties.fmeRetryHours;
-    private String fmeTokenProperty = Properties.fmeToken;
+    private String fmePollingUrlProperty;
+    private Integer fmeRetryHoursProperty;
+    private String fmeTokenProperty;
 
 
     private String fmeUser ;
@@ -86,6 +86,9 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         this.fmeTokenExpirationProperty = this.env.getProperty("fme_token_expiration");
         this.fmeTokenTimeunitProperty = this.env.getProperty("fme_token_timeunit");
         this.fmeTokenProperty = this.env.getProperty("fme_token");
+        this.fmeTimeoutProperty = Integer.valueOf(this.env.getProperty("fme_timeout"));
+        this.fmePollingUrlProperty = this.env.getProperty("fme_polling_url");
+        this.fmeRetryHoursProperty = Integer.valueOf(this.env.getProperty("fme_retry_hours"));
         boolean skipFMEConnectionInfoCheck = false;
         boolean testProfile = Arrays.asList(env.getActiveProfiles()).stream().allMatch(p -> p.equals(TEST_PROFILE));
         if (testProfile) {
@@ -207,20 +210,6 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         try {
 
             FmeServerCommunicator fmeServerCommunicator = this.getFmeServerCommunicator();
-            LOGGER.info("Before job submission token check");
-            if(fmeTokenProperty == null){
-                LOGGER.info("Null FME Token");
-            }
-            else{
-                if(fmeTokenProperty.length() == 0){
-                    LOGGER.info("Empty FME Token");
-                }
-                else {
-                    char first = fmeTokenProperty.charAt(0);
-                    char last = fmeTokenProperty.charAt(fmeTokenProperty.length() - 1);
-                    LOGGER.info("FME token size " + fmeTokenProperty.length() + " first and last letters: " + first + " " + last + ".");
-                }
-            }
             jobId = fmeServerCommunicator.submitJob(script,new SynchronousSubmitJobRequest(script.getOrigFileUrl(),folderName));
 
 
