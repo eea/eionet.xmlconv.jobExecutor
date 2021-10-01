@@ -85,6 +85,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         this.fmePassword = this.env.getProperty("fme_user_password");
         this.fmeTokenExpirationProperty = this.env.getProperty("fme_token_expiration");
         this.fmeTokenTimeunitProperty = this.env.getProperty("fme_token_timeunit");
+        this.fmeTokenProperty = this.env.getProperty("fme_token");
         boolean skipFMEConnectionInfoCheck = false;
         boolean testProfile = Arrays.asList(env.getActiveProfiles()).stream().allMatch(p -> p.equals(TEST_PROFILE));
         if (testProfile) {
@@ -206,6 +207,20 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         try {
 
             FmeServerCommunicator fmeServerCommunicator = this.getFmeServerCommunicator();
+            LOGGER.info("Before job submission token check");
+            if(fmeTokenProperty == null){
+                LOGGER.info("Null FME Token");
+            }
+            else{
+                if(fmeTokenProperty.length() == 0){
+                    LOGGER.info("Empty FME Token");
+                }
+                else {
+                    char first = fmeTokenProperty.charAt(0);
+                    char last = fmeTokenProperty.charAt(fmeTokenProperty.length() - 1);
+                    LOGGER.info("FME token size " + fmeTokenProperty.length() + " first and last letters: " + first + " " + last + ".");
+                }
+            }
             jobId = fmeServerCommunicator.submitJob(script,new SynchronousSubmitJobRequest(script.getOrigFileUrl(),folderName));
 
 
