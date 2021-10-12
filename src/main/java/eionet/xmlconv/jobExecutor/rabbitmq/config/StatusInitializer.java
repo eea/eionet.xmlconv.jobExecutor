@@ -2,7 +2,7 @@ package eionet.xmlconv.jobExecutor.rabbitmq.config;
 
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.JobExecutorType;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponse;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.entity.ContainerInfo;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
@@ -38,7 +38,7 @@ public class StatusInitializer {
     public void initializeWorkerStatusAfterStartup() {
         ContainerInfo containerInfo = containerInfoRetriever.getContainerInfo();
         LOGGER.info(String.format("Container name is %s", containerInfo.getName()));
-        WorkerStateRabbitMQResponse response = new WorkerStateRabbitMQResponse.WorkerStateRabbitMQResponseBuilder(containerInfoRetriever.getContainerName(), Constants.WORKER_READY)
+        WorkerStateRabbitMQResponseMessage response = new WorkerStateRabbitMQResponseMessage.WorkerStateRabbitMQResponseBuilder(containerInfoRetriever.getContainerName(), Constants.WORKER_READY)
                 .setJobExecutorType(containerInfo.getService_name().equals(rancherHeavyServiceName) ? JobExecutorType.Heavy : JobExecutorType.Light).setHeartBeatQueue(RabbitMQConfig.queue).build();
         rabbitMQSender.sendWorkerStatus(response);
         LOGGER.info("Message for initializing JobExecutor status sent on rabbitmq");

@@ -8,8 +8,8 @@ import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.RabbitMQConfig;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.JobExecutorType;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponse;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequest;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequestMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.entity.ContainerInfo;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
@@ -55,14 +55,14 @@ public class ScriptMessageListener {
     }
 
     @RabbitListener(queues = "${job.rabbitmq.listeningQueue}")
-    public void consumeMessage(WorkerJobRabbitMQRequest rabbitMQRequest) throws IOException {
+    public void consumeMessage(WorkerJobRabbitMQRequestMessage rabbitMQRequest) throws IOException {
         Script script = rabbitMQRequest.getScript();
         LOGGER.info("Received script with id " + script.getJobId());
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String scriptStr = ow.writeValueAsString(script);
 
-        WorkerJobInfoRabbitMQResponse response = new WorkerJobInfoRabbitMQResponse();
+        WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
         StopWatch timer = new StopWatch();
         String containerName = "";
         ContainerInfo containerInfo = null;
@@ -94,7 +94,8 @@ public class ScriptMessageListener {
             } else {
                 clearWorkerJobStatus();
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
-                response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_RECEIVED).setJobExecutorName(containerName).setHeartBeatQueue(RabbitMQConfig.queue)
+                response.setJobExecutorName(containerName);
+                response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_RECEIVED).setHeartBeatQueue(RabbitMQConfig.queue)
                     .setJobExecutorType(containerInfo.getService_name().equals(rancherHeavyServiceName) ? JobExecutorType.Heavy : JobExecutorType.Light);
                 rabbitMQSender.sendMessage(response);
 
@@ -129,8 +130,8 @@ public class ScriptMessageListener {
         }
     }
 
-    private WorkerJobRabbitMQRequest createMessageForDeadLetterQueue(WorkerJobRabbitMQRequest request,
-                                                 String errorMessage, Integer errorStatus, String containerName){
+    private WorkerJobRabbitMQRequestMessage createMessageForDeadLetterQueue(WorkerJobRabbitMQRequestMessage request,
+                                                                            String errorMessage, Integer errorStatus, String containerName){
         request.setScript(request.getScript());
         request.setErrorMessage(errorMessage);
         request.setErrorStatus(errorStatus);
@@ -141,7 +142,7 @@ public class ScriptMessageListener {
         return request;
     }
 
-    protected void sendResponseToConverters(String jobId, WorkerJobInfoRabbitMQResponse response, StopWatch timer) {
+    protected void sendResponseToConverters(String jobId, WorkerJobInfoRabbitMQResponseMessage response, StopWatch timer) {
         LOGGER.info(String.format("Execution of job %s was completed, total time of execution: %s", jobId, timer.toString()));
         rabbitMQSender.sendMessage(response);
     }
@@ -158,7 +159,7 @@ public class ScriptMessageListener {
         workerJobStatus.clear();
     }
 
-    protected void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequest message) {
+    protected void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequestMessage message) {
         rabbitMQSender.sendMessageToDeadLetterQueue(message);
     }
 }

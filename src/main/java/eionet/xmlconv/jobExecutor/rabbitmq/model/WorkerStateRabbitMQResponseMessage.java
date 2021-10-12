@@ -1,15 +1,14 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.model;
 
-public class WorkerStateRabbitMQResponse {
+public class WorkerStateRabbitMQResponseMessage extends WorkerMessage {
 
-    private String jobExecutorName;
     private Integer jobExecutorStatus;
     private String healthState;
     private String heartBeatQueue;
     private JobExecutorType jobExecutorType;
 
-    public WorkerStateRabbitMQResponse(WorkerStateRabbitMQResponseBuilder builder) {
-        this.jobExecutorName = builder.jobExecutorName;
+    public WorkerStateRabbitMQResponseMessage(WorkerStateRabbitMQResponseBuilder builder) {
+        super(builder.jobExecutorName);
         this.jobExecutorStatus = builder.jobExecutorStatus;
         this.healthState = builder.healthState;
         this.heartBeatQueue = builder.heartBeatQueue;
@@ -53,13 +52,9 @@ public class WorkerStateRabbitMQResponse {
             return this;
         }
 
-        public WorkerStateRabbitMQResponse build() {
-            return new WorkerStateRabbitMQResponse(this);
+        public WorkerStateRabbitMQResponseMessage build() {
+            return new WorkerStateRabbitMQResponseMessage(this);
         }
-    }
-
-    public String getJobExecutorName() {
-        return jobExecutorName;
     }
 
     public Integer getJobExecutorStatus() {

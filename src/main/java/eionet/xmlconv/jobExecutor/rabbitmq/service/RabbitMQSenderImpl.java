@@ -1,9 +1,9 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.service;
 
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessageInfo;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponse;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequest;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponse;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessage;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequestMessage;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponseMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,22 +34,22 @@ public class RabbitMQSenderImpl implements RabbitMQSender {
     }
 
     @Override
-    public void sendMessage(WorkerJobInfoRabbitMQResponse response) {
+    public void sendMessage(WorkerJobInfoRabbitMQResponseMessage response) {
         rabbitTemplate.convertAndSend(exchange, jobResultsRoutingKey, response);
     }
 
     @Override
-    public void sendWorkerStatus(WorkerStateRabbitMQResponse response) {
+    public void sendWorkerStatus(WorkerStateRabbitMQResponseMessage response) {
         rabbitTemplate.convertAndSend(exchange, workerStatusRoutingKey, response);
     }
 
     @Override
-    public void sendHeartBeatMessageResponse(WorkerHeartBeatMessageInfo response) {
+    public void sendHeartBeatMessageResponse(WorkerHeartBeatMessage response) {
         rabbitTemplate.convertAndSend(exchange, heartBeatResponseRoutingKey, response);
     }
 
     @Override
-    public void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequest message) {
+    public void sendMessageToDeadLetterQueue(WorkerJobRabbitMQRequestMessage message) {
         rabbitTemplate.convertAndSend(deadLetterExchange, deadLetterRoutingKey, message);
     }
 }

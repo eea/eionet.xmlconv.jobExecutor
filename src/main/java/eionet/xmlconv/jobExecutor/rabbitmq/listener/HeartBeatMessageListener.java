@@ -3,7 +3,7 @@ package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.xmlconv.jobExecutor.Constants;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessageInfo;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import org.slf4j.Logger;
@@ -34,9 +34,9 @@ public class HeartBeatMessageListener implements MessageListener {
     @Override
     public void onMessage(Message message) {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        WorkerHeartBeatMessageInfo response = null;
+        WorkerHeartBeatMessage response = null;
         try {
-            response = mapper.readValue(message.getBody(), WorkerHeartBeatMessageInfo.class);
+            response = mapper.readValue(message.getBody(), WorkerHeartBeatMessage.class);
             LOGGER.info("Received heart beat message for job " + response.getJobId());
         } catch (IOException e) {
             LOGGER.error("Error during processing of heart beat message, " + e.getMessage());
@@ -55,7 +55,7 @@ public class HeartBeatMessageListener implements MessageListener {
         }
     }
 
-    protected void sendHeartBeatResponse(WorkerHeartBeatMessageInfo jobExecInfo) {
+    protected void sendHeartBeatResponse(WorkerHeartBeatMessage jobExecInfo) {
         rabbitMQSender.sendHeartBeatMessageResponse(jobExecInfo);
         LOGGER.info("Response for heart beat message of job " + jobExecInfo.getJobId() + " sent");
     }

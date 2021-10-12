@@ -2,15 +2,13 @@ package eionet.xmlconv.jobExecutor.rabbitmq.model;
 
 import eionet.xmlconv.jobExecutor.models.Script;
 
-public class WorkerJobInfoRabbitMQResponse {
+public class WorkerJobInfoRabbitMQResponseMessage extends WorkerMessage {
 
     private Script script;
 
     private boolean errorExists;
 
     private String errorMessage;
-
-    private String jobExecutorName;
 
     private String executionTime;
 
@@ -29,7 +27,7 @@ public class WorkerJobInfoRabbitMQResponse {
         return script;
     }
 
-    public WorkerJobInfoRabbitMQResponse setScript(Script script) {
+    public WorkerJobInfoRabbitMQResponseMessage setScript(Script script) {
         this.script = script;
         return this;
     }
@@ -38,7 +36,7 @@ public class WorkerJobInfoRabbitMQResponse {
         return errorExists;
     }
 
-    public WorkerJobInfoRabbitMQResponse setErrorExists(boolean errorExists) {
+    public WorkerJobInfoRabbitMQResponseMessage setErrorExists(boolean errorExists) {
         this.errorExists = errorExists;
         return this;
     }
@@ -47,17 +45,8 @@ public class WorkerJobInfoRabbitMQResponse {
         return errorMessage;
     }
 
-    public WorkerJobInfoRabbitMQResponse setErrorMessage(String errorMessage) {
+    public WorkerJobInfoRabbitMQResponseMessage setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
-        return this;
-    }
-
-    public String getJobExecutorName() {
-        return jobExecutorName;
-    }
-
-    public WorkerJobInfoRabbitMQResponse setJobExecutorName(String jobExecutorName) {
-        this.jobExecutorName = jobExecutorName;
         return this;
     }
 
@@ -65,7 +54,7 @@ public class WorkerJobInfoRabbitMQResponse {
         return executionTime;
     }
 
-    public WorkerJobInfoRabbitMQResponse setExecutionTime(String executionTime) {
+    public WorkerJobInfoRabbitMQResponseMessage setExecutionTime(String executionTime) {
         this.executionTime = executionTime;
         return this;
     }
@@ -74,7 +63,7 @@ public class WorkerJobInfoRabbitMQResponse {
         return jobExecutorStatus;
     }
 
-    public WorkerJobInfoRabbitMQResponse setJobExecutorStatus(Integer jobExecutorStatus) {
+    public WorkerJobInfoRabbitMQResponseMessage setJobExecutorStatus(Integer jobExecutorStatus) {
         this.jobExecutorStatus = jobExecutorStatus;
         return this;
     }
@@ -83,7 +72,7 @@ public class WorkerJobInfoRabbitMQResponse {
         return heartBeatQueue;
     }
 
-    public WorkerJobInfoRabbitMQResponse setHeartBeatQueue(String heartBeatQueue) {
+    public WorkerJobInfoRabbitMQResponseMessage setHeartBeatQueue(String heartBeatQueue) {
         this.heartBeatQueue = heartBeatQueue;
         return this;
     }
@@ -92,7 +81,7 @@ public class WorkerJobInfoRabbitMQResponse {
         return errorStatus;
     }
 
-    public WorkerJobInfoRabbitMQResponse setErrorStatus(Integer errorStatus) {
+    public WorkerJobInfoRabbitMQResponseMessage setErrorStatus(Integer errorStatus) {
         this.errorStatus = errorStatus;
         return this;
     }
@@ -101,7 +90,7 @@ public class WorkerJobInfoRabbitMQResponse {
         return jobExecutionRetries;
     }
 
-    public WorkerJobInfoRabbitMQResponse setJobExecutionRetries(Integer jobExecutionRetries) {
+    public WorkerJobInfoRabbitMQResponseMessage setJobExecutionRetries(Integer jobExecutionRetries) {
         this.jobExecutionRetries = jobExecutionRetries;
         return this;
     }
@@ -110,7 +99,7 @@ public class WorkerJobInfoRabbitMQResponse {
         return jobExecutorType;
     }
 
-    public WorkerJobInfoRabbitMQResponse setJobExecutorType(JobExecutorType jobExecutorType) {
+    public WorkerJobInfoRabbitMQResponseMessage setJobExecutorType(JobExecutorType jobExecutorType) {
         this.jobExecutorType = jobExecutorType;
         return this;
     }
