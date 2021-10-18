@@ -47,7 +47,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue queue() {
-        queue = containerInfoRetriever.getContainerName() + "-queue";
+        queue = containerInfoRetriever.getContainerName() + "-heartbeat-queue";
         Map<String, Object> args = new HashMap<>();
         args.put("x-message-ttl", MESSAGE_TIME_EXPIRATION);
         return new Queue(queue, true , false, false , args);
