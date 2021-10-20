@@ -81,7 +81,7 @@ public class Properties {
     public static String convertersHostAuthenticationUrl;
     public static String convertersEndpointToken;
     public static String ddEndpointToken;
-    public static Long responseTimeoutMs;
+    public static String responseTimeoutMs;
 
     /**
      * Checks path
@@ -312,7 +312,7 @@ public class Properties {
     }
 
     @Value( "${response.timeout.ms}" )
-    public void setResponseTimeoutMs(Long responseTimeoutMs) {
+    public void setResponseTimeoutMs(String responseTimeoutMs) {
         this.responseTimeoutMs = responseTimeoutMs;
     }
 }
