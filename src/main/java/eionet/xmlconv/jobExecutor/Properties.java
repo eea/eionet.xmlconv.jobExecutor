@@ -81,6 +81,7 @@ public class Properties {
     public static String convertersHostAuthenticationUrl;
     public static String convertersEndpointToken;
     public static String ddEndpointToken;
+    public static Long responseTimeoutMs;
 
     /**
      * Checks path
@@ -308,5 +309,10 @@ public class Properties {
     @Value( "${dd.restapi.token}" )
     public void setDdEndpointToken(String ddEndpointToken) {
         this.ddEndpointToken = ddEndpointToken;
+    }
+
+    @Value( "${response.timeout.ms}" )
+    public void setResponseTimeoutMs(Long responseTimeoutMs) {
+        this.responseTimeoutMs = responseTimeoutMs;
     }
 }

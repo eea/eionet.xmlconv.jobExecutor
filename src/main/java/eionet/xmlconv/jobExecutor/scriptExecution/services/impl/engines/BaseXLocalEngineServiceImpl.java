@@ -98,6 +98,13 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
                 proc.close();
             }
             context.close();
+            // The thread is forced to wait for 'timeoutMilisecs' before sending the message to converters in order for the result of the job to be written properly. Refs #140608
+            LOGGER.info("Job with id " + script.getJobId() + " is waiting for " + Properties.responseTimeoutMs.toString() + " ms");
+            try {
+                Thread.sleep(Properties.responseTimeoutMs);
+            } catch (InterruptedException e) {
+                LOGGER.error("Job with id " + script.getJobId() + " failed to wait for " + Properties.responseTimeoutMs.toString() + " ms");
+            }
         }
     }
 }
