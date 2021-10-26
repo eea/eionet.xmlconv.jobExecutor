@@ -55,8 +55,10 @@ public class Properties {
     public static String fmeUser;
     /** FME user password. */
     public static String fmePassword;
-    /** FME token. */
+    /** FME asynchronous token. */
     public static String fmeToken;
+    /** FME synchronous token. */
+    public static String fmeSynchronousToken;
     /** FME token expiration. */
     public static String fmeTokenExpiration;
     /** FME token timeunit. */
@@ -234,6 +236,11 @@ public class Properties {
     @Value( "${fme_token}" )
     public void setFmeToken(String fmeToken) {
         this.fmeToken = fmeToken;
+    }
+
+    @Value( "${fme_synchronous_token}" )
+    public void setFmeSynchronousToken(String fmeSynchronousToken) {
+        this.fmeSynchronousToken = fmeSynchronousToken;
     }
 
     @Value( "${fme_token_expiration}" )
