@@ -48,8 +48,6 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private String randomStr = RandomStringUtils.randomAlphanumeric(5);
 
-    private String synchronousToken = null;
-
     private static final String FME_HOST_TEMPORARY_HARDCODED = "fme.discomap.eea.europa.eu";
 
     private static final String FME_PORT_TEMPORARY_HARDCODED = "443";
@@ -64,6 +62,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     private String fmePollingUrlProperty;
     private Integer fmeRetryHoursProperty;
     private String fmeTokenProperty;
+    private String fmeSynchronousTokenProperty;
 
 
     private String fmeUser ;
@@ -86,32 +85,19 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         this.fmeTokenExpirationProperty = this.env.getProperty("fme_token_expiration");
         this.fmeTokenTimeunitProperty = this.env.getProperty("fme_token_timeunit");
         this.fmeTokenProperty = this.env.getProperty("fme_token");
+        this.fmeSynchronousTokenProperty = this.env.getProperty("fme_synchronous_token");
         this.fmeTimeoutProperty = Integer.valueOf(this.env.getProperty("fme_timeout"));
         this.fmePollingUrlProperty = this.env.getProperty("fme_polling_url");
         this.fmeRetryHoursProperty = Integer.valueOf(this.env.getProperty("fme_retry_hours"));
-        boolean skipFMEConnectionInfoCheck = false;
-        boolean testProfile = Arrays.asList(env.getActiveProfiles()).stream().allMatch(p -> p.equals(TEST_PROFILE));
-        if (testProfile) {
-            skipFMEConnectionInfoCheck = true;
-        }
 
         client_ = HttpClients.createDefault();
 
         requestConfigBuilder = RequestConfig.custom();
         requestConfigBuilder.setSocketTimeout(this.getFmeTimeoutProperty());
-
-        //fme connection should be skipped in case of tests execution
-        try {
-            if (!skipFMEConnectionInfoCheck) {
-                getConnectionInfo();
-            }
-        } catch (IOException e) {
-            throw new GenericFMEexception(e.toString());
-        }
     }
 
     @Override
-    protected void runQuery(Script script, OutputStream result) throws IOException {
+    protected void runQuery(Script script, OutputStream result) throws Exception {
 
         if(script.getAsynchronousExecution()){
             LOGGER.info("The script " + script.getScriptFileName() + " will be run asynchronously");
@@ -123,7 +109,26 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         }
     }
 
-    protected void runQuerySynchronous(Script script, OutputStream result) {
+    protected void runQuerySynchronous(Script script, OutputStream result) throws GenericFMEexception {
+
+        //fme connection should be skipped in case of tests execution
+        String synchronousToken = null;
+        boolean skipFMEConnectionInfoCheck = false;
+        boolean testProfile = Arrays.asList(env.getActiveProfiles()).stream().allMatch(p -> p.equals(TEST_PROFILE));
+        if (testProfile) {
+            skipFMEConnectionInfoCheck = true;
+        }
+        try {
+            if (!skipFMEConnectionInfoCheck) {
+                //retrieve synchronous token
+                synchronousToken = getConnectionInfo();
+            }
+        } catch (Exception e) {
+            throw new GenericFMEexception(e.toString());
+        }
+        if(Utils.isNullStr(synchronousToken)){
+            throw new GenericFMEexception("Synchronous token is empty");
+        }
 
         HttpPost runMethod = null;
         CloseableHttpResponse response = null;
@@ -306,7 +311,15 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
      *
      * @throws Exception If an error occurs.
      */
-    private void getConnectionInfo() throws Exception {
+    private String getConnectionInfo() throws Exception {
+
+        if(!Utils.isNullStr(this.fmeSynchronousTokenProperty)){
+            LOGGER.info("A semi-permanent synchronous token for FME will be used");
+            return this.fmeSynchronousTokenProperty;
+        }
+        String synchronousToken = null;
+
+        LOGGER.info("No semi-permanent synchronous token for FME was found. A new one will be generated");
 
         HttpPost method = null;
         CloseableHttpResponse response = null;
@@ -331,6 +344,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 InputStream stream = entity.getContent();
                 synchronousToken = new String(IOUtils.toByteArray(stream), StandardCharsets.UTF_8);
                 IOUtils.closeQuietly(stream);
+                return synchronousToken;
             } else {
                 LOGGER.error("FME authentication failed. Could not retrieve a Token");
                 throw new GenericFMEexception("FME authentication failed");
