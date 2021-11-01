@@ -133,6 +133,13 @@ public class ScriptMessageListener {
 
     protected void sendResponseToConverters(String jobId, WorkerJobInfoRabbitMQResponse response, StopWatch timer) {
         LOGGER.info(String.format("Execution of job %s was completed, total time of execution: %s", jobId, timer.toString()));
+        // The thread is forced to wait for 'timeoutMilisecs' before sending the message to converters in order for the result of the job to be written properly. Refs #140608
+        LOGGER.info("Job with id " + jobId + " is waiting for " + Properties.responseTimeoutMs.toString() + " ms");
+        try {
+            Thread.sleep(Properties.responseTimeoutMs);
+        } catch (InterruptedException e) {
+            LOGGER.error("Job with id " + jobId + " failed to wait for " + Properties.responseTimeoutMs.toString() + " ms");
+        }
         rabbitMQSender.sendMessage(response);
     }
 
