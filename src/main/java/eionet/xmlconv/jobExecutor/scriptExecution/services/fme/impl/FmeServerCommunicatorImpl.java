@@ -32,10 +32,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
@@ -100,14 +97,17 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
                     createHeader(HttpHeaders.ACCEPT, MEDIA_TYPE_JSON).createHeader(HttpHeaders.AUTHORIZATION, FME_TOKEN_HEADER + fmeTokenProperty).build().getHeaders();
             postMethod.setHeaders(headers);
 
+            LOGGER.info("For jobId " + convertersJobId + " a POST request will be made to FME to asynchronously submit a job. Url: " + script.getScriptSource() + ". Headers are: " + Arrays.toString(headers) );
+
             if(Utils.isNullStr(fmeTokenProperty)){
-                LOGGER.info("Fme token is empty.");
+                LOGGER.info("For jobId " + convertersJobId + " fme token is empty.");
             }
 
             StringEntity params6 = new StringEntity(submitJobRequest.buildBody());
             postMethod.setEntity(params6);
 
             response = this.clientWrapper.getClient().execute(postMethod);
+            LOGGER.info("For jobId " + convertersJobId + " response: " + response.toString());
 
             Integer statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
@@ -157,8 +157,11 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
             Header[] headers = new HttpRequestHeader.Builder().createHeader(HttpHeaders.ACCEPT, MEDIA_TYPE_JSON).
                     createHeader(HttpHeaders.AUTHORIZATION, FME_TOKEN_HEADER + fmeTokenProperty).build().getHeaders();
             getMethod.setHeaders(headers);
+            LOGGER.info("For jobId " + script.getJobId() + " a GET request will be made to FME to asynchronously poll for status of FME job "+ jobId + " . Url: " + this.fmePollingUrl + jobId + ". Headers are: " + Arrays.toString(headers) );
 
             response = this.clientWrapper.getClient().execute(getMethod);
+            LOGGER.info("For jobId " + script.getJobId() + " response of polling for status is " + response.toString());
+
             Integer statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
                 throw new FmeAuthorizationException("Unauthorized token");
@@ -175,7 +178,7 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
                 }
             }else {
                 // NOT Valid status code
-                String message = "Error when polling for job status. Received status code: " + statusCode;
+                String message = "Error when polling for job status. Received status code: " + statusCode + ". Response: " + response.toString();
                 throw new GenericFMEexception(message);
             }
         } catch (URISyntaxException | HttpRequestHeaderInitializationException | IOException e) {
@@ -189,8 +192,8 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
     }
 
     @Override
-    public void getResultFiles(String folderName, String resultFile) throws FmeAuthorizationException  , FMEBadRequestException , GenericFMEexception {
-        LOGGER.info("Began downloading folder " + folderName);
+    public void getResultFiles(String jobId, String folderName, String resultFile) throws FmeAuthorizationException  , FMEBadRequestException , GenericFMEexception {
+        LOGGER.info("For jobId " + jobId + " began downloading folder " + folderName);
         HttpPost postMethod = null;
         CloseableHttpResponse response = null;
         try {
@@ -201,13 +204,16 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
                     createHeader(HttpHeaders.AUTHORIZATION, FME_TOKEN_HEADER + fmeTokenProperty).build().getHeaders();
             postMethod.setHeaders(headers);
 
-
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
             nameValuePairs.add(new BasicNameValuePair("folderNames","."));
             nameValuePairs.add(new BasicNameValuePair("zipFileName","htmlfiles.zip"));
             postMethod.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            LOGGER.info("For jobId " + jobId + " a POST request will be made to FME to asynchronously retrieve the zip with the results.  Url: " + fmeResultFolderUrlProperty + fmeResultFolderProperty + "/" + folderName
+                    + ". Headers are: " + Arrays.toString(headers) + " Parameters are [folderNames=.], [zipFileName=htmlfiles.zip]");
+
 
             response = this.clientWrapper.getClient().execute(postMethod);
+            LOGGER.info("For jobId " + jobId + " response of for retrieving zip is " + response.toString());
             Integer statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == HttpStatus.SC_UNAUTHORIZED){
                 throw new FmeAuthorizationException("Unauthorized token");
@@ -225,7 +231,7 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
                 }
             }
             //status code is HttpStatus.SC_OK (200)
-            LOGGER.info("Received status code 200 when downloading folder " + folderName);
+            LOGGER.info("For jobId " + jobId + " Received status code 200 when downloading folder " + folderName + " Response: " + response.toString());
 
             HttpEntity entity = response.getEntity();
             InputStream is = entity.getContent();
@@ -240,10 +246,10 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
             File zipFile = new File(folderPath+".zip");
             FileOutputStream result = new FileOutputStream(new File(resultFile));
             IOUtils.copy(new FileInputStream(zipFile),result);
-            LOGGER.info("Copied content of " + folderName + ".zip" + " to stream");
+            LOGGER.info("For jobId " + jobId + " copied content of " + folderName + ".zip" + " to stream");
             Utils.deleteFolder(folderPath+".zip");
-            LOGGER.info("Deleted folder " + folderPath + ".zip");
-            LOGGER.info("Finished downloading folder " + folderName + " from FME");
+            LOGGER.info("For jobId " + jobId + " deleted folder " + folderPath + ".zip");
+            LOGGER.info("For jobId " + jobId + " finished downloading folder " + folderName + " from FME");
 
         }  catch (URISyntaxException | HttpRequestHeaderInitializationException | IOException e) {
             throw new GenericFMEexception(e.getMessage());
@@ -255,8 +261,8 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
     }
 
     @Override
-    public void deleteFolder (String folderName) throws FmeAuthorizationException , GenericFMEexception  ,FMEBadRequestException{
-        LOGGER.info("Began deleting folder " + folderName);
+    public void deleteFolder (String jobId, String folderName) throws FmeAuthorizationException , GenericFMEexception  ,FMEBadRequestException{
+        LOGGER.info("For jobId " + jobId + " began deleting folder " + folderName);
         HttpDelete request = null;
         CloseableHttpResponse response = null;
         try {
@@ -266,8 +272,10 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
             Header[] headers = new HttpRequestHeader.Builder().createHeader(HttpHeaders.ACCEPT, MEDIA_TYPE_JSON).
                     createHeader(HttpHeaders.AUTHORIZATION, FME_TOKEN_HEADER + fmeTokenProperty).build().getHeaders();
             request.setHeaders(headers);
+            LOGGER.info("For jobId " + jobId + " a DELETE request will be made to FME to asynchronously delete result folder "+ folderName + " . Url: " + uri.toURL().toString() + ". Headers are: " + Arrays.toString(headers) );
 
             response = this.clientWrapper.getClient().execute(request);
+            LOGGER.info("For jobId " + jobId + " response of deleting folder " + folderName + " is: " + response.toString());
             Integer statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == HttpStatus.SC_UNAUTHORIZED){
                 throw new FmeAuthorizationException("Unauthorized token");
@@ -282,7 +290,7 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
                 }
             }
             //status code is HttpStatus.SC_NO_CONTENT (204)
-            LOGGER.info("Deleted folder " + folderName);
+            LOGGER.info("For jobId " + jobId + " deleted folder " + folderName);
         }  catch (GenericFMEexception | URISyntaxException | HttpRequestHeaderInitializationException |IOException e) {
             throw new GenericFMEexception(e.getMessage());
         } finally {
