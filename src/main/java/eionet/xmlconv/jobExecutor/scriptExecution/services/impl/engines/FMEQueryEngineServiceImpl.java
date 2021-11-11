@@ -100,11 +100,11 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     protected void runQuery(Script script, OutputStream result) throws Exception {
 
         if(script.getAsynchronousExecution()){
-            LOGGER.info("The script " + script.getScriptFileName() + " will be run asynchronously");
+            LOGGER.info("For job " + script.getJobId() + " the script " + script.getScriptFileName() + " will be run asynchronously");
             runQueryAsynchronous(script, result);
         }
         else{
-            LOGGER.info("The script " + script.getScriptFileName() + " will be run synchronously");
+            LOGGER.info("For job " + script.getJobId() + " the script " + script.getScriptFileName() + " will be run synchronously");
             runQuerySynchronous(script, result);
         }
     }
@@ -121,7 +121,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         try {
             if (!skipFMEConnectionInfoCheck) {
                 //retrieve synchronous token
-                synchronousToken = getConnectionInfo();
+                synchronousToken = getConnectionInfo(script.getJobId());
             }
         } catch (Exception e) {
             throw new GenericFMEexception(e.toString());
@@ -147,6 +147,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                         .addParameter("source_xml", script.getOrigFileUrl()) // XML file
                         .addParameter("format", script.getOutputType())
                         .build(); // Output format
+
+                LOGGER.info("For jobId " + script.getJobId() + " a post request will be made to FME in order to synchronously submit a job with URL " + uri.toURL().toString());
                 runMethod = new HttpPost(uri);
 
                 // Request Config (Timeout)
@@ -159,7 +161,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                     if (!Utils.isNullStr(jobId)){
                         logMessage += " for job id " + jobId;
                     }
-                    logMessage += " got response 200 OK From FME SERVER in :"+ count +"retry";
+                    logMessage += " got response 200 OK From FME SERVER in :"+ count +" retry . Response is: " + response.toString();
                     LOGGER.info(logMessage);
                     IOUtils.copy(entity.getContent(), result);
                 } else { // NOT Valid Result
@@ -169,7 +171,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                         if (!Utils.isNullStr(jobId)){
                             logMessage += " for job id " + jobId;
                         }
-                        logMessage += " failed with response code " + response.getStatusLine().getStatusCode() + " for last Retry  number :"+ count;
+                        logMessage += " failed with response code " + response.getStatusLine().getStatusCode() + " for last Retry  number :"+ count + ". Response is: " + response.toString();
                         LOGGER.error(logMessage);
 
                         IOUtils.copy(IOUtils.toInputStream("<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">The QC Process failed, please allow some time and re-run the process. If the issue persists please contact the dataflow helpdesk.</span>The QC Process failed, please allow some time and re-run the process. Please try again. If the issue persists please contact the dataflow helpdesk.</div>", "UTF-8"), result);
@@ -220,8 +222,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
             this.pollFmeServerWithRetries(jobId,script,fmeServerCommunicator);
 
-            fmeServerCommunicator.getResultFiles(folderName, script.getStrResultFile());
-            fmeServerCommunicator.deleteFolder(folderName);
+            fmeServerCommunicator.getResultFiles(script.getJobId(), folderName, script.getStrResultFile());
+            fmeServerCommunicator.deleteFolder(script.getJobId(), folderName);
         } catch (FmeAuthorizationException | FmeCommunicationException | GenericFMEexception | FMEBadRequestException |RetryCountForGettingJobResultReachedException | InterruptedException e) {
             String message = "Generic Exception handling ";
             if (!Utils.isNullStr(convertersJobId)){
@@ -311,15 +313,15 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
      *
      * @throws Exception If an error occurs.
      */
-    private String getConnectionInfo() throws Exception {
+    private String getConnectionInfo(String jobId) throws Exception {
 
         if(!Utils.isNullStr(this.fmeSynchronousTokenProperty)){
-            LOGGER.info("A semi-permanent synchronous token for FME will be used");
+            LOGGER.info("For job "+ jobId + " a semi-permanent synchronous token for FME will be used");
             return this.fmeSynchronousTokenProperty;
         }
         String synchronousToken = null;
 
-        LOGGER.info("No semi-permanent synchronous token for FME was found. A new one will be generated");
+        LOGGER.info("For job "+ jobId + " no semi-permanent synchronous token for FME was found. A new one will be generated");
 
         HttpPost method = null;
         CloseableHttpResponse response = null;
@@ -335,10 +337,11 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                     .addParameter("password", this.fmePassword)
                     .addParameter("expiration", this.getFmeTokenExpirationProperty())
                     .addParameter("timeunit", this.getFmeTokenTimeunitProperty()).build();
+            LOGGER.info("For job " + jobId + " a new synchronous token will be generated from FME. Url: " + fmeUrl + " expiration: " + this.getFmeTokenExpirationProperty() + " timeunit: " + this.getFmeTokenTimeunitProperty());
             method = new HttpPost(uri);
             response = client_.execute(method);
             if (response.getStatusLine().getStatusCode() == 200) {
-                LOGGER.info("FME authentication SUCCESS");
+                LOGGER.info("For job " + jobId + " FME authentication SUCCESS. Response: " + response.toString());
 
                 HttpEntity entity = response.getEntity();
                 InputStream stream = entity.getContent();
@@ -346,7 +349,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 IOUtils.closeQuietly(stream);
                 return synchronousToken;
             } else {
-                LOGGER.error("FME authentication failed. Could not retrieve a Token");
+                LOGGER.error("For job " + jobId + " FME authentication failed. Could not retrieve a Token. Response: " + response.toString());
                 throw new GenericFMEexception("FME authentication failed");
             }
         } catch (Exception e) {
