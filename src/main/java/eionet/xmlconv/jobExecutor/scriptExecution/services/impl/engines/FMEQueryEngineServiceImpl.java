@@ -46,8 +46,6 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private Integer retries = 0;
 
-    private String randomStr = RandomStringUtils.randomAlphanumeric(5);
-
     private static final String FME_HOST_TEMPORARY_HARDCODED = "fme.discomap.eea.europa.eu";
 
     private static final String FME_PORT_TEMPORARY_HARDCODED = "443";
@@ -211,7 +209,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         String fileNameWthXml = urlSegments[urlSegments.length-1];
         String[] fileNameSegments = fileNameWthXml.split("\\.");
         String fileName = fileNameSegments[0];
-        String folderName = fileName + "_" +  getRandomStr();
+        String folderName = fileName + "_" +  RandomStringUtils.randomAlphanumeric(5);
         String jobId="";
         String convertersJobId = script.getJobId();
         try {
@@ -411,9 +409,6 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         this.retries = (retries <= 0) ? 1 : retries;
     }
 
-    public String getRandomStr() {
-        return randomStr;
-    }
 
     public FmeServerCommunicator getFmeServerCommunicator(){
         return (FmeServerCommunicator) SpringApplicationContext.getBean(FmeServerCommunicator.class);
