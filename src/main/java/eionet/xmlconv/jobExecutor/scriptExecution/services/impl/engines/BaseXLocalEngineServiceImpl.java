@@ -51,7 +51,7 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
                 try (Reader queryReader = new FileReader(script.getScriptFileName())) {
                     scriptSource = new String(IOUtils.toByteArray(queryReader, "UTF-8"));
                 } catch (IOException e) {
-                    LOGGER.error("Error while reading XQuery file: " + e);
+                    LOGGER.error("For job id " + script.getJobId() + " error while reading BaseX xquery file: " + script.getScriptFileName() + " Exception message is " + e.getMessage());
                     throw new ScriptExecutionException("Error while reading XQuery file: " + script.getScriptFileName() + " : " + ExceptionUtils.getStackTrace(e), e);
                 }
             }
@@ -60,7 +60,7 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
             HttpFileManagerService fileManager = new HttpFileManagerServiceImpl();
             URL url = fileManager.followUrlRedirectIfNeeded(new URL(script.getSrcFileUrl()));
             script.setSrcFileUrl(url.toString());
-            LOGGER.info("Script Source URL:"+script.getSrcFileUrl());
+            LOGGER.info("For job id " + script.getJobId() + " Script Source URL:"+script.getSrcFileUrl());
             proc.bind("source_url", script.getSrcFileUrl(), "xs:string");
 
             // same serialization options with saxon
@@ -83,14 +83,20 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
             Value res = proc.value();
 
             ArrayOutput A = res.serialize(opts);
+            LOGGER.info("For job id " + script.getJobId() + " job result will be written to file :"+script.getStrResultFile());
             FileOutputStream fos = new FileOutputStream(script.getStrResultFile());
             fos.write(A.toArray());
 
-        } catch (QueryException | IOException | FollowRedirectException e) {
+        } catch (Exception e) {
             if (Thread.currentThread().isInterrupted()) {
                 throw new ScriptExecutionException(e.getMessage());
             } else {
-                LOGGER.error("Error executing BaseX xquery script : " + e.getMessage());
+                if(!Utils.isNullStr(script.getScriptFileName())){
+                    LOGGER.error("For job id " + script.getJobId() + " error while reading BaseX xquery file: " + script.getScriptFileName() + " Exception message is " + e.getMessage());
+                }
+                else{
+                    LOGGER.error("For job id " + script.getJobId() + " error while reading BaseX xquery file. Exception message is " + e.getMessage());
+                }
                 throw new ScriptExecutionException(e.getMessage(),e.getCause());
             }
         } finally {

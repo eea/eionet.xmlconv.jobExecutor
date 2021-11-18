@@ -3,6 +3,7 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.SpringApplicationContext;
 import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FMEUtils;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeJobStatus;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeServerCommunicator;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.request.SynchronousSubmitJobRequest;
@@ -194,8 +195,9 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                     logMessage += " for job id " + jobId;
                 }
                 logMessage += " failed with SocketTimeoutException. Retries = "+count+"\n The FME request has exceeded the allotted timeout of :"+Properties.fmeTimeout+" -- Source file: " + script.getOrigFileUrl() + " -- FME workspace: " + script.getScriptSource();
-                LOGGER.error(logMessage);            } catch (Exception e) {
-                LOGGER.error("Generic Exception handling. FME request error: " + e.getMessage());
+                LOGGER.error(logMessage);
+            } catch (Exception e) {
+                LOGGER.error("For job id " + jobId  + " Generic Exception handling. FME request error: " + e.getMessage());
             } finally {
                 if (runMethod != null) {
                     runMethod.releaseConnection();
@@ -207,11 +209,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     }
 
     protected void runQueryAsynchronous(Script script, OutputStream result) throws IOException {
-        String[] urlSegments = script.getOrigFileUrl().split("/");
-        String fileNameWthXml = urlSegments[urlSegments.length-1];
-        String[] fileNameSegments = fileNameWthXml.split("\\.");
-        String fileName = fileNameSegments[0];
-        String folderName = fileName + "_" +  this.getRandomStr();
+        String folderName = FMEUtils.constructFMEFolderName(script.getOrigFileUrl(), this.getRandomStr());
+        LOGGER.info("For job id " + script.getJobId() + " the folder we will create in FME server to get the asynchronous results is: " + folderName);
         String jobId="";
         String convertersJobId = script.getJobId();
         try {
@@ -231,7 +230,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             }
             message += " FME request error: " + e.getMessage();
             LOGGER.error(message);
-            String resultStr = createErrorMessage(jobId, script.getScriptSource(), script.getOrigFileUrl(), e.getMessage());
+            String resultStr = FMEUtils.createErrorMessage(jobId, script.getScriptSource(), script.getOrigFileUrl(), e.getMessage());
 
             FileOutputStream zipFile = new FileOutputStream(script.getStrResultFile());
             ZipOutputStream out = new ZipOutputStream(zipFile);
@@ -243,23 +242,6 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             out.close();
         }
     }
-
-    private String createErrorMessage (String fmeJobId, String scriptUrl, String sourceUrl, String exception){
-        String resultStringHtml = "<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">";
-        String resultStringMsg ="The QC Process failed, please allow some time and re-run the process. If the issue persists please contact the dataflow helpdesk. ";
-        String resultStringSpecificMsg;
-        if (Utils.isNullStr(fmeJobId)){
-            resultStringSpecificMsg = "Job submission for script: " + scriptUrl + " and xml url " + sourceUrl + " has failed. ";
-        }
-        else{
-            resultStringSpecificMsg = "The id in the FME server is #" + fmeJobId + ". ";
-        }
-        String exceptionMsg = "Exception message is: " + exception;
-        String fullResultString = resultStringHtml + resultStringMsg + resultStringSpecificMsg + exceptionMsg +  "</span>" ;
-        fullResultString += resultStringMsg + resultStringSpecificMsg + exceptionMsg + "</div>";
-        return fullResultString;
-    }
-
 
     protected void pollFmeServerWithRetries(String jobId, Script script,FmeServerCommunicator fmeServerCommunicator) throws RetryCountForGettingJobResultReachedException, FMEBadRequestException, FmeCommunicationException, GenericFMEexception, FmeAuthorizationException, InterruptedException {
         int count = 0;

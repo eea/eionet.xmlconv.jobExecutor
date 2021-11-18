@@ -51,7 +51,7 @@ public class ScriptMessageListener {
     @RabbitListener(queues = "${job.rabbitmq.listeningQueue}")
     public void consumeMessage(WorkerJobRabbitMQRequest rabbitMQRequest) throws IOException {
         Script script = rabbitMQRequest.getScript();
-        LOGGER.info("Received script with id " + script.getJobId());
+        LOGGER.info("Received job with id " + script.getJobId());
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String scriptStr = ow.writeValueAsString(script);
@@ -61,7 +61,7 @@ public class ScriptMessageListener {
         String containerName = "";
         try{
             containerName = containerInfoRetriever.getContainerName();
-            LOGGER.info(String.format("Container name is %s", containerName));
+            LOGGER.info(String.format("For job id " + script.getJobId() + " container name is %s", containerName));
             Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
             if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
                 rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
@@ -112,6 +112,7 @@ public class ScriptMessageListener {
             if(message == null){
                 message = "Unknown error";
             }
+            message += " Job id is " + script.getJobId();
             LOGGER.info(message);
             rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, message,
                     Constants.JOB_EXCEPTION_ERROR, containerName);
