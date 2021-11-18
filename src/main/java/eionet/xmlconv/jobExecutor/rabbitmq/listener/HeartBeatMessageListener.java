@@ -35,14 +35,14 @@ public class HeartBeatMessageListener implements MessageListener {
     public void onMessage(Message message) {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         WorkerHeartBeatMessageInfo response = null;
+        String containerName = containerInfoRetriever.getContainerName();
         try {
             response = mapper.readValue(message.getBody(), WorkerHeartBeatMessageInfo.class);
-            LOGGER.info("Received heart beat message for job " + response.getJobId());
+            LOGGER.info(containerName + " received heart beat message for job " + response.getJobId());
         } catch (IOException e) {
             LOGGER.error("Error during processing of heart beat message, " + e.getMessage());
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
-        String containerName = containerInfoRetriever.getContainerName();
         Integer jobStatus = ScriptMessageListener.getWorkerJobStatus().get(response.getJobId().toString());
         if (!response.getJobExecutorName().equals(containerName)) {
             throw new AmqpRejectAndDontRequeueException("Worker " + response.getJobExecutorName() + " should receive heart beat message for job " + response.getJobId());
@@ -57,6 +57,6 @@ public class HeartBeatMessageListener implements MessageListener {
 
     protected void sendHeartBeatResponse(WorkerHeartBeatMessageInfo jobExecInfo) {
         rabbitMQSender.sendHeartBeatMessageResponse(jobExecInfo);
-        LOGGER.info("Response for heart beat message of job " + jobExecInfo.getJobId() + " sent");
+        LOGGER.info(jobExecInfo.getJobExecutorName() + " sent response for heart beat message of job " + jobExecInfo.getJobId() + ". Job status: " + jobExecInfo.getJobStatus());
     }
 }
