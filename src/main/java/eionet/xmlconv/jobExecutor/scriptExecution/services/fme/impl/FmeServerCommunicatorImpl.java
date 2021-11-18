@@ -182,7 +182,7 @@ public class FmeServerCommunicatorImpl implements FmeServerCommunicator {
                 throw new GenericFMEexception(message);
             }
         } catch (URISyntaxException | HttpRequestHeaderInitializationException | IOException e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("For jobId " + script.getJobId() + " exception message is: " + e.getMessage());
             throw new GenericFMEexception(e);
         } finally {
             if (getMethod != null) {

@@ -40,7 +40,19 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
         try {
             setOutputType(script.getOutputType());
             runQuery(script, out);
+            String message = "For job id " + script.getJobId() + " the script ";
+            if(!Utils.isNullStr(script.getScriptFileName())){
+                message+= script.getScriptFileName() + " file ";
+            }
+            message += "was executed.";
+            LOGGER.info(message);
         } catch (Exception e) {
+            String message = "For job id " + script.getJobId() + " the script ";
+            if(!Utils.isNullStr(script.getScriptFileName())){
+                message+= script.getScriptFileName() + " file ";
+            }
+            message += " was executed unsuccessfully. Exception message is: " + e.getMessage();
+            LOGGER.error(message);
             throw new ScriptExecutionException(e.getMessage(), e);
         }
     }
@@ -52,11 +64,12 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
         try {
             result = new FileOutputStream(new File(script.getStrResultFile()));
         } catch (FileNotFoundException e) {
-            throw new ScriptExecutionException("Could not find result file " + script.getStrResultFile());
+            throw new ScriptExecutionException("For job id " + script.getJobId() + " could not find result file " + script.getStrResultFile());
         }
         try {
             getResult(script, result);
         } catch (ScriptExecutionException see) {
+            LOGGER.error("For job id " + script.getJobId() + " could not execute getResult method. Exception message is: " + see.getMessage() );
             StringBuilder errBuilder = new StringBuilder();
             errBuilder.append("<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">Unexpected error occured!</span><h2>Unexpected error occured!</h2>");
             errBuilder.append(Utils.escapeXML(see.toString()));

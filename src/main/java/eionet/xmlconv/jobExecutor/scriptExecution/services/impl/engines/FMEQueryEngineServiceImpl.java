@@ -195,8 +195,9 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                     logMessage += " for job id " + jobId;
                 }
                 logMessage += " failed with SocketTimeoutException. Retries = "+count+"\n The FME request has exceeded the allotted timeout of :"+Properties.fmeTimeout+" -- Source file: " + script.getOrigFileUrl() + " -- FME workspace: " + script.getScriptSource();
-                LOGGER.error(logMessage);            } catch (Exception e) {
-                LOGGER.error("Generic Exception handling. FME request error: " + e.getMessage());
+                LOGGER.error(logMessage);
+            } catch (Exception e) {
+                LOGGER.error("For job id " + jobId  + " Generic Exception handling. FME request error: " + e.getMessage());
             } finally {
                 if (runMethod != null) {
                     runMethod.releaseConnection();
