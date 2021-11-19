@@ -114,7 +114,7 @@ public class ScriptMessageListener {
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {containerName, script.getJobId(), timer.toString()}));
             response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobExecutorStatus(Constants.WORKER_READY)
-                    .setJobExecutorType(containerInfo.getService_name().equals(rancherHeavyServiceName) ? JobExecutorType.Heavy : JobExecutorType.Light);;
+                    .setJobExecutorType(containerInfo.getService_name().equals(rancherHeavyServiceName) ? JobExecutorType.Heavy : JobExecutorType.Light);
             setWorkerJobStatus(script.getJobId(), Constants.JOB_FATAL_ERROR);
             sendResponseToConverters(script.getJobId(), response, timer);
         }
