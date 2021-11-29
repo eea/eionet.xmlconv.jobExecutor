@@ -2,10 +2,9 @@ package eionet.xmlconv.jobExecutor.rabbitmq.model;
 
 import eionet.xmlconv.jobExecutor.models.Script;
 
-public class WorkerJobRabbitMQRequest {
+public class WorkerJobRabbitMQRequestMessage extends WorkerMessage {
 
     private Script script;
-    private String jobExecutorName;
     private Integer jobExecutionRetries;
     private String errorMessage;
     private Integer errorStatus;
@@ -16,17 +15,8 @@ public class WorkerJobRabbitMQRequest {
         return script;
     }
 
-    public WorkerJobRabbitMQRequest setScript(Script script) {
+    public WorkerJobRabbitMQRequestMessage setScript(Script script) {
         this.script = script;
-        return this;
-    }
-
-    public String getJobExecutorName() {
-        return jobExecutorName;
-    }
-
-    public WorkerJobRabbitMQRequest setJobExecutorName(String jobExecutorName) {
-        this.jobExecutorName = jobExecutorName;
         return this;
     }
 
