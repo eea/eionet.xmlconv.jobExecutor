@@ -1,8 +1,17 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.fme;
 
+import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines.FMEQueryEngineServiceImpl;
 import eionet.xmlconv.jobExecutor.utils.Utils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public final class FMEUtils {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FMEUtils.class);
 
     public static String createErrorMessage (String fmeJobId, String scriptUrl, String sourceUrl, String exception){
         String resultStringHtml = "<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">";
@@ -18,6 +27,23 @@ public final class FMEUtils {
         String fullResultString = resultStringHtml + resultStringMsg + resultStringSpecificMsg + exceptionMsg +  "</span>" ;
         fullResultString += resultStringMsg + resultStringSpecificMsg + exceptionMsg + "</div>";
         return fullResultString;
+    }
+
+    public static void handleSynchronousLastRetryExceptionFailure (Integer numberOfRetries, Integer currentRetry, String convertersJobId, String exceptionMsg, String exceptionType, OutputStream result){
+        String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job exeuction for job id " + convertersJobId;
+        logMessage += " failed with exception "  + exceptionType + " Exception message: "+ exceptionMsg + " for retry "+ currentRetry + " of " + numberOfRetries + " retries";
+        LOGGER.error(logMessage);
+
+        // If the last retry fails a BLOCKER predefined error is returned
+        if (numberOfRetries == currentRetry){
+            try {
+                String resultMsg="<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">The QC Process failed with " + exceptionType + " for the last retry when trying to contact FME, please allow some time and re-run the process. Please try again. If the issue persists please contact the dataflow helpdesk.</span>"
+                        + "The QC Process failed with " + exceptionType + " for the last retry when trying to contact FME, please allow some time and re-run the process. Please try again. If the issue persists please contact the dataflow helpdesk.</div>";
+                IOUtils.copy(IOUtils.toInputStream(resultMsg, "UTF-8"), result);
+            } catch (IOException ex) {
+                LOGGER.error("Could not store result to html file for job id " + convertersJobId);
+            }
+        }
     }
 
     public static String constructFMEFolderName(String xmlFileUrl, String randomStr){
