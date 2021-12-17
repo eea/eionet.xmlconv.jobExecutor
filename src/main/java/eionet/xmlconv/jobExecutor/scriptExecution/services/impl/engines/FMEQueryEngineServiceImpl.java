@@ -190,14 +190,9 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 }
                 count = retries;
             } catch (SocketTimeoutException e) { // Timeout Exceeded
-                String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job exeuction ";
-                if (!Utils.isNullStr(jobId)){
-                    logMessage += " for job id " + jobId;
-                }
-                logMessage += " failed with SocketTimeoutException. Retries = "+count+"\n The FME request has exceeded the allotted timeout of :"+Properties.fmeTimeout+" -- Source file: " + script.getOrigFileUrl() + " -- FME workspace: " + script.getScriptSource();
-                LOGGER.error(logMessage);
+                FMEUtils.handleSynchronousLastRetryExceptionFailure(retries, count +1, jobId, "The FME request has exceeded the allotted timeout of :"+Properties.fmeTimeout+" -- Source file: " + script.getOrigFileUrl() + " -- FME workspace: " + script.getScriptSource(), "SocketTimeoutException", result);
             } catch (Exception e) {
-                LOGGER.error("For job id " + jobId  + " Generic Exception handling. FME request error: " + e.getMessage());
+                FMEUtils.handleSynchronousLastRetryExceptionFailure(retries, count +1, jobId, "Generic Exception handling. FME request error: " + e.getMessage(), "Exception", result);
             } finally {
                 if (runMethod != null) {
                     runMethod.releaseConnection();
