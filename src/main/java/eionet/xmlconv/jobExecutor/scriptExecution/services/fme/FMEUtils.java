@@ -29,13 +29,13 @@ public final class FMEUtils {
         return fullResultString;
     }
 
-    public static void handleSynchronousLastRetryExceptionFailure (Integer numberOfRetries, Integer retryNum, String convertersJobId, String exceptionMsg, String exceptionType, OutputStream result){
+    public static void handleSynchronousLastRetryExceptionFailure (Integer numberOfRetries, Integer currentRetry, String convertersJobId, String exceptionMsg, String exceptionType, OutputStream result){
         String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job exeuction for job id " + convertersJobId;
-        logMessage += " failed with exception "  + exceptionType + " Exception message: "+ exceptionMsg + " for retry "+ retryNum + " of " + numberOfRetries + " retries";
+        logMessage += " failed with exception "  + exceptionType + " Exception message: "+ exceptionMsg + " for retry "+ currentRetry + " of " + numberOfRetries + " retries";
         LOGGER.error(logMessage);
 
         // If the last retry fails a BLOCKER predefined error is returned
-        if (numberOfRetries == retryNum){
+        if (numberOfRetries == currentRetry){
             try {
                 String resultMsg="<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">The QC Process failed with " + exceptionType + " for the last retry when trying to contact FME, please allow some time and re-run the process. Please try again. If the issue persists please contact the dataflow helpdesk.</span>"
                         + "The QC Process failed with " + exceptionType + " for the last retry when trying to contact FME, please allow some time and re-run the process. Please try again. If the issue persists please contact the dataflow helpdesk.</div>";
