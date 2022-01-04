@@ -39,7 +39,7 @@ import java.net.URL;
 import java.util.Hashtable;
 
 @Service
-@DependsOn("cacheManager")
+@DependsOn({"cacheManager","environment"})
 
 public class HttpFileManagerServiceImpl implements HttpFileManagerService{
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpFileManagerService.class);

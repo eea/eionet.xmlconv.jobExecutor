@@ -206,15 +206,15 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     protected void runQueryAsynchronous(Script script, OutputStream result) throws IOException {
         String folderName = FMEUtils.constructFMEFolderName(script.getOrigFileUrl(), this.getRandomStr());
         LOGGER.info("For job id " + script.getJobId() + " the folder we will create in FME server to get the asynchronous results is: " + folderName);
-        String jobId="";
+        String fmeJobId="";
         String convertersJobId = script.getJobId();
         try {
 
             FmeServerCommunicator fmeServerCommunicator = this.getFmeServerCommunicator();
-            jobId = fmeServerCommunicator.submitJob(script,new SynchronousSubmitJobRequest(script.getOrigFileUrl(),folderName));
+            fmeJobId = fmeServerCommunicator.submitJob(script,new SynchronousSubmitJobRequest(script.getOrigFileUrl(),folderName));
 
 
-            this.pollFmeServerWithRetries(jobId,script,fmeServerCommunicator);
+            this.pollFmeServerWithRetries(fmeJobId,script,fmeServerCommunicator);
 
             fmeServerCommunicator.getResultFiles(script.getJobId(), folderName, script.getStrResultFile());
             fmeServerCommunicator.deleteFolder(script.getJobId(), folderName);
@@ -225,7 +225,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             }
             message += " FME request error: " + e.getMessage();
             LOGGER.error(message);
-            String resultStr = FMEUtils.createErrorMessage(jobId, script.getScriptSource(), script.getOrigFileUrl(), e.getMessage());
+            String resultStr = FMEUtils.createErrorMessage(fmeJobId, script.getScriptSource(), script.getOrigFileUrl(), e.getMessage());
 
             FileOutputStream zipFile = new FileOutputStream(script.getStrResultFile());
             ZipOutputStream out = new ZipOutputStream(zipFile);
@@ -235,6 +235,12 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             out.write(data, 0, data.length);
             out.closeEntry();
             out.close();
+        }
+        finally {
+            if(!Utils.isNullStr(fmeJobId)){
+                script.setFmeJobId(fmeJobId);
+            }
+
         }
     }
 

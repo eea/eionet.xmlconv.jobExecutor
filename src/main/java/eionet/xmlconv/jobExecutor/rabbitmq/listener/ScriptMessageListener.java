@@ -107,6 +107,7 @@ public class ScriptMessageListener {
 
                 LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[]{containerName, script.getJobId(), timer.toString()}));
                 response.setJobExecutorStatus(Constants.WORKER_READY);
+                response.setScript(script);
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_READY);
                 sendResponseToConverters(script.getJobId(), response, timer);
             }
