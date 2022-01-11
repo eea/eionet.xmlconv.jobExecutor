@@ -40,8 +40,7 @@ import java.net.URL;
 import java.util.Hashtable;
 
 @Service
-@DependsOn({"cacheManager","environment"})
-@Order(1000)
+@DependsOn({"cacheManager","environmentbean"})
 public class HttpFileManagerServiceImpl implements HttpFileManagerService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpFileManagerService.class);
     private CloseableHttpClient client;
