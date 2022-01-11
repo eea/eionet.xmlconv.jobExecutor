@@ -52,7 +52,6 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService , Envi
     @Autowired
     private DataRetrieverService dataRetrieverService;
 
-    @Resource
     Environment environment;
 
     @Autowired
