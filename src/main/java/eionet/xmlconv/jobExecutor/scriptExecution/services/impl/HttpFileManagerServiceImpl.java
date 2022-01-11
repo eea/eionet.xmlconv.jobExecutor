@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +41,8 @@ import java.util.Hashtable;
 
 @Service
 @DependsOn({"cacheManager","environment"})
-
-public class HttpFileManagerServiceImpl implements HttpFileManagerService{
+@Order(1000)
+public class HttpFileManagerServiceImpl implements HttpFileManagerService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpFileManagerService.class);
     private CloseableHttpClient client;
     private CloseableHttpResponse response;
