@@ -53,7 +53,7 @@
                 class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- rollover daily and when the file reaches 5000KB -->
             <fileNamePattern>${basePath}/${appName}_%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
-            <maxFileSize>3KB</maxFileSize>
+            <maxFileSize>5000KB</maxFileSize>
         </rollingPolicy>
     </appender>
 
