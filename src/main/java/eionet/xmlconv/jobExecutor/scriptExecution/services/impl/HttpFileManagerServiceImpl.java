@@ -26,10 +26,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,9 +43,8 @@ import java.net.URL;
 import java.util.Hashtable;
 
 @Service
-@DependsOn({"cacheManager","environment"})
-
-public class HttpFileManagerServiceImpl implements HttpFileManagerService{
+@DependsOn({"cacheManager"})
+public class HttpFileManagerServiceImpl implements HttpFileManagerService , EnvironmentAware {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpFileManagerService.class);
     private CloseableHttpClient client;
     private CloseableHttpResponse response;
@@ -53,9 +56,12 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
 
     @Autowired
     public HttpFileManagerServiceImpl() {
-      this.environment=(Environment)  SpringApplicationContext.getBean(Environment.class);
+    }
+
+    @PostConstruct
+    void properlyInitialize(){
         LOGGER.info("Cache Temp Dir:"+  this.environment.getProperty("cache.temp.dir"));
-        this.client = HttpCacheClientFactory.getInstance(this.environment);
+         this.client = HttpCacheClientFactory.getInstance(this.environment);
     }
 
     public HttpFileManagerServiceImpl(CloseableHttpClient client){
@@ -321,4 +327,8 @@ public class HttpFileManagerServiceImpl implements HttpFileManagerService{
         return url;
     }
 
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment= environment;
+    }
 }
