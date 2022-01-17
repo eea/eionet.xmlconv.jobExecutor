@@ -8,6 +8,8 @@ $ mvn clean install
 - or if you want to use prod profile (matches application-prod.properties), specify it at build time using the -P flag <br>
 $ mvn -Pprod clean install
 
+Add an environmental variable logFilePath which is used in logback-spring.xml
+
 - JobExecutorApplication -> right click -> Run
 
 ## Docker commands and actions

@@ -31,7 +31,7 @@
         </encoder>
     </appender>
 
-    <property name="basePath" value="${env:logFilePath}/jobExecutorlogs"/>
+    <property name="basePath" value="${logFilePath}/jobExecutorlogs"/>
 
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
