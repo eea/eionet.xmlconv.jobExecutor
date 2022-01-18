@@ -56,6 +56,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     /* Variables for eionet.gdem.Properties*/
     private Integer fmeTimeoutProperty;
+    private Integer fmeSocketTimeoutProperty;
     private String fmeHostProperty ;
     private String fmePortProperty ;
     private String fmeTokenExpirationProperty ;
@@ -88,13 +89,14 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         this.fmeTokenProperty = this.env.getProperty("fme_token");
         this.fmeSynchronousTokenProperty = this.env.getProperty("fme_synchronous_token");
         this.fmeTimeoutProperty = Integer.valueOf(this.env.getProperty("fme_timeout"));
+        this.fmeSocketTimeoutProperty = Integer.valueOf(this.env.getProperty("fme_socket_timeout"));
         this.fmePollingUrlProperty = this.env.getProperty("fme_polling_url");
         this.fmeRetryHoursProperty = Integer.valueOf(this.env.getProperty("fme_retry_hours"));
 
         client_ = HttpClients.createDefault();
 
         requestConfigBuilder = RequestConfig.custom();
-        requestConfigBuilder.setSocketTimeout(this.getFmeTimeoutProperty());
+        requestConfigBuilder.setSocketTimeout(this.getFmeSocketTimeoutProperty());
     }
 
     @Override
@@ -190,7 +192,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 }
                 count = retries;
             } catch (SocketTimeoutException e) { // Timeout Exceeded
-                FMEUtils.handleSynchronousLastRetryExceptionFailure(retries, count +1, jobId, "The FME request has exceeded the allotted timeout of :"+Properties.fmeTimeout+" -- Source file: " + script.getOrigFileUrl() + " -- FME workspace: " + script.getScriptSource(), "SocketTimeoutException", result);
+                FMEUtils.handleSynchronousLastRetryExceptionFailure(retries, count +1, jobId, "The FME request has exceeded the allotted timeout of :"+Properties.fmeSocketTimeout+" -- Source file: " + script.getOrigFileUrl() + " -- FME workspace: " + script.getScriptSource(), "SocketTimeoutException", result);
             } catch (Exception e) {
                 FMEUtils.handleSynchronousLastRetryExceptionFailure(retries, count +1, jobId, "Generic Exception handling. FME request error: " + e.getMessage(), "Exception", result);
             } finally {
@@ -355,6 +357,10 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     protected Integer getFmeTimeoutProperty() {
         return fmeTimeoutProperty;
+    }
+
+    public Integer getFmeSocketTimeoutProperty() {
+        return fmeSocketTimeoutProperty;
     }
 
     protected String getFmeHostProperty() {

@@ -65,6 +65,7 @@ public class Properties {
     public static String fmeTokenTimeunit;
     /** FME timeout. */
     public static int fmeTimeout;
+    public static int fmeSocketTimeout;
     public static int fmeRetryHours;
     /** FME url for polling job status by job id. */
     public static String fmePollingUrl;
@@ -256,6 +257,11 @@ public class Properties {
     @Value( "${fme_timeout}" )
     public void setFmeTimeout(int fmeTimeout) {
         this.fmeTimeout = fmeTimeout;
+    }
+
+    @Value( "${fme_socket_timeout}" )
+    public void setFmeSocketTimeout(int fmeSocketTimeout) {
+        this.fmeSocketTimeout = fmeSocketTimeout;
     }
 
     @Value( "${fme_retry_hours}" )
