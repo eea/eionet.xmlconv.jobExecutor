@@ -4,6 +4,7 @@ import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.FollowRedirectException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.HttpFileManagerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.HttpFileManagerServiceImpl;
 import eionet.xmlconv.jobExecutor.utils.Utils;
@@ -37,7 +38,7 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
     }
 
     @Override
-    protected void runQuery(Script script, OutputStream result) throws ScriptExecutionException {
+    protected void runQuery(Script script, OutputStream result, WorkerJobInfoRabbitMQResponseMessage response) throws ScriptExecutionException {
         Context context = new Context();
         QueryProcessor proc = null;
         try {
