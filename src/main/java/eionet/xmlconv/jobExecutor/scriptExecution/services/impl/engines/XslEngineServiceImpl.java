@@ -6,6 +6,7 @@ import eionet.xmlconv.jobExecutor.converters.ConvertStrategy;
 import eionet.xmlconv.jobExecutor.converters.XMLConverter;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ConvertContextService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.HttpFileManagerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.ConvertContextServiceImpl;
@@ -33,7 +34,7 @@ public class XslEngineServiceImpl extends ScriptEngineServiceImpl {
     }
 
     @Override
-    protected void runQuery(Script script, OutputStream result) throws ScriptExecutionException {
+    protected void runQuery(Script script, OutputStream result, WorkerJobInfoRabbitMQResponseMessage response) throws ScriptExecutionException {
 
         FileInputStream fisXsl = null;
         String tmpXslFile = null;

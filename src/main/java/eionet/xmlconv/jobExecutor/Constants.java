@@ -17,6 +17,7 @@ public class Constants {
     public static final int WORKER_RECEIVED = 0;
     public static final int WORKER_READY = 1;
     public static final int WORKER_FAILED = 2;
+    public static final int WORKER_RECEIVED_FME_JOB_ID = 12;
 
     public static final int JOB_PROCESSING = 2;
     public static final int JOB_READY = 3;

@@ -1,8 +1,11 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 
+import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.SpringApplicationContext;
 import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
+import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FMEUtils;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeJobStatus;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeServerCommunicator;
@@ -53,6 +56,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private static final String FME_PORT_TEMPORARY_HARDCODED = "443";
 
+    private RabbitMQSender rabbitMQSender;
+
 
     /* Variables for eionet.gdem.Properties*/
     private Integer fmeTimeoutProperty;
@@ -77,7 +82,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
      * @throws Exception If an error occurs.
      */
     @Autowired
-    public FMEQueryEngineServiceImpl(Environment env) throws Exception {
+    public FMEQueryEngineServiceImpl(Environment env, RabbitMQSender rabbitMQSender) throws Exception {
         this.env = env;
 
         this.fmeUser = this.env.getProperty("fme_user");
@@ -97,14 +102,16 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
         requestConfigBuilder = RequestConfig.custom();
         requestConfigBuilder.setSocketTimeout(this.getFmeSocketTimeoutProperty());
+
+        this.rabbitMQSender = rabbitMQSender;
     }
 
     @Override
-    protected void runQuery(Script script, OutputStream result) throws Exception {
+    protected void runQuery(Script script, OutputStream result, WorkerJobInfoRabbitMQResponseMessage response) throws Exception {
 
         if(script.getAsynchronousExecution()){
             LOGGER.info("For job " + script.getJobId() + " the script " + script.getScriptFileName() + " will be run asynchronously");
-            runQueryAsynchronous(script, result);
+            runQueryAsynchronous(script, result, response);
         }
         else{
             LOGGER.info("For job " + script.getJobId() + " the script " + script.getScriptFileName() + " will be run synchronously");
@@ -205,7 +212,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     }
 
-    protected void runQueryAsynchronous(Script script, OutputStream result) throws IOException {
+    protected void runQueryAsynchronous(Script script, OutputStream result, WorkerJobInfoRabbitMQResponseMessage response) throws IOException {
         String folderName = FMEUtils.constructFMEFolderName(script.getOrigFileUrl(), this.getRandomStr());
         LOGGER.info("For job id " + script.getJobId() + " the folder we will create in FME server to get the asynchronous results is: " + folderName);
         String fmeJobId="";
@@ -214,6 +221,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
             FmeServerCommunicator fmeServerCommunicator = this.getFmeServerCommunicator();
             fmeJobId = fmeServerCommunicator.submitJob(script,new SynchronousSubmitJobRequest(script.getOrigFileUrl(),folderName));
+            sendFMEJobIdToConverters(fmeJobId, response);
 
 
             this.pollFmeServerWithRetries(fmeJobId,script,fmeServerCommunicator);
@@ -344,6 +352,12 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 method.releaseConnection();
             }
         }
+    }
+
+    private void sendFMEJobIdToConverters(String fmeJobId, WorkerJobInfoRabbitMQResponseMessage response){
+        response.getScript().setFmeJobId(fmeJobId);
+        response.setJobExecutorStatus(Constants.WORKER_RECEIVED_FME_JOB_ID);
+        rabbitMQSender.sendMessage(response);
     }
 
 
