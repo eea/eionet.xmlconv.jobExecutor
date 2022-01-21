@@ -3,6 +3,7 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.scriptExecution.processors.SaxonProcessor;
 import eionet.xmlconv.jobExecutor.utils.Utils;
 import net.sf.saxon.s9api.*;
@@ -29,7 +30,7 @@ public class SaxonEngineServiceImpl extends ScriptEngineServiceImpl {
     }
 
     @Override
-    protected void runQuery(Script script, OutputStream result) throws ScriptExecutionException {
+    protected void runQuery(Script script, OutputStream result, WorkerJobInfoRabbitMQResponseMessage response) throws ScriptExecutionException {
 
         Processor proc = SaxonProcessor.getProcessor();
         XQueryCompiler comp = proc.newXQueryCompiler();

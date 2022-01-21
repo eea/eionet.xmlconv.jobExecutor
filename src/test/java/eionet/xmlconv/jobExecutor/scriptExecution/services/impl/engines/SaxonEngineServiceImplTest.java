@@ -38,7 +38,7 @@ public class SaxonEngineServiceImplTest {
     public void testSimpleQuery() throws Exception {
         Script script = new Script("1 + 3", new String[]{});
         SaxonEngineServiceImpl sax = new SaxonEngineServiceImpl();
-        sax.runQuery(script, pr);
+        sax.runQuery(script, pr, null);
         Assert.assertEquals("4", baos.toString("UTF-8"));
     }
 
@@ -46,7 +46,7 @@ public class SaxonEngineServiceImplTest {
     public void testException() throws Exception {
         Script xq = new Script("xquery version \"1.0\"; x || y", new String[]{});
         SaxonEngineServiceImpl sax = new SaxonEngineServiceImpl();
-        sax.runQuery(xq, pr);
+        sax.runQuery(xq, pr, null);
     }
 
 }

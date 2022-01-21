@@ -2,6 +2,7 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services;
 
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 
 import java.io.OutputStream;
 
@@ -20,7 +21,7 @@ public interface ScriptEngineService {
      * @return the result of XQuery
      * @throws ScriptExecutionException If an error occurs.
      */
-    void getResult(Script script) throws ScriptExecutionException;
+    void getResult(Script script, WorkerJobInfoRabbitMQResponseMessage response) throws ScriptExecutionException;
 
     /**
      * Gets result
@@ -28,7 +29,7 @@ public interface ScriptEngineService {
      * @param out OutputStream
      * @throws ScriptExecutionException If an error occurs.
      */
-    void getResult(Script script, OutputStream out) throws ScriptExecutionException;
+    void getResult(Script script, OutputStream out, WorkerJobInfoRabbitMQResponseMessage response) throws ScriptExecutionException;
 
     /**
      * get output type of the XQuery script result. Default is text/html.

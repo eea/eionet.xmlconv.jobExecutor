@@ -102,7 +102,7 @@ public class ScriptMessageListener {
 
                 scriptExecutionService.setScript(script);
                 timer.start();
-                scriptExecutionService.getResult();
+                scriptExecutionService.getResult(response);
                 timer.stop();
 
                 LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[]{containerName, script.getJobId(), timer.toString()}));

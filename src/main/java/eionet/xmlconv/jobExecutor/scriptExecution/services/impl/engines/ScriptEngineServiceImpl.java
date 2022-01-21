@@ -1,6 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.QAResultPostProcessorService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptEngineService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.QAResultPostProcessorServiceImpl;
@@ -33,13 +34,13 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
      * @param result Result
      * @throws Exception If an error occurs.
      */
-    protected abstract void runQuery(Script script, OutputStream result) throws Exception;
+    protected abstract void runQuery(Script script, OutputStream result,  WorkerJobInfoRabbitMQResponseMessage response) throws Exception;
 
     @Override
-    public void getResult(Script script, OutputStream out) throws ScriptExecutionException {
+    public void getResult(Script script, OutputStream out, WorkerJobInfoRabbitMQResponseMessage response) throws ScriptExecutionException {
         try {
             setOutputType(script.getOutputType());
-            runQuery(script, out);
+            runQuery(script, out, response);
             String message = "For job id " + script.getJobId() + " the script ";
             if(!Utils.isNullStr(script.getScriptFileName())){
                 message+= script.getScriptFileName() + " file ";
@@ -59,7 +60,7 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
 
 
     @Override
-    public void getResult(Script script) throws ScriptExecutionException {
+    public void getResult(Script script, WorkerJobInfoRabbitMQResponseMessage response) throws ScriptExecutionException {
         FileOutputStream result = null;
         try {
             result = new FileOutputStream(new File(script.getStrResultFile()));
@@ -67,7 +68,7 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
             throw new ScriptExecutionException("For job id " + script.getJobId() + " could not find result file " + script.getStrResultFile());
         }
         try {
-            getResult(script, result);
+            getResult(script, result, response);
         } catch (ScriptExecutionException see) {
             LOGGER.error("For job id " + script.getJobId() + " could not execute getResult method. Exception message is: " + see.getMessage() );
             StringBuilder errBuilder = new StringBuilder();
