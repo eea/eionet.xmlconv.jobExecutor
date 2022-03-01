@@ -8,7 +8,9 @@ $ mvn clean install
 - or if you want to use prod profile (matches application-prod.properties), specify it at build time using the -P flag <br>
 $ mvn -Pprod clean install
 
-Add an environmental variable logFilePath which is used in logback-spring.xml
+- Add an environment variable logFilePath with value a path to a folder where log files will be stored. The variable is used in logback-spring.xml.
+
+- Add an environment variable queryLogRetentionDays with value the duration in days for which log files will be retained. Log files older than the specified duration will be deleted. The variable is used in logback-spring.xml.
 
 - JobExecutorApplication -> right click -> Run
 

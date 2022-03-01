@@ -54,6 +54,8 @@
             <!-- rollover daily and when the file reaches 5000KB -->
             <fileNamePattern>${basePath}/${appName}_%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
             <maxFileSize>5000KB</maxFileSize>
+            <!-- keep queryLogRetentionDays days of history -->
+            <maxHistory>${queryLogRetentionDays}</maxHistory>
         </rollingPolicy>
     </appender>
 
