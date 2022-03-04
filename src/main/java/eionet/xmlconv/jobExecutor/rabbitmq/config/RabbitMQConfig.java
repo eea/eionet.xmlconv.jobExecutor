@@ -109,7 +109,6 @@ public class RabbitMQConfig {
         rabbitTemplate.setMessageConverter(jsonMessageConverter());
         rabbitTemplate.setMandatory(true);
         rabbitTemplate.setReturnsCallback((returnedMessage) -> {
-            System.out.println("message returned");
             Message message = returnedMessage.getMessage();
             String exchange = returnedMessage.getExchange();
             String routingKey = returnedMessage.getRoutingKey();
