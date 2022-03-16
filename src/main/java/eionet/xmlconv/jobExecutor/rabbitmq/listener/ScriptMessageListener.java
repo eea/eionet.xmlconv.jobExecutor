@@ -1,17 +1,14 @@
 package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.RabbitMQConfig;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.JobExecutorType;
+import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequestMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
-import eionet.xmlconv.jobExecutor.rancher.entity.ContainerInfo;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptExecutionService;
@@ -20,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -42,9 +38,6 @@ public class ScriptMessageListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptMessageListener.class);
     private static volatile Map<String, Integer> workerJobStatus = new HashMap<>();
 
-    @Value("${rancher.heavy.service.name}")
-    private String rancherHeavyServiceName;
-
     @Autowired
     public ScriptMessageListener(ScriptExecutionService scriptExecutionService, RabbitMQSender rabbitMQSender, ContainerInfoRetriever containerInfoRetriever,
                                  DataRetrieverService dataRetrieverService) {
@@ -58,17 +51,11 @@ public class ScriptMessageListener {
     public void consumeMessage(WorkerJobRabbitMQRequestMessage rabbitMQRequest) throws IOException {
         Script script = rabbitMQRequest.getScript();
         LOGGER.info("Received job with id " + script.getJobId());
-
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String scriptStr = ow.writeValueAsString(script);
-
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
         StopWatch timer = new StopWatch();
         String containerName = "";
-        ContainerInfo containerInfo = null;
         try{
-            containerInfo = containerInfoRetriever.getContainerInfo();
-            containerName = containerInfo.getName();
+            containerName = containerInfoRetriever.getContainerName();
             LOGGER.info(String.format("For job id " + script.getJobId() + " container name is %s", containerName));
             LOGGER.info(String.format("Container name is %s", containerName));
             Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
@@ -97,7 +84,7 @@ public class ScriptMessageListener {
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
                 response.setJobExecutorName(containerName);
                 response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_RECEIVED).setHeartBeatQueue(RabbitMQConfig.queue)
-                    .setJobExecutorType(containerInfo.getService_name().equals(rancherHeavyServiceName) ? JobExecutorType.Heavy : JobExecutorType.Light);
+                    .setJobExecutorType(StatusInitializer.jobExecutorType);
                 rabbitMQSender.sendMessage(response);
 
                 scriptExecutionService.setScript(script);
@@ -116,7 +103,7 @@ public class ScriptMessageListener {
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {containerName, script.getJobId(), timer.toString()}));
             response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobExecutorStatus(Constants.WORKER_READY)
-                    .setJobExecutorType(containerInfo.getService_name().equals(rancherHeavyServiceName) ? JobExecutorType.Heavy : JobExecutorType.Light);
+                    .setJobExecutorType(StatusInitializer.jobExecutorType);
             setWorkerJobStatus(script.getJobId(), Constants.JOB_FATAL_ERROR);
             sendResponseToConverters(script.getJobId(), response, timer);
         }

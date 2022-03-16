@@ -3,6 +3,7 @@ package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.JobExecutorType;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
@@ -14,7 +15,6 @@ import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +26,6 @@ import java.io.IOException;
         matchIfMissing = true)
 @Service
 public class HeartBeatMessageListener implements MessageListener {
-
-    @Value("${rancher.heavy.service.name}")
-    private String rancherHeavyServiceName;
 
     @Autowired
     private ContainerInfoRetriever containerInfoRetriever;
@@ -48,10 +45,10 @@ public class HeartBeatMessageListener implements MessageListener {
             LOGGER.error("Error during processing of heart beat message, " + e.getMessage());
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
-        ContainerInfo containerInfo = containerInfoRetriever.getContainerInfo();
-        response.setJobExecutorType(containerInfo.getService_name().equals(rancherHeavyServiceName) ? JobExecutorType.Heavy : JobExecutorType.Light);
+        String containerName = containerInfoRetriever.getContainerName();
+        response.setJobExecutorType(StatusInitializer.jobExecutorType);
         Integer jobStatus = ScriptMessageListener.getWorkerJobStatus().get(response.getJobId().toString());
-        if (!response.getJobExecutorName().equals(containerInfo.getName())) {
+        if (!response.getJobExecutorName().equals(containerName)) {
             throw new AmqpRejectAndDontRequeueException("Worker " + response.getJobExecutorName() + " should receive heart beat message for job " + response.getJobId());
         } else if (jobStatus == null) {
             response.setJobStatus(Constants.JOB_NOT_FOUND);

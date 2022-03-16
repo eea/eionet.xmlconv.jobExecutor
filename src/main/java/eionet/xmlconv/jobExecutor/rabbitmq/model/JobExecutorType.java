@@ -3,7 +3,10 @@ package eionet.xmlconv.jobExecutor.rabbitmq.model;
 public enum JobExecutorType {
 
     Light(0),
-    Heavy(1);
+    Heavy(1),
+    Unknown(2),
+    Sync_fme(3),
+    Async_fme(4);
 
     private Integer id;
 
