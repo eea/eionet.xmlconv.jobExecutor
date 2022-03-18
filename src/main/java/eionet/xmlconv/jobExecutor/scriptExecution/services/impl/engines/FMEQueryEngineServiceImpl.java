@@ -1,5 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.SpringApplicationContext;
@@ -36,6 +38,7 @@ import eionet.xmlconv.jobExecutor.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.client.support.InterceptingHttpAccessor;
 import org.springframework.stereotype.Service;
 import org.apache.commons.io.IOUtils;
 
@@ -231,10 +234,17 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             sendFMEJobIdToConverters(fmeJobId, response);
             Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
             if (!fmeJobsAsync.isPresent()) {
-                throw new DatabaseException("Entry not found for job " + script.getJobId());
+                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                int retryMilisecs = this.getFmeRetryHoursProperty() * 60 * 60 * 1000;
+                int timeoutMilisecs = this.getFmeTimeoutProperty();
+                Integer retries = retryMilisecs / timeoutMilisecs;
+                FmeJobsAsync asyncEntry = new FmeJobsAsync(Integer.parseInt(script.getJobId())).setFmeJobId(fmeJobId!=null ? Integer.parseInt(fmeJobId) : null)
+                        .setScript(mapper.writeValueAsString(script)).setRetries(retries <= 0 ? 1 : retries).setCount(0).setFmeJobId(Integer.parseInt(fmeJobId)).setFolderName(folderName);
+                fmeJobsAsyncService.save(asyncEntry);
+            } else {
+                fmeJobsAsync.get().setFmeJobId(Integer.parseInt(fmeJobId)).setFolderName(folderName);
+                fmeJobsAsyncService.save(fmeJobsAsync.get());
             }
-            fmeJobsAsync.get().setFmeJobId(Integer.parseInt(fmeJobId)).setFolderName(folderName);
-            fmeJobsAsyncService.save(fmeJobsAsync.get());
             fmeQueryAsynchronousHandler.pollFmeServerForResults(script, folderName);
         } catch (FmeAuthorizationException | FmeCommunicationException | DatabaseException e) {
             String message = "Generic Exception handling ";
