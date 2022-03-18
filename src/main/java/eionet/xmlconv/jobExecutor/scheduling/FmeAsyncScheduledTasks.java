@@ -51,7 +51,7 @@ public class FmeAsyncScheduledTasks {
                 }
                 fmeQueryAsynchronousHandler.pollFmeServerForResults(script, fmeJobsAsync.getFolderName());
             } catch (JsonProcessingException e) {
-                LOGGER.error("Error during deserialization script for job " + fmeJobsAsync.getId());
+                LOGGER.error("Error during deserialization of script for job " + fmeJobsAsync.getId());
             } catch (IOException | ConvertersCommunicationException | DatabaseException e) {
                 LOGGER.error("Error while processing job " + fmeJobsAsync.getId());
             }
