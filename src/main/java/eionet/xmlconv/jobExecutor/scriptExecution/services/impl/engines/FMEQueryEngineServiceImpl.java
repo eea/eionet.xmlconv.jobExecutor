@@ -8,6 +8,8 @@ import eionet.xmlconv.jobExecutor.SpringApplicationContext;
 import eionet.xmlconv.jobExecutor.jpa.entities.FmeJobsAsync;
 import eionet.xmlconv.jobExecutor.jpa.services.FmeJobsAsyncService;
 import eionet.xmlconv.jobExecutor.models.Script;
+import eionet.xmlconv.jobExecutor.rabbitmq.config.RabbitMQConfig;
+import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FMEUtils;
@@ -263,6 +265,10 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             out.write(data, 0, data.length);
             out.closeEntry();
             out.close();
+            response.setJobExecutorName(StatusInitializer.containerName);
+            response.setErrorExists(true).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
+                    .setJobExecutorType(StatusInitializer.jobExecutorType).setScript(script);
+            fmeQueryAsynchronousHandler.sendResponseToConverters(script.getJobId(), response);
             Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
             if (fmeJobsAsync.isPresent()) {
                 fmeJobsAsyncService.deleteById(Integer.parseInt(script.getJobId()));

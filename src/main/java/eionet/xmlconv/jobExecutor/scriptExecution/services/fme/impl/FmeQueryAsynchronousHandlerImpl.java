@@ -82,7 +82,10 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
             response.setErrorExists(true).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
                     .setJobExecutorType(StatusInitializer.jobExecutorType).setScript(script);
             sendResponseToConverters(script.getJobId(), response);
-            fmeJobsAsyncService.deleteById(Integer.parseInt(script.getJobId()));
+            Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
+            if (fmeJobsAsync.isPresent()) {
+                fmeJobsAsyncService.deleteById(Integer.parseInt(script.getJobId()));
+            }
         }
         finally {
             if(!Utils.isNullStr(script.getFmeJobId())){
@@ -147,7 +150,8 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
         throw new RetryCountForGettingJobResultReachedException("Retry count reached with no result");
     }
 
-    protected void sendResponseToConverters(String jobId, WorkerJobInfoRabbitMQResponseMessage response) {
+    @Override
+    public void sendResponseToConverters(String jobId, WorkerJobInfoRabbitMQResponseMessage response) {
         LOGGER.info(String.format("Execution of job %s was completed", jobId));
         // The thread is forced to wait for 'timeoutMilisecs' before sending the message to converters in order for the result of the job to be written properly. Refs #140608
         LOGGER.info("Job with id " + jobId + " is waiting for " + Properties.responseTimeoutMs.toString() + " ms");
