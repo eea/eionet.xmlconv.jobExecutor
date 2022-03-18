@@ -248,7 +248,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 fmeJobsAsyncService.save(fmeJobsAsync.get());
             }
             fmeQueryAsynchronousHandler.pollFmeServerForResults(script, folderName);
-        } catch (FmeAuthorizationException | FmeCommunicationException | DatabaseException e) {
+        } catch (FmeAuthorizationException | FmeCommunicationException | DatabaseException | GenericFMEexception | RetryCountForGettingJobResultReachedException | InterruptedException | FMEBadRequestException e) {
             String message = "Generic Exception handling ";
             if (!Utils.isNullStr(convertersJobId)){
                 message += " for job id " + convertersJobId;

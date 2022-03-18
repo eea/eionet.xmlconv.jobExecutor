@@ -45,6 +45,9 @@ public class FmeJobsAsyncServiceImpl implements FmeJobsAsyncService {
     @Override
     public void deleteById(Integer id) throws DatabaseException {
         try {
+            if (true) {
+                throw new DatabaseException();
+            }
             fmeJobsAsyncRepository.deleteById(id);
         } catch (Exception e) {
             LOGGER.error("Exception during deletion of fme asynchronous job " + id);

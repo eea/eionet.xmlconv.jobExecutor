@@ -10,7 +10,6 @@ import eionet.xmlconv.jobExecutor.rabbitmq.config.RabbitMQConfig;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
-import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FMEUtils;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeJobStatus;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeQueryAsynchronousHandler;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeServerCommunicator;
@@ -21,13 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Service
 public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHandler {
@@ -48,50 +43,17 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
     }
 
     @Override
-    public void pollFmeServerForResults(Script script, String folderName) throws IOException, DatabaseException {
+    public void pollFmeServerForResults(Script script, String folderName) throws DatabaseException, GenericFMEexception, RetryCountForGettingJobResultReachedException, InterruptedException, FmeAuthorizationException, FMEBadRequestException, FmeCommunicationException {
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
-        try {
-            if (checkResultIfReady(script,fmeServerCommunicator)) {
-                String jobId = script.getJobId();
-                fmeServerCommunicator.getResultFiles(jobId, folderName, script.getStrResultFile());
-                fmeServerCommunicator.deleteFolder(jobId, folderName);
-                fmeJobsAsyncService.deleteById(Integer.parseInt(jobId));
-                response.setJobExecutorName(StatusInitializer.containerName);
-                response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
-                        .setJobExecutorType(StatusInitializer.jobExecutorType).setScript(script);
-                sendResponseToConverters(jobId, response);
-            }
-        } catch (FmeAuthorizationException | FmeCommunicationException | GenericFMEexception | FMEBadRequestException | RetryCountForGettingJobResultReachedException | InterruptedException | DatabaseException e) {
-            String message = "Generic Exception handling ";
-            if (!Utils.isNullStr(script.getJobId())){
-                message += " for job id " + script.getJobId();
-            }
-            message += " FME request error: " + e.getMessage();
-            LOGGER.error(message);
-            String resultStr = FMEUtils.createErrorMessage(script.getFmeJobId(), script.getScriptSource(), script.getOrigFileUrl(), e.getMessage());
-
-            FileOutputStream zipFile = new FileOutputStream(script.getStrResultFile());
-            ZipOutputStream out = new ZipOutputStream(zipFile);
-            ZipEntry entry = new ZipEntry("output.html");
-            out.putNextEntry(entry);
-            byte[] data = resultStr.getBytes();
-            out.write(data, 0, data.length);
-            out.closeEntry();
-            out.close();
+        if (checkResultIfReady(script, fmeServerCommunicator)) {
+            String jobId = script.getJobId();
+            fmeServerCommunicator.getResultFiles(jobId, folderName, script.getStrResultFile());
+            fmeServerCommunicator.deleteFolder(jobId, folderName);
+            fmeJobsAsyncService.deleteById(Integer.parseInt(jobId));
             response.setJobExecutorName(StatusInitializer.containerName);
-            response.setErrorExists(true).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
+            response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
                     .setJobExecutorType(StatusInitializer.jobExecutorType).setScript(script);
-            sendResponseToConverters(script.getJobId(), response);
-            Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
-            if (fmeJobsAsync.isPresent()) {
-                fmeJobsAsyncService.deleteById(Integer.parseInt(script.getJobId()));
-            }
-        }
-        finally {
-            if(!Utils.isNullStr(script.getFmeJobId())){
-                script.setFmeJobId(script.getFmeJobId());
-            }
-
+            sendResponseToConverters(jobId, response);
         }
     }
 
@@ -103,7 +65,7 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
         FmeJobsAsync jobAsyncEntry = jobsAsyncOptional.get();
         int count = jobAsyncEntry.getCount();
         String convertersJobId = script.getJobId();
-        if (jobAsyncEntry.getTimestamp()!=null) {
+        if (jobAsyncEntry.getTimestamp() != null) {
             //will wait 'fmeTimeOutProperty' before trying to retry the FME call
             Duration duration = Duration.between(jobAsyncEntry.getTimestamp(), Instant.now());
             if (duration.toMillis() < fmeTimeOutProperty) {
@@ -112,24 +74,24 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
         }
         while (count < jobAsyncEntry.getRetries()) {
             String logMessage = "Retry " + count + " for polling for status of FME job " + jobAsyncEntry.getFmeJobId();
-            if (!Utils.isNullStr(convertersJobId)){
+            if (!Utils.isNullStr(convertersJobId)) {
                 logMessage += " Converters job id is " + convertersJobId;
             }
             LOGGER.info(logMessage);
-            FmeJobStatus jobStatus = fmeServerCommunicator.getJobStatus(jobAsyncEntry.getFmeJobId().toString(),script);
-            switch (jobStatus){
+            FmeJobStatus jobStatus = fmeServerCommunicator.getJobStatus(jobAsyncEntry.getFmeJobId().toString(), script);
+            switch (jobStatus) {
                 case SUBMITTED:
                 case PULLED:
                 case QUEUED: {
                     if (count + 1 == jobAsyncEntry.getRetries()) {
                         String message = "Failed for last Retry  number: " + count + ". Received status " + jobStatus.toString();
-                        if (!Utils.isNullStr(convertersJobId)){
+                        if (!Utils.isNullStr(convertersJobId)) {
                             message += " Converters job id is " + convertersJobId;
                         }
                         throw new RetryCountForGettingJobResultReachedException(message);
                     } else {
                         String message = "Fme Request Process is still in progress for  -- Source file: " + script.getOrigFileUrl() + " -- FME workspace: " + script.getScriptSource() + " -- Response: " + jobStatus.toString() + "-- #Retry: " + count;
-                        if (!Utils.isNullStr(convertersJobId)){
+                        if (!Utils.isNullStr(convertersJobId)) {
                             message += " Converters job id is " + convertersJobId;
                         }
                         LOGGER.error(message);
@@ -140,8 +102,9 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
                     return false;
                 }
                 case ABORTED:
-                case FME_FAILURE:{
-                    throw new GenericFMEexception("Received result status FME_FAILURE for job Id #" + script.getFmeJobId());}
+                case FME_FAILURE: {
+                    throw new GenericFMEexception("Received result status FME_FAILURE for job Id #" + script.getFmeJobId());
+                }
 
                 case SUCCESS:
                     return true;
