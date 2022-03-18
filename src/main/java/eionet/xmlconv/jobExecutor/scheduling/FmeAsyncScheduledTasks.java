@@ -12,6 +12,7 @@ import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequestMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeExceptionHandlerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeQueryAsynchronousHandler;
 import eionet.xmlconv.jobExecutor.utils.GenericHandlerUtils;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,8 @@ public class FmeAsyncScheduledTasks {
     private DataRetrieverService dataRetrieverService;
     @Autowired
     private RabbitMQSender rabbitMQSender;
+    @Autowired
+    private FmeExceptionHandlerService fmeExceptionHandlerService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeAsyncScheduledTasks.class);
 
@@ -47,7 +51,7 @@ public class FmeAsyncScheduledTasks {
         List<FmeJobsAsync> asyncFmeJobs = fmeJobsAsyncService.findAll();
         asyncFmeJobs.forEach(fmeJobsAsync -> {
             ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            Script script;
+            Script script = null;
             try {
                 script = mapper.readValue(fmeJobsAsync.getScript(), Script.class);
                 Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
@@ -77,12 +81,19 @@ public class FmeAsyncScheduledTasks {
                     rabbitMQSender.sendMessageToDeadLetterQueue(rabbitMQRequest);
                     deleteEntryFromJobsAsyncTable(fmeJobsAsync.getId());
                 } else {
-                    fmeQueryAsynchronousHandler.pollFmeServerForResults(script, fmeJobsAsync.getFolderName());
+                    if (!fmeJobsAsync.isProcessing()) {
+                        fmeQueryAsynchronousHandler.pollFmeServerForResults(script, fmeJobsAsync.getFolderName());
+                    }
                 }
-            } catch (JsonProcessingException e) {
-                LOGGER.error("Error during deserialization of script for job " + fmeJobsAsync.getId());
+            } catch (JsonProcessingException ex) {
+                LOGGER.error("Error while deserializing script of job " + fmeJobsAsync.getId());
             } catch (Exception e) {
                 LOGGER.error("Error while processing job " + fmeJobsAsync.getId());
+                try {
+                    fmeExceptionHandlerService.execute(script, script.getFmeJobId(), e.getMessage());
+                } catch (DatabaseException | IOException exc) {
+                    exc.printStackTrace();
+                }
             }
         });
     }

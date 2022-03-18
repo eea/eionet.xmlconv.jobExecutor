@@ -43,9 +43,13 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
     }
 
     @Override
-    public void pollFmeServerForResults(Script script, String folderName) throws DatabaseException, GenericFMEexception, RetryCountForGettingJobResultReachedException, InterruptedException, FmeAuthorizationException, FMEBadRequestException, FmeCommunicationException {
+    public synchronized void pollFmeServerForResults(Script script, String folderName) throws DatabaseException, GenericFMEexception, RetryCountForGettingJobResultReachedException, InterruptedException, FmeAuthorizationException, FMEBadRequestException, FmeCommunicationException {
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
-        if (checkResultIfReady(script, fmeServerCommunicator)) {
+        Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
+        if (!fmeJobsAsync.isPresent()) {
+            return;
+        }
+        if (checkResultIfReady(fmeJobsAsync.get(), script, fmeServerCommunicator)) {
             String jobId = script.getJobId();
             fmeServerCommunicator.getResultFiles(jobId, folderName, script.getStrResultFile());
             fmeServerCommunicator.deleteFolder(jobId, folderName);
@@ -57,12 +61,7 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
         }
     }
 
-    protected boolean checkResultIfReady(Script script, FmeServerCommunicator fmeServerCommunicator) throws RetryCountForGettingJobResultReachedException, FMEBadRequestException, FmeCommunicationException, GenericFMEexception, FmeAuthorizationException, InterruptedException, DatabaseException {
-        Optional<FmeJobsAsync> jobsAsyncOptional = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
-        if (!jobsAsyncOptional.isPresent()) {
-            throw new RetryCountForGettingJobResultReachedException("Failed to find job " + script.getJobId() + " in FME_JOBS_ASYNC table");
-        }
-        FmeJobsAsync jobAsyncEntry = jobsAsyncOptional.get();
+    protected synchronized boolean checkResultIfReady(FmeJobsAsync jobAsyncEntry, Script script, FmeServerCommunicator fmeServerCommunicator) throws RetryCountForGettingJobResultReachedException, FMEBadRequestException, FmeCommunicationException, GenericFMEexception, FmeAuthorizationException, InterruptedException, DatabaseException {
         int count = jobAsyncEntry.getCount();
         String convertersJobId = script.getJobId();
         if (jobAsyncEntry.getTimestamp() != null) {
@@ -97,8 +96,8 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
                         LOGGER.error(message);
                         jobAsyncEntry.setTimestamp(Instant.now());
                     }
-                    jobAsyncEntry.setCount(++count);
-                    fmeJobsAsyncService.save(jobsAsyncOptional.get());
+                    jobAsyncEntry.setCount(++count).setProcessing(false);
+                    fmeJobsAsyncService.save(jobAsyncEntry);
                     return false;
                 }
                 case ABORTED:

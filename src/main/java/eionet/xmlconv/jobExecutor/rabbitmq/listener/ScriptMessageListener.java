@@ -105,7 +105,7 @@ public class ScriptMessageListener {
                         String fmeJobId = script.getFmeJobId();
                         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                         FmeJobsAsync fmeJobsAsync = new FmeJobsAsync(Integer.parseInt(script.getJobId())).setFmeJobId(fmeJobId!=null ? Integer.parseInt(fmeJobId) : null)
-                                .setScript(mapper.writeValueAsString(script)).setRetries(retries <= 0 ? 1 : retries).setCount(0);
+                                .setScript(mapper.writeValueAsString(script)).setRetries(retries <= 0 ? 1 : retries).setCount(0).setProcessing(true);
                         fmeJobsAsyncService.save(fmeJobsAsync);
                     }
                 } else {

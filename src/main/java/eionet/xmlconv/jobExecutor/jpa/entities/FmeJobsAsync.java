@@ -33,6 +33,9 @@ public class FmeJobsAsync implements Serializable {
     @Column(name = "TIMESTAMP")
     private Instant timestamp;
 
+    @Column(name = "PROCESSING")
+    private boolean processing;
+
     public FmeJobsAsync() {
     }
 
@@ -100,6 +103,15 @@ public class FmeJobsAsync implements Serializable {
 
     public FmeJobsAsync setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
+        return this;
+    }
+
+    public boolean isProcessing() {
+        return processing;
+    }
+
+    public FmeJobsAsync setProcessing(boolean processing) {
+        this.processing = processing;
         return this;
     }
 }
