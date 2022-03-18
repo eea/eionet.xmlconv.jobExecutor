@@ -3,12 +3,14 @@ package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.jpa.entities.FmeJobsAsync;
 import eionet.xmlconv.jobExecutor.jpa.services.FmeJobsAsyncService;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
+import eionet.xmlconv.jobExecutor.utils.GenericHandlerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
@@ -54,7 +56,7 @@ public class HeartBeatMessageListener implements MessageListener {
         } else {
             containerName = containerInfoRetriever.getContainerName();
         }
-        response.setJobExecutorType(StatusInitializer.jobExecutorType);
+        response.setJobExecutorType(GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType));
         Integer jobStatus = ScriptMessageListener.getWorkerJobStatus().get(response.getJobId().toString());
         if (!response.getJobExecutorName().equals(containerName)) {
             throw new AmqpRejectAndDontRequeueException("Worker " + response.getJobExecutorName() + " should receive heart beat message for job " + response.getJobId());

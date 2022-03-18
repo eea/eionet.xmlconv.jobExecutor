@@ -15,6 +15,7 @@ import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeJobStatus;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeQueryAsynchronousHandler;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeServerCommunicator;
+import eionet.xmlconv.jobExecutor.utils.GenericHandlerUtils;
 import eionet.xmlconv.jobExecutor.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,7 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
             }
             response.setJobExecutorName(containerName);
             response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
-                    .setJobExecutorType(StatusInitializer.jobExecutorType).setScript(script);
+                    .setJobExecutorType(GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType)).setScript(script);
             sendResponseToConverters(jobId, response);
         }
     }

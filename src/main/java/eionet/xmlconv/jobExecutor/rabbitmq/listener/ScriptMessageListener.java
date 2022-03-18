@@ -11,6 +11,7 @@ import eionet.xmlconv.jobExecutor.jpa.services.FmeJobsAsyncService;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.RabbitMQConfig;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
+import eionet.xmlconv.jobExecutor.rabbitmq.model.JobExecutorType;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequestMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponseMessage;
@@ -70,12 +71,16 @@ public class ScriptMessageListener {
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
         StopWatch timer = new StopWatch();
         String containerName = "";
+        JobExecutorType jobExecutorType = JobExecutorType.Unknown;
         try{
             if (StatusInitializer.containerName!=null) {
                 containerName = StatusInitializer.containerName;
             } else {
                 containerName = containerInfoRetriever.getContainerName();
             }
+
+            jobExecutorType = GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType);
+
             LOGGER.info(String.format("For job id " + script.getJobId() + " container name is %s", containerName));
             LOGGER.info(String.format("Container name is %s", containerName));
             Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
@@ -115,13 +120,15 @@ public class ScriptMessageListener {
                         FmeJobsAsync fmeJobsAsync = new FmeJobsAsync(Integer.parseInt(script.getJobId())).setFmeJobId(fmeJobId!=null ? Integer.parseInt(fmeJobId) : null)
                                 .setScript(mapper.writeValueAsString(script)).setRetries(retries <= 0 ? 1 : retries).setCount(0).setProcessing(true);
                         fmeJobsAsyncService.save(fmeJobsAsync);
+                    } else {
+                        setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
                     }
                 } else {
                     setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
                 }
                 response.setJobExecutorName(containerName);
                 response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_RECEIVED).setHeartBeatQueue(RabbitMQConfig.queue)
-                    .setJobExecutorType(StatusInitializer.jobExecutorType);
+                    .setJobExecutorType(jobExecutorType);
                 rabbitMQSender.sendMessage(response);
 
                 scriptExecutionService.setScript(script);
@@ -132,7 +139,7 @@ public class ScriptMessageListener {
                 if (script.getScriptType().equals(FME_SCRIPT_TYPE)) {
                     if (script.getAsynchronousExecution()) {
                         WorkerStateRabbitMQResponseMessage workerStatus = new WorkerStateRabbitMQResponseMessage.WorkerStateRabbitMQResponseBuilder(containerName, Constants.WORKER_READY)
-                                .setJobExecutorType(StatusInitializer.jobExecutorType).setHeartBeatQueue(RabbitMQConfig.queue).build();
+                                .setJobExecutorType(jobExecutorType).setHeartBeatQueue(RabbitMQConfig.queue).build();
                         rabbitMQSender.sendWorkerStatus(workerStatus);
                         return;
                     }
@@ -149,7 +156,7 @@ public class ScriptMessageListener {
             timer.stop();
             LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {containerName, script.getJobId(), timer.toString()}));
             response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobExecutorStatus(Constants.WORKER_READY)
-                    .setJobExecutorType(StatusInitializer.jobExecutorType);
+                    .setJobExecutorType(jobExecutorType);
             setWorkerJobStatus(script.getJobId(), Constants.JOB_FATAL_ERROR);
             sendResponseToConverters(script.getJobId(), response, timer);
         }

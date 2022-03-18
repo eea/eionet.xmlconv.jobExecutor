@@ -1,6 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.fme.impl;
 
 import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.DatabaseException;
 import eionet.xmlconv.jobExecutor.jpa.entities.FmeJobsAsync;
 import eionet.xmlconv.jobExecutor.jpa.services.FmeJobsAsyncService;
@@ -12,6 +13,7 @@ import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FMEUtils;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeExceptionHandlerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeQueryAsynchronousHandler;
+import eionet.xmlconv.jobExecutor.utils.GenericHandlerUtils;
 import eionet.xmlconv.jobExecutor.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +68,7 @@ public class FmeExceptionHandlerServiceImpl implements FmeExceptionHandlerServic
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
         response.setJobExecutorName(containerName);
         response.setErrorExists(true).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
-                .setJobExecutorType(StatusInitializer.jobExecutorType).setScript(script);
+                .setJobExecutorType(GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType)).setScript(script);
         fmeQueryAsynchronousHandler.sendResponseToConverters(script.getJobId(), response);
         Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
         if (fmeJobsAsync.isPresent()) {

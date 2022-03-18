@@ -85,6 +85,7 @@ public class Properties {
     public static String convertersEndpointToken;
     public static String ddEndpointToken;
     public static Long responseTimeoutMs;
+    public static Integer rancherJobExecutorType;
 
     /**
      * Checks path
@@ -327,5 +328,10 @@ public class Properties {
     @Value( "${response.timeout.ms}" )
     public void setResponseTimeoutMs(Long responseTimeoutMs) {
         this.responseTimeoutMs = responseTimeoutMs;
+    }
+
+    @Value("${rancher.jobExecutor.type}")
+    public void setRancherJobExecutorType(Integer rancherJobExecutorType) {
+        this.rancherJobExecutorType = rancherJobExecutorType;
     }
 }
