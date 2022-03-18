@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
+import eionet.xmlconv.jobExecutor.exceptions.DatabaseException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.jpa.entities.FmeJobsAsync;
 import eionet.xmlconv.jobExecutor.jpa.services.FmeJobsAsyncService;
@@ -156,7 +157,7 @@ public class ScriptMessageListener {
         }
     }
 
-    private void deleteEntryFromJobsAsyncTable(Script script) {
+    private void deleteEntryFromJobsAsyncTable(Script script) throws DatabaseException {
         Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
         if (fmeJobsAsync.isPresent()) {
             fmeJobsAsyncService.deleteById(Integer.parseInt(script.getJobId()));
