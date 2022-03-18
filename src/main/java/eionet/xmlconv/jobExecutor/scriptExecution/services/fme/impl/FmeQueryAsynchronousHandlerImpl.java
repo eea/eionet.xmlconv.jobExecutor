@@ -48,7 +48,7 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
     }
 
     @Override
-    public void pollFmeServerForResults(Script script, String folderName) throws IOException {
+    public void pollFmeServerForResults(Script script, String folderName) throws IOException, DatabaseException {
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
         try {
             if (checkResultIfReady(script,fmeServerCommunicator)) {
@@ -82,6 +82,7 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
             response.setErrorExists(true).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
                     .setJobExecutorType(StatusInitializer.jobExecutorType).setScript(script);
             sendResponseToConverters(script.getJobId(), response);
+            fmeJobsAsyncService.deleteById(Integer.parseInt(script.getJobId()));
         }
         finally {
             if(!Utils.isNullStr(script.getFmeJobId())){

@@ -219,7 +219,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     }
 
-    protected void runQueryAsynchronous(Script script, OutputStream result, WorkerJobInfoRabbitMQResponseMessage response) throws IOException {
+    protected void runQueryAsynchronous(Script script, OutputStream result, WorkerJobInfoRabbitMQResponseMessage response) throws IOException, DatabaseException {
         String folderName = FMEUtils.constructFMEFolderName(script.getOrigFileUrl(), this.getRandomStr());
         LOGGER.info("For job id " + script.getJobId() + " the folder we will create in FME server to get the asynchronous results is: " + folderName);
         String fmeJobId="";
@@ -253,6 +253,10 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             out.write(data, 0, data.length);
             out.closeEntry();
             out.close();
+            Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
+            if (fmeJobsAsync.isPresent()) {
+                fmeJobsAsyncService.deleteById(Integer.parseInt(script.getJobId()));
+            }
         }
         finally {
             if(!Utils.isNullStr(fmeJobId)){
