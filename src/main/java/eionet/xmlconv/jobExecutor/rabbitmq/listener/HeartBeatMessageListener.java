@@ -3,11 +3,11 @@ package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.jpa.entities.FmeJobsAsync;
+import eionet.xmlconv.jobExecutor.jpa.services.FmeJobsAsyncService;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
-import eionet.xmlconv.jobExecutor.rabbitmq.model.JobExecutorType;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
-import eionet.xmlconv.jobExecutor.rancher.entity.ContainerInfo;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +19,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @ConditionalOnProperty(
         value="rabbitmq.enabled",
@@ -31,6 +32,8 @@ public class HeartBeatMessageListener implements MessageListener {
     private ContainerInfoRetriever containerInfoRetriever;
     @Autowired
     private RabbitMQSender rabbitMQSender;
+    @Autowired
+    private FmeJobsAsyncService fmeJobsAsyncService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HeartBeatMessageListener.class);
 
@@ -51,7 +54,12 @@ public class HeartBeatMessageListener implements MessageListener {
         if (!response.getJobExecutorName().equals(containerName)) {
             throw new AmqpRejectAndDontRequeueException("Worker " + response.getJobExecutorName() + " should receive heart beat message for job " + response.getJobId());
         } else if (jobStatus == null) {
-            response.setJobStatus(Constants.JOB_NOT_FOUND);
+            Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(response.getJobId());
+            if (!fmeJobsAsync.isPresent()) {
+                response.setJobStatus(Constants.JOB_NOT_FOUND);
+                sendHeartBeatResponse(response);
+            }
+            response.setJobStatus(Constants.JOB_PROCESSING);
             sendHeartBeatResponse(response);
         } else if (jobStatus != null) {
             response.setJobStatus(jobStatus);

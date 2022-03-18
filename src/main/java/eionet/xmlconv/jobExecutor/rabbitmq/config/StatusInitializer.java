@@ -4,12 +4,10 @@ import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.JobExecutorType;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
-import eionet.xmlconv.jobExecutor.rancher.entity.ContainerInfo;
 import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -29,6 +27,7 @@ public class StatusInitializer {
     private Integer rancherJobExecutorType;
 
     public static JobExecutorType jobExecutorType;
+    public static String containerName;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusInitializer.class);
 
@@ -39,8 +38,8 @@ public class StatusInitializer {
 
     @EventListener(ApplicationReadyEvent.class)
     public void initializeWorkerStatusAfterStartup() {
-        ContainerInfo containerInfo = containerInfoRetriever.getContainerInfo();
-        LOGGER.info(String.format("Container name is %s", containerInfo.getName()));
+        containerName = containerInfoRetriever.getContainerName();
+        LOGGER.info(String.format("Container name is %s", containerName));
         if (rancherJobExecutorType.equals(JobExecutorType.Light.getId())) {
             jobExecutorType = JobExecutorType.Light;
         } else if (rancherJobExecutorType.equals(JobExecutorType.Heavy.getId())) {
@@ -52,7 +51,7 @@ public class StatusInitializer {
         } else {
             jobExecutorType = JobExecutorType.Unknown;
         }
-        WorkerStateRabbitMQResponseMessage response = new WorkerStateRabbitMQResponseMessage.WorkerStateRabbitMQResponseBuilder(containerInfoRetriever.getContainerName(), Constants.WORKER_READY)
+        WorkerStateRabbitMQResponseMessage response = new WorkerStateRabbitMQResponseMessage.WorkerStateRabbitMQResponseBuilder(containerName, Constants.WORKER_READY)
                 .setJobExecutorType(jobExecutorType).setHeartBeatQueue(RabbitMQConfig.queue).build();
         rabbitMQSender.sendWorkerStatus(response);
         LOGGER.info("Message for initializing JobExecutor status sent on rabbitmq");
