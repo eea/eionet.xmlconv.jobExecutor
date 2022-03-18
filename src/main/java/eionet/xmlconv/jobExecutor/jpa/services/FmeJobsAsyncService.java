@@ -14,5 +14,5 @@ public interface FmeJobsAsyncService {
 
     FmeJobsAsync save(FmeJobsAsync entry) throws DatabaseException;
 
-    void deleteById(Integer id);
+    void deleteById(Integer id) throws DatabaseException;
 }
