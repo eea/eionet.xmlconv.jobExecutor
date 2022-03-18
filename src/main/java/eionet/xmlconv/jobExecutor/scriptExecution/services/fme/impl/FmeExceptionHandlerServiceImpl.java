@@ -8,6 +8,7 @@ import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.RabbitMQConfig;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
+import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FMEUtils;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeExceptionHandlerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeQueryAsynchronousHandler;
@@ -28,17 +29,25 @@ public class FmeExceptionHandlerServiceImpl implements FmeExceptionHandlerServic
 
     private FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler;
     private FmeJobsAsyncService fmeJobsAsyncService;
+    private ContainerInfoRetriever containerInfoRetriever;
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeExceptionHandlerServiceImpl.class);
 
     @Autowired
-    public FmeExceptionHandlerServiceImpl(FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler, FmeJobsAsyncService fmeJobsAsyncService) {
+    public FmeExceptionHandlerServiceImpl(FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler, FmeJobsAsyncService fmeJobsAsyncService, ContainerInfoRetriever containerInfoRetriever) {
         this.fmeQueryAsynchronousHandler = fmeQueryAsynchronousHandler;
         this.fmeJobsAsyncService = fmeJobsAsyncService;
+        this.containerInfoRetriever = containerInfoRetriever;
     }
 
     @Override
     public void execute(Script script, String fmeJobId, String exceptionMessage) throws DatabaseException, IOException {
         String message = "Generic Exception handling ";
+        String containerName = "";
+        if (StatusInitializer.containerName!=null) {
+            containerName = StatusInitializer.containerName;
+        } else {
+            containerName = containerInfoRetriever.getContainerName();
+        }
         if (!Utils.isNullStr(script.getJobId())){
             message += " for job id " + script.getJobId();
         }
@@ -55,7 +64,7 @@ public class FmeExceptionHandlerServiceImpl implements FmeExceptionHandlerServic
         out.closeEntry();
         out.close();
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
-        response.setJobExecutorName(StatusInitializer.containerName);
+        response.setJobExecutorName(containerName);
         response.setErrorExists(true).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
                 .setJobExecutorType(StatusInitializer.jobExecutorType).setScript(script);
         fmeQueryAsynchronousHandler.sendResponseToConverters(script.getJobId(), response);

@@ -48,7 +48,12 @@ public class HeartBeatMessageListener implements MessageListener {
             LOGGER.error("Error during processing of heart beat message, " + e.getMessage());
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
-        String containerName = containerInfoRetriever.getContainerName();
+        String containerName = "";
+        if (StatusInitializer.containerName!=null) {
+            containerName = StatusInitializer.containerName;
+        } else {
+            containerName = containerInfoRetriever.getContainerName();
+        }
         response.setJobExecutorType(StatusInitializer.jobExecutorType);
         Integer jobStatus = ScriptMessageListener.getWorkerJobStatus().get(response.getJobId().toString());
         if (!response.getJobExecutorName().equals(containerName)) {

@@ -10,6 +10,8 @@ import eionet.xmlconv.jobExecutor.rabbitmq.config.RabbitMQConfig;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
+import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
+import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeJobStatus;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeQueryAsynchronousHandler;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeServerCommunicator;
@@ -33,13 +35,18 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
     private FmeServerCommunicator fmeServerCommunicator;
     private FmeJobsAsyncService fmeJobsAsyncService;
     private RabbitMQSender rabbitMQSender;
+    private ContainerInfoRetriever containerInfoRetriever;
+    private DataRetrieverService dataRetrieverService;
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeQueryAsynchronousHandlerImpl.class);
 
     @Autowired
-    public FmeQueryAsynchronousHandlerImpl(FmeServerCommunicator fmeServerCommunicator, FmeJobsAsyncService fmeJobsAsyncService, RabbitMQSender rabbitMQSender) {
+    public FmeQueryAsynchronousHandlerImpl(FmeServerCommunicator fmeServerCommunicator, FmeJobsAsyncService fmeJobsAsyncService, RabbitMQSender rabbitMQSender,
+                                           ContainerInfoRetriever containerInfoRetriever, DataRetrieverService dataRetrieverService) {
         this.fmeServerCommunicator = fmeServerCommunicator;
         this.fmeJobsAsyncService = fmeJobsAsyncService;
         this.rabbitMQSender = rabbitMQSender;
+        this.containerInfoRetriever = containerInfoRetriever;
+        this.dataRetrieverService = dataRetrieverService;
     }
 
     @Override
@@ -51,10 +58,26 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
         }
         if (checkResultIfReady(fmeJobsAsync.get(), script, fmeServerCommunicator)) {
             String jobId = script.getJobId();
+
+            try {
+                Integer jobExecutionStatus = dataRetrieverService.getJobStatus(jobId);
+                if (jobExecutionStatus == Constants.JOB_FATAL_ERROR || jobExecutionStatus == Constants.JOB_READY) {
+                    return;
+                }
+            } catch (ConvertersCommunicationException e) {
+                LOGGER.error("Error finding status from converters for job " + jobId);
+            }
+
             fmeServerCommunicator.getResultFiles(jobId, folderName, script.getStrResultFile());
             fmeServerCommunicator.deleteFolder(jobId, folderName);
             fmeJobsAsyncService.deleteById(Integer.parseInt(jobId));
-            response.setJobExecutorName(StatusInitializer.containerName);
+            String containerName = "";
+            if (StatusInitializer.containerName!=null) {
+                containerName = StatusInitializer.containerName;
+            } else {
+                containerName = containerInfoRetriever.getContainerName();
+            }
+            response.setJobExecutorName(containerName);
             response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
                     .setJobExecutorType(StatusInitializer.jobExecutorType).setScript(script);
             sendResponseToConverters(jobId, response);

@@ -15,6 +15,7 @@ import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMe
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequestMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
+import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptExecutionService;
 import eionet.xmlconv.jobExecutor.utils.GenericHandlerUtils;
@@ -47,17 +48,19 @@ public class ScriptMessageListener {
     private RabbitMQSender rabbitMQSender;
     private DataRetrieverService dataRetrieverService;
     private FmeJobsAsyncService fmeJobsAsyncService;
+    private ContainerInfoRetriever containerInfoRetriever;
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptMessageListener.class);
     private static volatile Map<String, Integer> workerJobStatus = new HashMap<>();
     private static final String FME_SCRIPT_TYPE = "fme";
 
     @Autowired
     public ScriptMessageListener(ScriptExecutionService scriptExecutionService, RabbitMQSender rabbitMQSender,
-                                 DataRetrieverService dataRetrieverService, FmeJobsAsyncService fmeJobsAsyncService) {
+                                 DataRetrieverService dataRetrieverService, FmeJobsAsyncService fmeJobsAsyncService, ContainerInfoRetriever containerInfoRetriever) {
         this.scriptExecutionService = scriptExecutionService;
         this.rabbitMQSender = rabbitMQSender;
         this.dataRetrieverService = dataRetrieverService;
         this.fmeJobsAsyncService = fmeJobsAsyncService;
+        this.containerInfoRetriever = containerInfoRetriever;
     }
 
     @RabbitListener(queues = "${job.rabbitmq.listeningQueue}")
@@ -66,8 +69,13 @@ public class ScriptMessageListener {
         LOGGER.info("Received job with id " + script.getJobId());
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
         StopWatch timer = new StopWatch();
-        String containerName = StatusInitializer.containerName;
+        String containerName = "";
         try{
+            if (StatusInitializer.containerName!=null) {
+                containerName = StatusInitializer.containerName;
+            } else {
+                containerName = containerInfoRetriever.getContainerName();
+            }
             LOGGER.info(String.format("For job id " + script.getJobId() + " container name is %s", containerName));
             LOGGER.info(String.format("Container name is %s", containerName));
             Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
