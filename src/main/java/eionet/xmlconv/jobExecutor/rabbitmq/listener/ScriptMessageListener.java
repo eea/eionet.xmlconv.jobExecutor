@@ -17,6 +17,7 @@ import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponseMess
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptExecutionService;
+import eionet.xmlconv.jobExecutor.utils.GenericHandlerUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,29 +72,29 @@ public class ScriptMessageListener {
             LOGGER.info(String.format("Container name is %s", containerName));
             Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
             if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
-                rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
-                        Constants.JOB_CANCELLED_BY_USER, containerName);
+                rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
+                        Constants.JOB_CANCELLED_BY_USER, containerName, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                deleteEntryFromJobsAsyncTable(script);
+                deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
             } else if (jobExecutionStatus == Constants.JOB_INTERRUPTED) {
-                rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job was interrupted because duration exceeded schema's maxExecutionTime",
-                        Constants.JOB_INTERRUPTED, containerName);
+                rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was interrupted because duration exceeded schema's maxExecutionTime",
+                        Constants.JOB_INTERRUPTED, containerName, Constants.WORKER_READY);
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                deleteEntryFromJobsAsyncTable(script);
+                deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
             }
             else if(jobExecutionStatus == Constants.JOB_DELETED){
-                rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job was deleted",
-                        Constants.JOB_DELETED, containerName);
+                rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was deleted",
+                        Constants.JOB_DELETED, containerName, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                deleteEntryFromJobsAsyncTable(script);
+                deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
             } else if(jobExecutionStatus == Constants.JOB_FATAL_ERROR || jobExecutionStatus == Constants.JOB_READY){
-                rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, "Job has already been executed",
-                        Constants.JOB_READY, containerName);
+                rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job has already been executed",
+                        Constants.JOB_READY, containerName, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                deleteEntryFromJobsAsyncTable(script);
+                deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
             } else {
                 clearWorkerJobStatus();
                 if (script.getScriptType().equals(FME_SCRIPT_TYPE)) {
@@ -151,29 +152,10 @@ public class ScriptMessageListener {
             }
             message += " Job id is " + script.getJobId();
             LOGGER.info(message);
-            rabbitMQRequest = createMessageForDeadLetterQueue(rabbitMQRequest, message,
-                    Constants.JOB_EXCEPTION_ERROR, containerName);
+            rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, message,
+                    Constants.JOB_EXCEPTION_ERROR, containerName, Constants.WORKER_READY);
             sendMessageToDeadLetterQueue(rabbitMQRequest);
         }
-    }
-
-    private void deleteEntryFromJobsAsyncTable(Script script) throws DatabaseException {
-        Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
-        if (fmeJobsAsync.isPresent()) {
-            fmeJobsAsyncService.deleteById(Integer.parseInt(script.getJobId()));
-        }
-    }
-
-    private WorkerJobRabbitMQRequestMessage createMessageForDeadLetterQueue(WorkerJobRabbitMQRequestMessage request,
-                                                                            String errorMessage, Integer errorStatus, String containerName){
-        request.setScript(request.getScript());
-        request.setErrorMessage(errorMessage);
-        request.setErrorStatus(errorStatus);
-        request.setJobExecutionRetries(request.getJobExecutionRetries());
-        request.setJobExecutorName(containerName);
-        request.setJobExecutorStatus(Constants.WORKER_FAILED);
-        request.setHeartBeatQueue(RabbitMQConfig.queue);
-        return request;
     }
 
     protected void sendResponseToConverters(String jobId, WorkerJobInfoRabbitMQResponseMessage response, StopWatch timer) {
@@ -186,6 +168,13 @@ public class ScriptMessageListener {
             LOGGER.error("Job with id " + jobId + " failed to wait for " + Properties.responseTimeoutMs.toString() + " ms");
         }
         rabbitMQSender.sendMessage(response);
+    }
+
+    protected void deleteEntryFromJobsAsyncTable(Integer jobId) throws DatabaseException {
+        Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(jobId);
+        if (fmeJobsAsync.isPresent()) {
+            fmeJobsAsyncService.deleteById(jobId);
+        }
     }
 
     public static synchronized Map<String, Integer> getWorkerJobStatus() {
