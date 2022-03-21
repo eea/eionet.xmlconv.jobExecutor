@@ -71,7 +71,6 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
 
             fmeServerCommunicator.getResultFiles(jobId, folderName, script.getStrResultFile());
             fmeServerCommunicator.deleteFolder(jobId, folderName);
-            fmeJobsAsyncService.deleteById(Integer.parseInt(jobId));
             String containerName = "";
             if (StatusInitializer.containerName!=null) {
                 containerName = StatusInitializer.containerName;
@@ -82,6 +81,7 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
             response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
                     .setJobExecutorType(GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType)).setScript(script);
             sendResponseToConverters(jobId, response);
+            fmeJobsAsyncService.deleteById(Integer.parseInt(jobId));
         }
     }
 
