@@ -6,19 +6,15 @@
 - If you want to connect jobExecutor with the database 
 1. Create a database connection using docker command <br>
 $ docker run --name jobExecutor -p 3314:3306 -e MYSQL_ROOT_PASSWORD=yourPassword mysql:8.0.28
-2. Comment out property 
+2. Set existing property spring.autoconfigure.exclude with no value
 <pre>
-    spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+    spring.autoconfigure.exclude=
 </pre>
 3. Connect jobExecutor with the database setting the following properties
 <pre>
-spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
-spring.jpa.hibernate.ddl-auto=none
 spring.datasource.url=jdbc:mysql://localhost:3314/jobExecutor?createDatabaseIfNotExist=true
 spring.datasource.username=root
 spring.datasource.password=yourPassword
-spring.jpa.open-in-view=false
-spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 </pre>
 
 ### Instructions to run application locally
