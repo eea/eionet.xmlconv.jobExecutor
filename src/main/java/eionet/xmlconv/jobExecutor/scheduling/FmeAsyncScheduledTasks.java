@@ -55,6 +55,7 @@ public class FmeAsyncScheduledTasks {
      */
     @Scheduled(fixedRate = 120000)
     public void scheduleFmeAsyncJobsStatusPolling() {
+        LOGGER.info("Running task scheduleFmeAsyncJobsStatusPolling");
         List<FmeJobsAsync> asyncFmeJobs = fmeJobsAsyncService.findAll();
         asyncFmeJobs.forEach(fmeJobsAsync -> {
             ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
