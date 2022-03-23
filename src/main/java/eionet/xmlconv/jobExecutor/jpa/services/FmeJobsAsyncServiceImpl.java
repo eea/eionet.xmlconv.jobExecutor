@@ -14,12 +14,11 @@ import java.util.Optional;
 @Service
 public class FmeJobsAsyncServiceImpl implements FmeJobsAsyncService {
 
+    @Autowired(required = false)
     private FmeJobsAsyncRepository fmeJobsAsyncRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeJobsAsyncServiceImpl.class);
 
-    @Autowired
-    public FmeJobsAsyncServiceImpl(FmeJobsAsyncRepository fmeJobsAsyncRepository) {
-        this.fmeJobsAsyncRepository = fmeJobsAsyncRepository;
+    public FmeJobsAsyncServiceImpl() {
     }
 
     @Override

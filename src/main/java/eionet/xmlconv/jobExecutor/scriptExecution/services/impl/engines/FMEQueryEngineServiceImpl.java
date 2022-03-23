@@ -63,6 +63,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private RabbitMQSender rabbitMQSender;
     private FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler;
+    @Autowired(required = false)
     private FmeJobsAsyncService fmeJobsAsyncService;
     private FmeExceptionHandlerService fmeExceptionHandlerService;
 
@@ -89,7 +90,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
      * @throws Exception If an error occurs.
      */
     @Autowired
-    public FMEQueryEngineServiceImpl(Environment env, RabbitMQSender rabbitMQSender, FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler, FmeJobsAsyncService fmeJobsAsyncService,
+    public FMEQueryEngineServiceImpl(Environment env, RabbitMQSender rabbitMQSender, FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler,
                                      FmeExceptionHandlerService fmeExceptionHandlerService) throws Exception {
         this.env = env;
 
@@ -113,7 +114,6 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
         this.rabbitMQSender = rabbitMQSender;
         this.fmeQueryAsynchronousHandler = fmeQueryAsynchronousHandler;
-        this.fmeJobsAsyncService = fmeJobsAsyncService;
         this.fmeExceptionHandlerService = fmeExceptionHandlerService;
     }
 

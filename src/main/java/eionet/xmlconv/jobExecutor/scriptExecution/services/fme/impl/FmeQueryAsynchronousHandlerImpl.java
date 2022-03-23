@@ -33,18 +33,18 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
     @Value(("${fme_timeout}"))
     private Integer fmeTimeOutProperty;
 
-    private FmeServerCommunicator fmeServerCommunicator;
+    @Autowired(required = false)
     private FmeJobsAsyncService fmeJobsAsyncService;
+    private FmeServerCommunicator fmeServerCommunicator;
     private RabbitMQSender rabbitMQSender;
     private ContainerInfoRetriever containerInfoRetriever;
     private DataRetrieverService dataRetrieverService;
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeQueryAsynchronousHandlerImpl.class);
 
     @Autowired
-    public FmeQueryAsynchronousHandlerImpl(FmeServerCommunicator fmeServerCommunicator, FmeJobsAsyncService fmeJobsAsyncService, RabbitMQSender rabbitMQSender,
+    public FmeQueryAsynchronousHandlerImpl(FmeServerCommunicator fmeServerCommunicator, RabbitMQSender rabbitMQSender,
                                            ContainerInfoRetriever containerInfoRetriever, DataRetrieverService dataRetrieverService) {
         this.fmeServerCommunicator = fmeServerCommunicator;
-        this.fmeJobsAsyncService = fmeJobsAsyncService;
         this.rabbitMQSender = rabbitMQSender;
         this.containerInfoRetriever = containerInfoRetriever;
         this.dataRetrieverService = dataRetrieverService;

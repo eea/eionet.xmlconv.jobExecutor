@@ -34,7 +34,7 @@ public class HeartBeatMessageListener implements MessageListener {
     private ContainerInfoRetriever containerInfoRetriever;
     @Autowired
     private RabbitMQSender rabbitMQSender;
-    @Autowired
+    @Autowired(required = false)
     private FmeJobsAsyncService fmeJobsAsyncService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HeartBeatMessageListener.class);

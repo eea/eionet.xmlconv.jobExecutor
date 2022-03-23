@@ -1,5 +1,25 @@
 ## Installation Guide 
-Create application-dev.properties file by copying the contents of application-prod.properties file. 
+- Create application-dev.properties file by copying the contents of application-prod.properties file. 
+
+- Set integer rancher.jobExecutor.type according to the enum JobExecutorType: 0 for Light, 1 for Heavy, 2 for Unknown, 3 for Sync_fme, 4 for Async_fme
+
+- If you want to connect jobExecutor with the database 
+1. Create a database connection using docker command <br>
+$ docker run --name jobExecutor -p 3314:3306 -e MYSQL_ROOT_PASSWORD=yourPassword mysql:8.0.28
+2. Comment out property 
+<pre>
+    spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+</pre>
+3. Connect jobExecutor with the database setting the following properties
+<pre>
+spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+spring.jpa.hibernate.ddl-auto=none
+spring.datasource.url=jdbc:mysql://localhost:3314/jobExecutor?createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=yourPassword
+spring.jpa.open-in-view=false
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+</pre>
 
 ### Instructions to run application locally
 - dev profile (matches application-dev.properties file) is activated by default, so run <br>

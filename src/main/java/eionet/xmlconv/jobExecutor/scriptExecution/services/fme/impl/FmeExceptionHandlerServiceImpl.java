@@ -29,15 +29,15 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class FmeExceptionHandlerServiceImpl implements FmeExceptionHandlerService {
 
-    private FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler;
+    @Autowired(required = false)
     private FmeJobsAsyncService fmeJobsAsyncService;
+    private FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler;
     private ContainerInfoRetriever containerInfoRetriever;
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeExceptionHandlerServiceImpl.class);
 
     @Autowired
-    public FmeExceptionHandlerServiceImpl(FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler, FmeJobsAsyncService fmeJobsAsyncService, ContainerInfoRetriever containerInfoRetriever) {
+    public FmeExceptionHandlerServiceImpl(FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler, ContainerInfoRetriever containerInfoRetriever) {
         this.fmeQueryAsynchronousHandler = fmeQueryAsynchronousHandler;
-        this.fmeJobsAsyncService = fmeJobsAsyncService;
         this.containerInfoRetriever = containerInfoRetriever;
     }
 

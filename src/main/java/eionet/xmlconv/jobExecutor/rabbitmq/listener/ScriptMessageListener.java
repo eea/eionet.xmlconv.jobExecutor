@@ -45,10 +45,11 @@ public class ScriptMessageListener {
     @Value(("${fme_timeout}"))
     private Integer fmeTimeOutProperty;
 
+    @Autowired(required = false)
+    private FmeJobsAsyncService fmeJobsAsyncService;
     private ScriptExecutionService scriptExecutionService;
     private RabbitMQSender rabbitMQSender;
     private DataRetrieverService dataRetrieverService;
-    private FmeJobsAsyncService fmeJobsAsyncService;
     private ContainerInfoRetriever containerInfoRetriever;
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptMessageListener.class);
     private static volatile Map<String, Integer> workerJobStatus = new HashMap<>();
@@ -56,11 +57,10 @@ public class ScriptMessageListener {
 
     @Autowired
     public ScriptMessageListener(ScriptExecutionService scriptExecutionService, RabbitMQSender rabbitMQSender,
-                                 DataRetrieverService dataRetrieverService, FmeJobsAsyncService fmeJobsAsyncService, ContainerInfoRetriever containerInfoRetriever) {
+                                 DataRetrieverService dataRetrieverService, ContainerInfoRetriever containerInfoRetriever) {
         this.scriptExecutionService = scriptExecutionService;
         this.rabbitMQSender = rabbitMQSender;
         this.dataRetrieverService = dataRetrieverService;
-        this.fmeJobsAsyncService = fmeJobsAsyncService;
         this.containerInfoRetriever = containerInfoRetriever;
     }
 

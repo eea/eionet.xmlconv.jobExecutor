@@ -24,13 +24,13 @@ public class GenericHandlerUtils {
             rancherJobExecutorType = Properties.rancherJobExecutorType;
         }
         JobExecutorType jobExecutorType;
-        if (rancherJobExecutorType.equals(JobExecutorType.Light.getId())) {
+        if (rancherJobExecutorType!=null && rancherJobExecutorType.equals(JobExecutorType.Light.getId())) {
             jobExecutorType = JobExecutorType.Light;
-        } else if (rancherJobExecutorType.equals(JobExecutorType.Heavy.getId())) {
+        } else if (rancherJobExecutorType!=null && rancherJobExecutorType.equals(JobExecutorType.Heavy.getId())) {
             jobExecutorType = JobExecutorType.Heavy;
-        } else if (rancherJobExecutorType.equals(JobExecutorType.Sync_fme.getId())) {
+        } else if (rancherJobExecutorType!=null && rancherJobExecutorType.equals(JobExecutorType.Sync_fme.getId())) {
             jobExecutorType = JobExecutorType.Sync_fme;
-        } else if (rancherJobExecutorType.equals(JobExecutorType.Async_fme.getId())){
+        } else if (rancherJobExecutorType!=null && rancherJobExecutorType.equals(JobExecutorType.Async_fme.getId())){
             jobExecutorType = JobExecutorType.Async_fme;
         } else {
             jobExecutorType = JobExecutorType.Unknown;
