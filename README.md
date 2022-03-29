@@ -17,6 +17,8 @@ spring.datasource.username=root
 spring.datasource.password=yourPassword
 </pre>
 
+- If jobExecutor should work as async fme worker, property enable.fmeScheduler should be set to true so as that scheduled task scheduleFmeAsyncJobsStatusPolling is enabled
+
 ### Instructions to run application locally
 - dev profile (matches application-dev.properties file) is activated by default, so run <br>
 $ mvn clean install
