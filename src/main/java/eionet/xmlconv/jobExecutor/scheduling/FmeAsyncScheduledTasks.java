@@ -49,11 +49,11 @@ public class FmeAsyncScheduledTasks {
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeAsyncScheduledTasks.class);
 
     /**
-     * Time in milliseconds. Runs every 2 minutes
+     * Time in milliseconds. Runs every 30 seconds
      * Finds fme asynchronous jobs and check for their status in fme server. If ready result file is update and converters tables are updated through rabbitmq messages.
      * Moreover, fme async entries for ready jobs are deleted from FME_JOBS_ASYNC table.
      */
-    @Scheduled(fixedRate = 120000)
+    @Scheduled(fixedRate = 30000)
     public void scheduleFmeAsyncJobsStatusPolling() {
         LOGGER.info("Running task scheduleFmeAsyncJobsStatusPolling");
         List<FmeJobsAsync> asyncFmeJobs = fmeJobsAsyncService.findAll();
