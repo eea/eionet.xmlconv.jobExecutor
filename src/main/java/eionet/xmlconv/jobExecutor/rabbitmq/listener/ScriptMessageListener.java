@@ -84,30 +84,39 @@ public class ScriptMessageListener {
             LOGGER.info(String.format("For job id " + script.getJobId() + " container name is %s", containerName));
             LOGGER.info(String.format("Container name is %s", containerName));
             Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
+            LOGGER.info("Job status is " + jobExecutionStatus);
             if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
                         Constants.JOB_CANCELLED_BY_USER, containerName, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
+                if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
+                    deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
+                }
             } else if (jobExecutionStatus == Constants.JOB_INTERRUPTED) {
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was interrupted because duration exceeded schema's maxExecutionTime",
                         Constants.JOB_INTERRUPTED, containerName, Constants.WORKER_READY);
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
+                if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
+                    deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
+                }
             }
             else if(jobExecutionStatus == Constants.JOB_DELETED){
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was deleted",
                         Constants.JOB_DELETED, containerName, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
+                if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
+                    deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
+                }
             } else if(jobExecutionStatus == Constants.JOB_FATAL_ERROR || jobExecutionStatus == Constants.JOB_READY){
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job has already been executed",
                         Constants.JOB_READY, containerName, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
+                if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
+                    deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
+                }
             } else {
                 clearWorkerJobStatus();
                 if (script.getScriptType().equals(FME_SCRIPT_TYPE)) {
