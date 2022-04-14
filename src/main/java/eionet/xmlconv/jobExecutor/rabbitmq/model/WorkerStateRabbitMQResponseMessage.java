@@ -7,6 +7,9 @@ public class WorkerStateRabbitMQResponseMessage extends WorkerMessage {
     private String heartBeatQueue;
     private JobExecutorType jobExecutorType;
 
+    public WorkerStateRabbitMQResponseMessage() {
+    }
+
     public WorkerStateRabbitMQResponseMessage(WorkerStateRabbitMQResponseBuilder builder) {
         super(builder.jobExecutorName);
         this.jobExecutorStatus = builder.jobExecutorStatus;

@@ -32,7 +32,7 @@
         </encoder>
     </appender>
 
-    -->
+    <property name="basePath" value="${logFilePath}/jobExecutorLogs"/>
 
     <property name="basePath" value="${logFilePath}/jobExecutorLogs"/>
 
@@ -57,6 +57,8 @@
             <!-- rollover daily and when the file reaches 5000KB -->
             <fileNamePattern>${basePath}/${appName}_%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
             <maxFileSize>5000KB</maxFileSize>
+            <!-- keep queryLogRetentionDays days of history -->
+            <maxHistory>${queryLogRetentionDays}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -70,11 +72,11 @@
     <springProfile name="prod">
         <!-- configuration to be enabled when the "prod" profile is active -->
         <root level="INFO">
-            <!-- <appender-ref ref="GELF"/> -->
-             <appender-ref ref="Console" />
-             <appender-ref ref="fileLogger" level="info" />
-         </root>
-     </springProfile>
+            <appender-ref ref="GELF"/>
+            <appender-ref ref="Console" />
+            <appender-ref ref="fileLogger" level="info" />
+        </root>
+    </springProfile>
 
 
  </configuration>
