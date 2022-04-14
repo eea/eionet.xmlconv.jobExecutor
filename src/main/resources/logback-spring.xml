@@ -5,7 +5,6 @@
 
     <define name="appName" class="eionet.xmlconv.jobExecutor.ApplicationNamePropertyDefiner"/>
 
-    <!-- commented because Graylog dev is down
     <appender name="GELF" class="de.siegmar.logbackgelf.GelfTcpAppender">
         <graylogHost>localhost</graylogHost>
         <graylogPort>12201</graylogPort>
@@ -31,8 +30,6 @@
             <staticField>os_version:${os.version}</staticField>
         </encoder>
     </appender>
-
-    <property name="basePath" value="${logFilePath}/jobExecutorLogs"/>
 
     <property name="basePath" value="${logFilePath}/jobExecutorLogs"/>
 
@@ -79,4 +76,4 @@
     </springProfile>
 
 
- </configuration>
+</configuration>
