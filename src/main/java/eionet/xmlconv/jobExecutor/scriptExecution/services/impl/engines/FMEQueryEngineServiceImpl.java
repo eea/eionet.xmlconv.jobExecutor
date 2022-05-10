@@ -250,9 +250,6 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             }
             fmeQueryAsynchronousHandler.pollFmeServerForResults(script, folderName);
         } catch (FmeAuthorizationException | FmeCommunicationException | DatabaseException | GenericFMEexception | RetryCountForGettingJobResultReachedException | InterruptedException | FMEBadRequestException e) {
-            if(!Utils.isNullStr(fmeJobId)){
-                script.setFmeJobId(fmeJobId);
-            }
             fmeExceptionHandlerService.execute(script, fmeJobId, e.getMessage());
         }
     }
