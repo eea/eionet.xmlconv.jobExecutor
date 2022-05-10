@@ -63,6 +63,9 @@ public class FmeAsyncScheduledTasks {
             String containerName = "";
             try {
                 script = mapper.readValue(fmeJobsAsync.getScript(), Script.class);
+                if(fmeJobsAsync.getFmeJobId() != null){
+                    script.setFmeJobId(fmeJobsAsync.getFmeJobId().toString());
+                }
                 Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
                 WorkerJobRabbitMQRequestMessage rabbitMQRequest = new WorkerJobRabbitMQRequestMessage().setScript(script);
                 if (StatusInitializer.containerName!=null) {
