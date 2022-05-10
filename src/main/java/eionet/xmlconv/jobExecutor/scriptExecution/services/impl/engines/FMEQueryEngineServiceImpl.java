@@ -232,6 +232,9 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             FmeServerCommunicator fmeServerCommunicator = this.getFmeServerCommunicator();
             fmeJobId = fmeServerCommunicator.submitJob(script,new SynchronousSubmitJobRequest(script.getOrigFileUrl(),folderName));
             sendFMEJobIdToConverters(fmeJobId, response);
+            if(!Utils.isNullStr(fmeJobId)){
+                script.setFmeJobId(fmeJobId);
+            }
             Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
             if (!fmeJobsAsync.isPresent()) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -247,13 +250,10 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
             }
             fmeQueryAsynchronousHandler.pollFmeServerForResults(script, folderName);
         } catch (FmeAuthorizationException | FmeCommunicationException | DatabaseException | GenericFMEexception | RetryCountForGettingJobResultReachedException | InterruptedException | FMEBadRequestException e) {
-            fmeExceptionHandlerService.execute(script, fmeJobId, e.getMessage());
-        }
-        finally {
             if(!Utils.isNullStr(fmeJobId)){
                 script.setFmeJobId(fmeJobId);
             }
-
+            fmeExceptionHandlerService.execute(script, fmeJobId, e.getMessage());
         }
     }
 
