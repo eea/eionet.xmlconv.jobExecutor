@@ -43,6 +43,9 @@ public class FmeExceptionHandlerServiceImpl implements FmeExceptionHandlerServic
 
     @Override
     public void execute(Script script, String fmeJobId, String exceptionMessage) throws DatabaseException, IOException {
+        if(!Utils.isNullStr(fmeJobId)){
+            script.setFmeJobId(fmeJobId);
+        }
         String message = "Generic Exception handling ";
         String containerName = "";
         if (StatusInitializer.containerName!=null) {
