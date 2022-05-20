@@ -3,7 +3,9 @@
 
 - Set integer rancher.jobExecutor.type according to the enum JobExecutorType: 0 for Light, 1 for Heavy, 2 for Unknown, 3 for Sync_fme, 4 for Async_fme
 
-- If you want to connect jobExecutor with the database 
+- The appropriate listening queue should also be set via property job.rabbitmq.listeningQueue depending on the type of jobExecutor we want to use
+
+- Async fme jobExecutor should be connected with the database, so the following steps should be done before starting the application:
 1. Create a database connection using docker command <br>
 $ docker run --name jobExecutor -p 3314:3306 -e MYSQL_ROOT_PASSWORD=yourPassword mysql:8.0.28
 2. Set existing property spring.autoconfigure.exclude with no value
