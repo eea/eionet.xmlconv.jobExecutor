@@ -4,6 +4,5 @@ import org.apache.http.impl.client.CloseableHttpClient;
 
 public interface ApacheHttpClientWrapper {
 
-
     CloseableHttpClient getClient();
 }

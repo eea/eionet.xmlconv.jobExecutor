@@ -1,6 +1,5 @@
 package eionet.xmlconv.jobExecutor.factories;
 
-import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.utils.CacheManagerUtils;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;

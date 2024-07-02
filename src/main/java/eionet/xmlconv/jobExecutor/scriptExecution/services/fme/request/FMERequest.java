@@ -1,6 +1,7 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.fme.request;
 
 public abstract class FMERequest {
+
     public static final String NAME_KEY="name";
     public static final String VALUE_KEY="value";
     public static final String FOLDER_VALUE="folder";

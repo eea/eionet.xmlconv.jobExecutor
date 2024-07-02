@@ -4,9 +4,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class GetResultFilesFromFolderAsZipRequest extends FMERequest {
+
     private String fmeResultFolderProperty = Properties.fmeResultFolder;
     private String folderName;
-
 
     public GetResultFilesFromFolderAsZipRequest(String folderName) {
         this.folderName = folderName;

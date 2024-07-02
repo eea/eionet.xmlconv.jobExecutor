@@ -1,6 +1,5 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.fme.impl;
 
-import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.*;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.ApacheHttpClientUtils;
@@ -10,7 +9,6 @@ import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeServerCommunic
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.request.HttpRequestHeader;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.request.SubmitJobRequest;
 import eionet.xmlconv.jobExecutor.utils.Utils;
-import eionet.xmlconv.jobExecutor.utils.ZipUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
 import org.apache.http.client.entity.UrlEncodedFormEntity;

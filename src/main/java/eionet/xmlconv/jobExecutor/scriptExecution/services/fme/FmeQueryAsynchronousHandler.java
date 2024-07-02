@@ -9,6 +9,6 @@ import java.io.IOException;
 public interface FmeQueryAsynchronousHandler {
 
     void pollFmeServerForResults(Script script, String folderName) throws IOException, DatabaseException, GenericFMEexception, RetryCountForGettingJobResultReachedException, InterruptedException, FmeAuthorizationException, FMEBadRequestException, FmeCommunicationException;
-
     void sendResponseToConverters(String jobId, WorkerJobInfoRabbitMQResponseMessage response);
+
 }

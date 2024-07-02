@@ -4,7 +4,6 @@ import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.datadict.DataDictUtil;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
-import eionet.xmlconv.jobExecutor.exceptions.XmlconvApiException;
 import eionet.xmlconv.jobExecutor.models.Schema;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.QAResultPostProcessorService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;

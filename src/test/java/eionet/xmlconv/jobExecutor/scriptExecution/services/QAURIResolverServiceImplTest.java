@@ -3,7 +3,6 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services;
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.QAURIResolverServiceImpl;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

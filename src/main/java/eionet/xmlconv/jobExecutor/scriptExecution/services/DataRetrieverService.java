@@ -2,7 +2,6 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services;
 
 import eionet.xmlconv.jobExecutor.exceptions.ConvertersCommunicationException;
 import eionet.xmlconv.jobExecutor.exceptions.XmlconvApiException;
-import eionet.xmlconv.jobExecutor.models.JobExecutionStatus;
 import eionet.xmlconv.jobExecutor.models.Schema;
 
 import java.io.IOException;

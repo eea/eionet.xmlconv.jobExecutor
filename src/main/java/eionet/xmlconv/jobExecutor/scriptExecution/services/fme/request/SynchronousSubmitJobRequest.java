@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class SynchronousSubmitJobRequest extends SubmitJobRequest {
 
-   private String xmlSourceFile;
+    private String xmlSourceFile;
     private String folderName;
 
     ArrayList<NameValuePair> postParameters;
@@ -21,7 +21,6 @@ public class SynchronousSubmitJobRequest extends SubmitJobRequest {
         this.xmlSourceFile = xmlSourceFile;
         this.folderName = folderName;
     }
-
 
     @Override
     public String buildBody() {
@@ -39,7 +38,7 @@ public class SynchronousSubmitJobRequest extends SubmitJobRequest {
 
         JSONObject result = new JSONObject();
         result.put("publishedParameters",jsonArray);
-       return  result.toString();
+        return  result.toString();
     }
 
 

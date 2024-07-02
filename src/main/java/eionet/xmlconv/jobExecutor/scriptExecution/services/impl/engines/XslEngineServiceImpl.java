@@ -1,6 +1,5 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 
-
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.converters.ConvertStrategy;
 import eionet.xmlconv.jobExecutor.converters.XMLConverter;
@@ -26,7 +25,7 @@ import java.util.Map;
 
 @Service("xslEngineService")
 public class XslEngineServiceImpl extends ScriptEngineServiceImpl {
-    /** */
+
     private static final Logger LOGGER = LoggerFactory.getLogger(XslEngineServiceImpl.class);
 
     @Autowired

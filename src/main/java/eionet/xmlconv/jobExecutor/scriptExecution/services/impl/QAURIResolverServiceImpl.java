@@ -17,7 +17,6 @@ import java.io.File;
  * Type for resolving QA URIs. If XML file is referenced from XQuery as file in the root folder, then it is resolved to correct
  * location in filesystem.
  */
-
 @Service
 public class QAURIResolverServiceImpl implements URIResolver {
     private static Logger LOGGER = LoggerFactory.getLogger(QAURIResolverServiceImpl.class);

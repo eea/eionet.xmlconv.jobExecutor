@@ -1,8 +1,8 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.fme.request;
 
 public abstract class SubmitJobRequest extends FMEJsonRequest{
-    private String xmlSourceFile;
 
+    private String xmlSourceFile;
 
     public SubmitJobRequest(String xmlSourceFile) {
         this.xmlSourceFile = xmlSourceFile;

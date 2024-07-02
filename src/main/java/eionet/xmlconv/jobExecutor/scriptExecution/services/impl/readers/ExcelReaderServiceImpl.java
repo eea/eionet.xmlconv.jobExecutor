@@ -29,11 +29,10 @@ import java.util.*;
  * The main class, which is calling POI HSSF methods for reading Excel file.
  *
  */
-
 @Service
 public class ExcelReaderServiceImpl implements SourceReaderService {
     /**
-     * Excel eorkbook to be converted.
+     * Excel workbook to be converted.
      */
     private Workbook wb = null;
     /**

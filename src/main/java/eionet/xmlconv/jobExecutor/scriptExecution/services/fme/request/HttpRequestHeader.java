@@ -11,10 +11,8 @@ public class HttpRequestHeader {
 
     private Header[] headers;
 
-
-  private HttpRequestHeader(){
-
-  }
+    private HttpRequestHeader(){
+    }
 
     public static class Builder {
         private List<Header> headers;

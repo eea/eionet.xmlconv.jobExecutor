@@ -2,9 +2,7 @@ package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
-import eionet.xmlconv.jobExecutor.scriptExecution.services.QAResultPostProcessorService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptEngineService;
-import eionet.xmlconv.jobExecutor.scriptExecution.services.impl.QAResultPostProcessorServiceImpl;
 import eionet.xmlconv.jobExecutor.utils.Utils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -18,8 +16,6 @@ import java.util.HashMap;
 @Service
 public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
 
-
-    /** */
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptEngineServiceImpl.class);
     private String encoding = null;
     private String outputType = null;

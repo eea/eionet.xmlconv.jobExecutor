@@ -1,6 +1,5 @@
 package eionet.xmlconv.jobExecutor.utils;
 
-import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.SpringApplicationContext;
 import eionet.xmlconv.jobExecutor.datadict.DDDatasetTable;
 import net.sf.ehcache.Cache;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 

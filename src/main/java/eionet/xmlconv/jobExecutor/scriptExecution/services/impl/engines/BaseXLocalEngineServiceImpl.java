@@ -1,7 +1,6 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
 
 import eionet.xmlconv.jobExecutor.Properties;
-import eionet.xmlconv.jobExecutor.exceptions.FollowRedirectException;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
@@ -14,7 +13,6 @@ import org.basex.core.Context;
 import org.basex.core.MainOptions;
 import org.basex.io.out.ArrayOutput;
 import org.basex.io.serial.SerializerOptions;
-import org.basex.query.QueryException;
 import org.basex.query.QueryProcessor;
 import org.basex.query.value.Value;
 import org.slf4j.Logger;

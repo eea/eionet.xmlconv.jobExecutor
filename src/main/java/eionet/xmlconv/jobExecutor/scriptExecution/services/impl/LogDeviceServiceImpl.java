@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class LogDeviceServiceImpl implements LogDeviceService {
 
-    /** */
     private static final Logger LOGGER = LoggerFactory.getLogger(LogDeviceService.class);
 
     @Autowired

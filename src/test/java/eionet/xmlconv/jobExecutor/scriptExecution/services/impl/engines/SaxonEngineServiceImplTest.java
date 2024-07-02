@@ -4,7 +4,6 @@ import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
-import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptEngineService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

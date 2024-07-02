@@ -1,10 +1,10 @@
 package eionet.xmlconv.jobExecutor.factories;
 
-import eionet.xmlconv.jobExecutor.Properties;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.core.env.Environment;
 
 public class HttpConnectionManagerFactory {
+
     private HttpConnectionManagerFactory() {
         // do nothing
     }
