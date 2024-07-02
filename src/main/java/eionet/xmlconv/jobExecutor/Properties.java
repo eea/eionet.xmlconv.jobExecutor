@@ -3,7 +3,6 @@ package eionet.xmlconv.jobExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Configuration;
 
 import java.text.MessageFormat;
@@ -86,6 +85,7 @@ public class Properties {
     public static String ddEndpointToken;
     public static Long responseTimeoutMs;
     public static Integer rancherJobExecutorType;
+    public static String RANCHER_POD_NAME;
 
     /**
      * Checks path
@@ -334,4 +334,10 @@ public class Properties {
     public void setRancherJobExecutorType(Integer rancherJobExecutorType) {
         this.rancherJobExecutorType = rancherJobExecutorType;
     }
+
+    @Value("${rancher.pod.name}")
+    public void setRancherPodName(String rancherPodName) {
+        this.RANCHER_POD_NAME = rancherPodName;
+    }
+
 }

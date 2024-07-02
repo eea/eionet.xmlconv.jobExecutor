@@ -3,7 +3,10 @@
 <!-- <configuration debug="true" > -->
 <configuration debug="true">
 
-    <define name="appName" class="eionet.xmlconv.jobExecutor.ApplicationNamePropertyDefiner"/>
+    <!-- Name of the pod. Exposed to running container through environment variable 
+        (https://kubernetes.io/docs/tasks/inject-data-application/environment-variable-expose-pod-information/) 
+    -->
+    <springProperty scope="context" name="appName" source="rancher.pod.name" defaultValue="genericJobExecutor" />
 
     <appender name="GELF" class="de.siegmar.logbackgelf.GelfTcpAppender">
         <graylogHost>localhost</graylogHost>
@@ -60,7 +63,7 @@
     </appender>
 
     <springProfile name="dev">
-        <!-- configuration to be enabled when the "prod" profile is active -->
+        <!-- configuration to be enabled when the "dev" profile is active -->
         <root level="INFO">
             <appender-ref ref="Console" />
             <appender-ref ref="fileLogger" level="info" />

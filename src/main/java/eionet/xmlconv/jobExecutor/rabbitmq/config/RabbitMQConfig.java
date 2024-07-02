@@ -3,13 +3,13 @@ package eionet.xmlconv.jobExecutor.rabbitmq.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.rabbitmq.enums.RabbitmqMessageType;
 import eionet.xmlconv.jobExecutor.rabbitmq.listener.HeartBeatMessageListener;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequestMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponseMessage;
-import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
@@ -20,7 +20,6 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -51,21 +50,14 @@ public class RabbitMQConfig {
     @Value("${job.rabbitmq.workerStatusRoutingKey}")
     private String workerStatusRoutingKey;
 
-    private ContainerInfoRetriever containerInfoRetriever;
     public static String queue;
     public static volatile Map<Message, Integer> rabbitmqRetries = new HashMap<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConfig.class);
     private static final Integer MAX_RABBITMQ_RETRIES = 3;
 
-    @Autowired
-    public RabbitMQConfig(ContainerInfoRetriever containerInfoRetriever) {
-        this.containerInfoRetriever = containerInfoRetriever;
-
-    }
-
     @Bean
     public Queue queue() {
-        queue = containerInfoRetriever.getContainerName() + "-heartbeat-queue";
+        queue = Properties.RANCHER_POD_NAME + "-heartbeat-queue";
         Map<String, Object> args = new HashMap<>();
         args.put("x-message-ttl", MESSAGE_TIME_EXPIRATION);
         return new Queue(queue, true , false, false , args);

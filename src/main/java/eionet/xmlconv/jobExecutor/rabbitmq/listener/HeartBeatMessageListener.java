@@ -6,10 +6,8 @@ import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.jpa.entities.FmeJobsAsync;
 import eionet.xmlconv.jobExecutor.jpa.services.FmeJobsAsyncService;
-import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerHeartBeatMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
-import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.utils.GenericHandlerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +29,6 @@ import java.util.Optional;
 public class HeartBeatMessageListener implements MessageListener {
 
     @Autowired
-    private ContainerInfoRetriever containerInfoRetriever;
-    @Autowired
     private RabbitMQSender rabbitMQSender;
     @Autowired(required = false)
     private FmeJobsAsyncService fmeJobsAsyncService;
@@ -50,15 +46,11 @@ public class HeartBeatMessageListener implements MessageListener {
             LOGGER.error("Error during processing of heart beat message, " + e.getMessage());
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
-        String containerName = "";
-        if (StatusInitializer.containerName!=null) {
-            containerName = StatusInitializer.containerName;
-        } else {
-            containerName = containerInfoRetriever.getContainerName();
-        }
+
         response.setJobExecutorType(GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType));
         Integer jobStatus = ScriptMessageListener.getWorkerJobStatus().get(response.getJobId().toString());
-        if (!response.getJobExecutorName().equals(containerName)) {
+
+        if (!response.getJobExecutorName().equals(Properties.RANCHER_POD_NAME)) {
             throw new AmqpRejectAndDontRequeueException("Worker " + response.getJobExecutorName() + " should receive heart beat message for job " + response.getJobId());
         } else if (jobStatus == null) {
             Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(response.getJobId());

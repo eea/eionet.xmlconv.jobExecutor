@@ -4,14 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.xmlconv.jobExecutor.Constants;
+import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.DatabaseException;
 import eionet.xmlconv.jobExecutor.jpa.entities.FmeJobsAsync;
 import eionet.xmlconv.jobExecutor.jpa.services.FmeJobsAsyncService;
 import eionet.xmlconv.jobExecutor.models.Script;
-import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequestMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
-import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeExceptionHandlerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeQueryAsynchronousHandler;
@@ -43,8 +42,6 @@ public class FmeAsyncScheduledTasks {
     private RabbitMQSender rabbitMQSender;
     @Autowired
     private FmeExceptionHandlerService fmeExceptionHandlerService;
-    @Autowired
-    private ContainerInfoRetriever containerInfoRetriever;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeAsyncScheduledTasks.class);
 
@@ -60,7 +57,6 @@ public class FmeAsyncScheduledTasks {
         asyncFmeJobs.forEach(fmeJobsAsync -> {
             ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             Script script = null;
-            String containerName = "";
             try {
                 script = mapper.readValue(fmeJobsAsync.getScript(), Script.class);
                 if(fmeJobsAsync.getFmeJobId() != null){
@@ -68,32 +64,28 @@ public class FmeAsyncScheduledTasks {
                 }
                 Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
                 WorkerJobRabbitMQRequestMessage rabbitMQRequest = new WorkerJobRabbitMQRequestMessage().setScript(script);
-                if (StatusInitializer.containerName!=null) {
-                    containerName = StatusInitializer.containerName;
-                } else {
-                    containerName = containerInfoRetriever.getContainerName();
-                }
+
                 if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
                     rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
-                            Constants.JOB_CANCELLED_BY_USER, containerName, Constants.WORKER_READY);
+                            Constants.JOB_CANCELLED_BY_USER, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 
                     rabbitMQSender.sendMessageToDeadLetterQueue(rabbitMQRequest);
                     deleteEntryFromJobsAsyncTable(fmeJobsAsync.getId());
                 } else if (jobExecutionStatus == Constants.JOB_INTERRUPTED) {
                     rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was interrupted because duration exceeded schema's maxExecutionTime",
-                            Constants.JOB_INTERRUPTED, containerName, Constants.WORKER_READY);
+                            Constants.JOB_INTERRUPTED, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
                     rabbitMQSender.sendMessageToDeadLetterQueue(rabbitMQRequest);
                     deleteEntryFromJobsAsyncTable(fmeJobsAsync.getId());
                 }
                 else if(jobExecutionStatus == Constants.JOB_DELETED){
                     rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was deleted",
-                            Constants.JOB_DELETED, containerName, Constants.WORKER_READY);
+                            Constants.JOB_DELETED, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 
                     rabbitMQSender.sendMessageToDeadLetterQueue(rabbitMQRequest);
                     deleteEntryFromJobsAsyncTable(fmeJobsAsync.getId());
                 } else if(jobExecutionStatus == Constants.JOB_FATAL_ERROR || jobExecutionStatus == Constants.JOB_READY){
                     rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job has already been executed",
-                            Constants.JOB_READY, containerName, Constants.WORKER_READY);
+                            Constants.JOB_READY, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 
                     rabbitMQSender.sendMessageToDeadLetterQueue(rabbitMQRequest);
                     deleteEntryFromJobsAsyncTable(fmeJobsAsync.getId());

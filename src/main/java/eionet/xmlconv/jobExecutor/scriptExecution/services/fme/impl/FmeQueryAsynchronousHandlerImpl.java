@@ -10,7 +10,6 @@ import eionet.xmlconv.jobExecutor.rabbitmq.config.RabbitMQConfig;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
-import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeJobStatus;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeQueryAsynchronousHandler;
@@ -37,16 +36,14 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
     private FmeJobsAsyncService fmeJobsAsyncService;
     private FmeServerCommunicator fmeServerCommunicator;
     private RabbitMQSender rabbitMQSender;
-    private ContainerInfoRetriever containerInfoRetriever;
     private DataRetrieverService dataRetrieverService;
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeQueryAsynchronousHandlerImpl.class);
 
     @Autowired
     public FmeQueryAsynchronousHandlerImpl(FmeServerCommunicator fmeServerCommunicator, RabbitMQSender rabbitMQSender,
-                                           ContainerInfoRetriever containerInfoRetriever, DataRetrieverService dataRetrieverService) {
+                                           DataRetrieverService dataRetrieverService) {
         this.fmeServerCommunicator = fmeServerCommunicator;
         this.rabbitMQSender = rabbitMQSender;
-        this.containerInfoRetriever = containerInfoRetriever;
         this.dataRetrieverService = dataRetrieverService;
     }
 
@@ -71,13 +68,8 @@ public class FmeQueryAsynchronousHandlerImpl implements FmeQueryAsynchronousHand
 
             fmeServerCommunicator.getResultFiles(jobId, folderName, script.getStrResultFile());
             fmeServerCommunicator.deleteFolder(jobId, folderName);
-            String containerName = "";
-            if (StatusInitializer.containerName!=null) {
-                containerName = StatusInitializer.containerName;
-            } else {
-                containerName = containerInfoRetriever.getContainerName();
-            }
-            response.setJobExecutorName(containerName);
+
+            response.setJobExecutorName(Properties.RANCHER_POD_NAME);
             response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
                     .setJobExecutorType(GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType)).setScript(script);
             sendResponseToConverters(jobId, response);

@@ -10,13 +10,11 @@ import eionet.xmlconv.jobExecutor.jpa.entities.FmeJobsAsync;
 import eionet.xmlconv.jobExecutor.jpa.services.FmeJobsAsyncService;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.RabbitMQConfig;
-import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.JobExecutorType;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobRabbitMQRequestMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerStateRabbitMQResponseMessage;
 import eionet.xmlconv.jobExecutor.rabbitmq.service.RabbitMQSender;
-import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.DataRetrieverService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.ScriptExecutionService;
 import eionet.xmlconv.jobExecutor.utils.GenericHandlerUtils;
@@ -50,18 +48,16 @@ public class ScriptMessageListener {
     private ScriptExecutionService scriptExecutionService;
     private RabbitMQSender rabbitMQSender;
     private DataRetrieverService dataRetrieverService;
-    private ContainerInfoRetriever containerInfoRetriever;
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptMessageListener.class);
     private static volatile Map<String, Integer> workerJobStatus = new HashMap<>();
     private static final String FME_SCRIPT_TYPE = "fme";
 
     @Autowired
     public ScriptMessageListener(ScriptExecutionService scriptExecutionService, RabbitMQSender rabbitMQSender,
-                                 DataRetrieverService dataRetrieverService, ContainerInfoRetriever containerInfoRetriever) {
+                                 DataRetrieverService dataRetrieverService) {
         this.scriptExecutionService = scriptExecutionService;
         this.rabbitMQSender = rabbitMQSender;
         this.dataRetrieverService = dataRetrieverService;
-        this.containerInfoRetriever = containerInfoRetriever;
     }
 
     @RabbitListener(queues = "${job.rabbitmq.listeningQueue}")
@@ -70,24 +66,17 @@ public class ScriptMessageListener {
         LOGGER.info("Received job with id " + script.getJobId());
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
         StopWatch timer = new StopWatch();
-        String containerName = "";
         JobExecutorType jobExecutorType = JobExecutorType.Unknown;
         try{
-            if (StatusInitializer.containerName!=null) {
-                containerName = StatusInitializer.containerName;
-            } else {
-                containerName = containerInfoRetriever.getContainerName();
-            }
-
             jobExecutorType = GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType);
 
-            LOGGER.info(String.format("For job id " + script.getJobId() + " container name is %s", containerName));
-            LOGGER.info(String.format("Container name is %s", containerName));
+            LOGGER.info(String.format("For job id " + script.getJobId() + " container name is %s", Properties.RANCHER_POD_NAME));
             Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
             LOGGER.info("Job status is " + jobExecutionStatus);
+            
             if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
-                        Constants.JOB_CANCELLED_BY_USER, containerName, Constants.WORKER_READY);
+                        Constants.JOB_CANCELLED_BY_USER, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
                 if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
@@ -95,7 +84,7 @@ public class ScriptMessageListener {
                 }
             } else if (jobExecutionStatus == Constants.JOB_INTERRUPTED) {
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was interrupted because duration exceeded schema's maxExecutionTime",
-                        Constants.JOB_INTERRUPTED, containerName, Constants.WORKER_READY);
+                        Constants.JOB_INTERRUPTED, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
                 if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
                     deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
@@ -103,7 +92,7 @@ public class ScriptMessageListener {
             }
             else if(jobExecutionStatus == Constants.JOB_DELETED){
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was deleted",
-                        Constants.JOB_DELETED, containerName, Constants.WORKER_READY);
+                        Constants.JOB_DELETED, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
                 if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
@@ -111,7 +100,7 @@ public class ScriptMessageListener {
                 }
             } else if(jobExecutionStatus == Constants.JOB_FATAL_ERROR || jobExecutionStatus == Constants.JOB_READY){
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job has already been executed",
-                        Constants.JOB_READY, containerName, Constants.WORKER_READY);
+                        Constants.JOB_READY, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
                 if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
@@ -135,7 +124,7 @@ public class ScriptMessageListener {
                 } else {
                     setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
                 }
-                response.setJobExecutorName(containerName);
+                response.setJobExecutorName(Properties.RANCHER_POD_NAME);
                 response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_RECEIVED).setHeartBeatQueue(RabbitMQConfig.queue)
                     .setJobExecutorType(jobExecutorType);
                 rabbitMQSender.sendMessage(response);
@@ -147,14 +136,15 @@ public class ScriptMessageListener {
 
                 if (script.getScriptType().equals(FME_SCRIPT_TYPE)) {
                     if (script.getAsynchronousExecution()) {
-                        WorkerStateRabbitMQResponseMessage workerStatus = new WorkerStateRabbitMQResponseMessage.WorkerStateRabbitMQResponseBuilder(containerName, Constants.WORKER_READY)
+                        WorkerStateRabbitMQResponseMessage workerStatus = new WorkerStateRabbitMQResponseMessage
+                                .WorkerStateRabbitMQResponseBuilder(Properties.RANCHER_POD_NAME, Constants.WORKER_READY)
                                 .setJobExecutorType(jobExecutorType).setHeartBeatQueue(RabbitMQConfig.queue).build();
                         rabbitMQSender.sendWorkerStatus(workerStatus);
                         return;
                     }
                 }
 
-                LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[]{containerName, script.getJobId(), timer.toString()}));
+                LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[]{Properties.RANCHER_POD_NAME, script.getJobId(), timer.toString()}));
                 response.setJobExecutorStatus(Constants.WORKER_READY);
                 response.setScript(script);
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_READY);
@@ -163,7 +153,7 @@ public class ScriptMessageListener {
         }
         catch(ScriptExecutionException e){
             timer.stop();
-            LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {containerName, script.getJobId(), timer.toString()}));
+            LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {Properties.RANCHER_POD_NAME, script.getJobId(), timer.toString()}));
             response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobExecutorStatus(Constants.WORKER_READY)
                     .setJobExecutorType(jobExecutorType);
             setWorkerJobStatus(script.getJobId(), Constants.JOB_FATAL_ERROR);
@@ -177,7 +167,7 @@ public class ScriptMessageListener {
             message += " Job id is " + script.getJobId();
             LOGGER.info(message);
             rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, message,
-                    Constants.JOB_EXCEPTION_ERROR, containerName, Constants.WORKER_READY);
+                    Constants.JOB_EXCEPTION_ERROR, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
             sendMessageToDeadLetterQueue(rabbitMQRequest);
         }
     }

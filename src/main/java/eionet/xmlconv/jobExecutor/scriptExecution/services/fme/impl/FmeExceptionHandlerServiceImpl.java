@@ -7,9 +7,7 @@ import eionet.xmlconv.jobExecutor.jpa.entities.FmeJobsAsync;
 import eionet.xmlconv.jobExecutor.jpa.services.FmeJobsAsyncService;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.config.RabbitMQConfig;
-import eionet.xmlconv.jobExecutor.rabbitmq.config.StatusInitializer;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
-import eionet.xmlconv.jobExecutor.rancher.service.ContainerInfoRetriever;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FMEUtils;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeExceptionHandlerService;
 import eionet.xmlconv.jobExecutor.scriptExecution.services.fme.FmeQueryAsynchronousHandler;
@@ -32,13 +30,11 @@ public class FmeExceptionHandlerServiceImpl implements FmeExceptionHandlerServic
     @Autowired(required = false)
     private FmeJobsAsyncService fmeJobsAsyncService;
     private FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler;
-    private ContainerInfoRetriever containerInfoRetriever;
     private static final Logger LOGGER = LoggerFactory.getLogger(FmeExceptionHandlerServiceImpl.class);
 
     @Autowired
-    public FmeExceptionHandlerServiceImpl(FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler, ContainerInfoRetriever containerInfoRetriever) {
+    public FmeExceptionHandlerServiceImpl(FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler) {
         this.fmeQueryAsynchronousHandler = fmeQueryAsynchronousHandler;
-        this.containerInfoRetriever = containerInfoRetriever;
     }
 
     @Override
@@ -46,13 +42,8 @@ public class FmeExceptionHandlerServiceImpl implements FmeExceptionHandlerServic
         if(!Utils.isNullStr(fmeJobId)){
             script.setFmeJobId(fmeJobId);
         }
+
         String message = "Generic Exception handling ";
-        String containerName = "";
-        if (StatusInitializer.containerName!=null) {
-            containerName = StatusInitializer.containerName;
-        } else {
-            containerName = containerInfoRetriever.getContainerName();
-        }
         if (!Utils.isNullStr(script.getJobId())){
             message += " for job id " + script.getJobId();
         }
@@ -69,7 +60,7 @@ public class FmeExceptionHandlerServiceImpl implements FmeExceptionHandlerServic
         out.closeEntry();
         out.close();
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
-        response.setJobExecutorName(containerName);
+        response.setJobExecutorName(Properties.RANCHER_POD_NAME);
         response.setErrorExists(true).setScript(script).setJobExecutorStatus(Constants.WORKER_READY).setHeartBeatQueue(RabbitMQConfig.queue)
                 .setJobExecutorType(GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType)).setScript(script);
         fmeQueryAsynchronousHandler.sendResponseToConverters(script.getJobId(), response);
