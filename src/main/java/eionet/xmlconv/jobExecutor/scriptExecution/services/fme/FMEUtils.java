@@ -30,7 +30,7 @@ public final class FMEUtils {
     }
 
     public static void handleSynchronousLastRetryExceptionFailure (Integer numberOfRetries, Integer currentRetry, String convertersJobId, String exceptionMsg, String exceptionType, OutputStream result){
-        String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job exeuction for job id " + convertersJobId;
+        String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job execution for job id " + convertersJobId;
         logMessage += " failed with exception "  + exceptionType + " Exception message: "+ exceptionMsg + " for retry "+ currentRetry + " of " + numberOfRetries + " retries";
         LOGGER.error(logMessage);
 

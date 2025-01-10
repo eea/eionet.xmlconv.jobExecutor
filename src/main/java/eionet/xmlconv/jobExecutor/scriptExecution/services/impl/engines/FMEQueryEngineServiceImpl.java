@@ -178,7 +178,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 if (response.getStatusLine().getStatusCode() == 200) { // Valid Result: 200 HTTP status code
                     HttpEntity entity = response.getEntity();
                     // We get an InputStream and copy it to the 'result' OutputStream
-                    String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job exeuction ";
+                    String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job execution ";
                     if (!Utils.isNullStr(jobId)){
                         logMessage += " for job id " + jobId;
                     }
@@ -188,7 +188,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 } else { // NOT Valid Result
                     // If the last retry fails a BLOCKER predefined error is returned
                     if (count + 1 == retries){
-                        String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job exeuction ";
+                        String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job execution ";
                         if (!Utils.isNullStr(jobId)){
                             logMessage += " for job id " + jobId;
                         }
@@ -198,7 +198,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                         IOUtils.copy(IOUtils.toInputStream("<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">The QC Process failed, please allow some time and re-run the process. If the issue persists please contact the dataflow helpdesk.</span>The QC Process failed, please allow some time and re-run the process. Please try again. If the issue persists please contact the dataflow helpdesk.</div>", "UTF-8"), result);
                     } else {
 
-                        String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job exeuction ";
+                        String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job execution ";
                         if (!Utils.isNullStr(jobId)){
                             logMessage += " for job id " + jobId;
                         }
