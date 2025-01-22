@@ -70,7 +70,7 @@ public class ScriptMessageListener {
         try{
             jobExecutorType = GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType);
 
-            LOGGER.info(String.format("For job id " + script.getJobId() + " container name is %s", Properties.RANCHER_POD_NAME));
+            LOGGER.info(String.format("For job id " + script.getJobId() + " pod name is %s", Properties.RANCHER_POD_NAME));
             Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
             LOGGER.info("Job status is " + jobExecutionStatus);
             
