@@ -77,7 +77,7 @@ public class DataRetrieverServiceImpl implements DataRetrieverService {
     public Integer getJobStatus(String jobId) throws ConvertersCommunicationException {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
-        headers.add("Authorization", "Bearer " + Properties.convertersEndpointToken);
+        headers.add("Authorization", Properties.convertersEndpointToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<Integer> result;
         String url = Properties.convertersUrl + "restapi/asynctasks/qajobs/status/" + jobId;
