@@ -65,7 +65,13 @@ public class FmeAsyncScheduledTasks {
                 Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
                 WorkerJobRabbitMQRequestMessage rabbitMQRequest = new WorkerJobRabbitMQRequestMessage().setScript(script);
 
-                if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
+                if (jobExecutionStatus == Constants.JOB_NOT_FOUND) {
+                    rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job not found",
+                            Constants.JOB_NOT_FOUND, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
+
+                    rabbitMQSender.sendMessageToDeadLetterQueue(rabbitMQRequest);
+                    deleteEntryFromJobsAsyncTable(fmeJobsAsync.getId());
+                } else if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
                     rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
                             Constants.JOB_CANCELLED_BY_USER, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 

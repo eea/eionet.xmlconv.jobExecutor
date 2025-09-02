@@ -22,10 +22,11 @@ public class Constants {
     public static final int JOB_PROCESSING = 2;
     public static final int JOB_READY = 3;
     public static final int JOB_FATAL_ERROR = 4;
+    public static final int JOB_NOT_FOUND = 6;
     public static final int JOB_INTERRUPTED = 7;
     public static final int JOB_DELETED = 8;
     public static final int JOB_CANCELLED_BY_USER = 9;
-    public static final int JOB_NOT_FOUND = 10;
+    public static final int JOB_NOT_FOUND_IN_WORKER = 10;
     public static final int JOB_EXCEPTION_ERROR = 11;
 
 

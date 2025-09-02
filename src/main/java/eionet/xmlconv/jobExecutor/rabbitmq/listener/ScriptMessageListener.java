@@ -73,8 +73,16 @@ public class ScriptMessageListener {
             LOGGER.info(String.format("For job id " + script.getJobId() + " pod name is %s", Properties.RANCHER_POD_NAME));
             Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
             LOGGER.info("Job status is " + jobExecutionStatus);
-            
-            if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
+
+            if (jobExecutionStatus == Constants.JOB_NOT_FOUND) {
+                rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job not found",
+                        Constants.JOB_NOT_FOUND, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
+
+                sendMessageToDeadLetterQueue(rabbitMQRequest);
+                if (jobExecutorType != null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
+                    deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
+                }
+            } else if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
                         Constants.JOB_CANCELLED_BY_USER, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 
