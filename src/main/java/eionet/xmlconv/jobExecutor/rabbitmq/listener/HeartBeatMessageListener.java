@@ -51,7 +51,11 @@ public class HeartBeatMessageListener implements MessageListener {
         Integer jobStatus = ScriptMessageListener.getWorkerJobStatus().get(response.getJobId().toString());
 
         if (!response.getJobExecutorName().equals(Properties.RANCHER_POD_NAME)) {
-            throw new AmqpRejectAndDontRequeueException("Worker " + response.getJobExecutorName() + " should receive heart beat message for job " + response.getJobId());
+            LOGGER.info(
+                    "Ignoring heartbeat message for worker {}. Current worker is {}.",
+                    response.getJobExecutorName(),
+                    Properties.RANCHER_POD_NAME
+            );
         } else if (jobStatus == null) {
             Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(response.getJobId());
             if (!fmeJobsAsync.isPresent()) {
