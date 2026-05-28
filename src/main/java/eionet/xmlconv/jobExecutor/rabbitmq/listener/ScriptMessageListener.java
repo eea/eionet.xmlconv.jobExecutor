@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @ConditionalOnProperty(
-        value="rabbitmq.enabled",
+        value = "rabbitmq.enabled",
         havingValue = "true",
         matchIfMissing = true)
 @Component
@@ -67,7 +67,7 @@ public class ScriptMessageListener {
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
         StopWatch timer = new StopWatch();
         JobExecutorType jobExecutorType = JobExecutorType.Unknown;
-        try{
+        try {
             jobExecutorType = GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType);
 
             LOGGER.info(String.format("For job id " + script.getJobId() + " pod name is %s", Properties.RANCHER_POD_NAME));
@@ -87,31 +87,30 @@ public class ScriptMessageListener {
                         Constants.JOB_CANCELLED_BY_USER, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
+                if (jobExecutorType != null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
                     deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
                 }
             } else if (jobExecutionStatus == Constants.JOB_INTERRUPTED) {
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was interrupted because duration exceeded schema's maxExecutionTime",
                         Constants.JOB_INTERRUPTED, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
+                if (jobExecutorType != null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
                     deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
                 }
-            }
-            else if(jobExecutionStatus == Constants.JOB_DELETED){
+            } else if (jobExecutionStatus == Constants.JOB_DELETED) {
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was deleted",
                         Constants.JOB_DELETED, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
+                if (jobExecutorType != null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
                     deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
                 }
-            } else if(jobExecutionStatus == Constants.JOB_FATAL_ERROR || jobExecutionStatus == Constants.JOB_READY){
+            } else if (jobExecutionStatus == Constants.JOB_FATAL_ERROR || jobExecutionStatus == Constants.JOB_READY) {
                 rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job has already been executed",
                         Constants.JOB_READY, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
 
                 sendMessageToDeadLetterQueue(rabbitMQRequest);
-                if (jobExecutorType!=null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
+                if (jobExecutorType != null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
                     deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
                 }
             } else {
@@ -123,7 +122,7 @@ public class ScriptMessageListener {
                         Integer retries = retryMilisecs / timeoutMilisecs;
                         String fmeJobId = script.getFmeJobId();
                         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                        FmeJobsAsync fmeJobsAsync = new FmeJobsAsync(Integer.parseInt(script.getJobId())).setFmeJobId(fmeJobId!=null ? Integer.parseInt(fmeJobId) : null)
+                        FmeJobsAsync fmeJobsAsync = new FmeJobsAsync(Integer.parseInt(script.getJobId())).setFmeJobId(fmeJobId != null ? Integer.parseInt(fmeJobId) : null)
                                 .setScript(mapper.writeValueAsString(script)).setRetries(retries <= 0 ? 1 : retries).setCount(0).setProcessing(true);
                         fmeJobsAsyncService.save(fmeJobsAsync);
                     } else {
@@ -134,7 +133,7 @@ public class ScriptMessageListener {
                 }
                 response.setJobExecutorName(Properties.RANCHER_POD_NAME);
                 response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_RECEIVED).setHeartBeatQueue(RabbitMQConfig.queue)
-                    .setJobExecutorType(jobExecutorType);
+                        .setJobExecutorType(jobExecutorType);
                 rabbitMQSender.sendMessage(response);
 
                 scriptExecutionService.setScript(script);
@@ -158,18 +157,16 @@ public class ScriptMessageListener {
                 setWorkerJobStatus(script.getJobId(), Constants.JOB_READY);
                 sendResponseToConverters(script.getJobId(), response, timer);
             }
-        }
-        catch(ScriptExecutionException e){
+        } catch (ScriptExecutionException e) {
             timer.stop();
-            LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[] {Properties.RANCHER_POD_NAME, script.getJobId(), timer.toString()}));
+            LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_FAILURE, new String[]{Properties.RANCHER_POD_NAME, script.getJobId(), timer.toString()}));
             response.setErrorExists(true).setErrorMessage(e.getMessage()).setJobExecutorStatus(Constants.WORKER_READY)
                     .setJobExecutorType(jobExecutorType);
             setWorkerJobStatus(script.getJobId(), Constants.JOB_FATAL_ERROR);
             sendResponseToConverters(script.getJobId(), response, timer);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = e.getMessage();
-            if(message == null){
+            if (message == null) {
                 message = "Unknown error";
             }
             message += " Job id is " + script.getJobId();
