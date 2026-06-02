@@ -60,9 +60,9 @@ public class HeartBeatMessageListener implements MessageListener {
             Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(response.getJobId());
             if (!fmeJobsAsync.isPresent()) {
                 response.setJobStatus(Constants.JOB_NOT_FOUND_IN_WORKER);
-                sendHeartBeatResponse(response);
+            } else {
+                response.setJobStatus(Constants.JOB_PROCESSING);
             }
-            response.setJobStatus(Constants.JOB_PROCESSING);
             sendHeartBeatResponse(response);
         } else if (jobStatus != null) {
             response.setJobStatus(jobStatus);
