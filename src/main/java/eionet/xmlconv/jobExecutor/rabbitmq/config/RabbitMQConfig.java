@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,10 +51,15 @@ public class RabbitMQConfig {
     @Value("${job.rabbitmq.workerStatusRoutingKey}")
     private String workerStatusRoutingKey;
 
+    private final AmqpAdmin amqpAdmin;
     public static String queue;
     public static volatile Map<Message, Integer> rabbitmqRetries = new HashMap<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConfig.class);
     private static final Integer MAX_RABBITMQ_RETRIES = 3;
+
+    public RabbitMQConfig(AmqpAdmin amqpAdmin) {
+        this.amqpAdmin = amqpAdmin;
+    }
 
     @Bean
     public Queue queue() {
@@ -177,6 +183,14 @@ public class RabbitMQConfig {
         }
         rabbitmqRetries.put(message, retries);
         return false;
+    }
+
+    @PreDestroy
+    public void deleteHeartbeatQueueOnShutdown() {
+        if (queue != null) {
+            amqpAdmin.deleteQueue(queue);
+            LOGGER.info("Deleted RabbitMQ heartbeat queue on shutdown: {}", queue);
+        }
     }
 
     @Bean
