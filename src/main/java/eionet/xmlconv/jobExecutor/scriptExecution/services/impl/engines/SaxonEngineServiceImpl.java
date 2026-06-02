@@ -18,11 +18,11 @@ import java.net.URI;
 @Service("saxonEngineService")
 public class SaxonEngineServiceImpl extends ScriptEngineServiceImpl {
 
-    /** */
     private static final Logger LOGGER = LoggerFactory.getLogger(SaxonEngineServiceImpl.class);
 
     /**
      * Default Constructor
+     *
      * @throws ScriptExecutionException If an error occurs.
      */
     @Autowired

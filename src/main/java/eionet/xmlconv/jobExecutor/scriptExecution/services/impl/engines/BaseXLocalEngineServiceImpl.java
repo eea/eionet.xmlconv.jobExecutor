@@ -11,23 +11,23 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.basex.core.Context;
 import org.basex.core.MainOptions;
+import org.basex.core.cmd.Set;
 import org.basex.io.out.ArrayOutput;
 import org.basex.io.serial.SerializerOptions;
 import org.basex.query.QueryProcessor;
 import org.basex.query.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.URL;
-import org.basex.core.cmd.Set;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;
 
 @Service("basexEngineService")
-public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
+public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseXLocalEngineServiceImpl.class);
 
@@ -59,7 +59,7 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
             HttpFileManagerService fileManager = new HttpFileManagerServiceImpl();
             URL url = fileManager.followUrlRedirectIfNeeded(new URL(script.getSrcFileUrl()));
             script.setSrcFileUrl(url.toString());
-            LOGGER.info("For job id " + script.getJobId() + " Script Source URL:"+script.getSrcFileUrl());
+            LOGGER.info("For job id " + script.getJobId() + " Script Source URL:" + script.getSrcFileUrl());
             proc.bind("source_url", script.getSrcFileUrl(), "xs:string");
 
             // same serialization options with saxon
@@ -82,7 +82,7 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
             Value res = proc.value();
 
             ArrayOutput A = res.serialize(opts);
-            LOGGER.info("For job id " + script.getJobId() + " job result will be written to file :"+script.getStrResultFile());
+            LOGGER.info("For job id " + script.getJobId() + " job result will be written to file :" + script.getStrResultFile());
             FileOutputStream fos = new FileOutputStream(script.getStrResultFile());
             fos.write(A.toArray());
 
@@ -90,16 +90,15 @@ public class BaseXLocalEngineServiceImpl extends ScriptEngineServiceImpl{
             if (Thread.currentThread().isInterrupted()) {
                 throw new ScriptExecutionException(e.getMessage());
             } else {
-                if(!Utils.isNullStr(script.getScriptFileName())){
+                if (!Utils.isNullStr(script.getScriptFileName())) {
                     LOGGER.error("For job id " + script.getJobId() + " error while reading BaseX xquery file: " + script.getScriptFileName() + " Exception message is " + e.getMessage());
-                }
-                else{
+                } else {
                     LOGGER.error("For job id " + script.getJobId() + " error while reading BaseX xquery file. Exception message is " + e.getMessage());
                 }
-                throw new ScriptExecutionException(e.getMessage(),e.getCause());
+                throw new ScriptExecutionException(e.getMessage(), e.getCause());
             }
         } finally {
-            if (!isNull(proc))  {
+            if (!isNull(proc)) {
                 proc.close();
             }
             context.close();

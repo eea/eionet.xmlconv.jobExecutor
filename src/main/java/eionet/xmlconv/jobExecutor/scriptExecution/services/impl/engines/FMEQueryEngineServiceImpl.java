@@ -41,7 +41,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @Service("fmeEngineService")
-public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
+public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl {
 
     private Environment env;
 
@@ -55,12 +55,6 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
 
     private Integer retries = 0;
 
-    private String randomStr;
-
-    private static final String FME_HOST_TEMPORARY_HARDCODED = "fme.discomap.eea.europa.eu";
-
-    private static final String FME_PORT_TEMPORARY_HARDCODED = "443";
-
     private RabbitMQSender rabbitMQSender;
     private FmeQueryAsynchronousHandler fmeQueryAsynchronousHandler;
     @Autowired(required = false)
@@ -70,9 +64,9 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     /* Variables for eionet.gdem.Properties*/
     private Integer fmeTimeoutProperty;
     private Integer fmeSocketTimeoutProperty;
-    private String fmeHostProperty ;
-    private String fmePortProperty ;
-    private String fmeTokenExpirationProperty ;
+    private String fmeHostProperty;
+    private String fmePortProperty;
+    private String fmeTokenExpirationProperty;
     private String fmeTokenTimeunitProperty;
     private String fmePollingUrlProperty;
     private Integer fmeRetryHoursProperty;
@@ -80,13 +74,14 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     private String fmeSynchronousTokenProperty;
 
 
-    private String fmeUser ;
-    private String fmePassword ;
+    private String fmeUser;
+    private String fmePassword;
 
     private static final String TEST_PROFILE = "test";
 
     /**
      * Default constructor.
+     *
      * @throws Exception If an error occurs.
      */
     @Autowired
@@ -120,11 +115,10 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     @Override
     protected void runQuery(Script script, OutputStream result, WorkerJobInfoRabbitMQResponseMessage response) throws Exception {
 
-        if(script.getAsynchronousExecution()){
+        if (script.getAsynchronousExecution()) {
             LOGGER.info("For job " + script.getJobId() + " the script " + script.getScriptFileName() + " will be run asynchronously");
             runQueryAsynchronous(script, result, response);
-        }
-        else{
+        } else {
             LOGGER.info("For job " + script.getJobId() + " the script " + script.getScriptFileName() + " will be run synchronously");
             runQuerySynchronous(script, result);
         }
@@ -147,7 +141,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         } catch (Exception e) {
             throw new GenericFMEexception(e.toString());
         }
-        if(Utils.isNullStr(synchronousToken)){
+        if (Utils.isNullStr(synchronousToken)) {
             throw new GenericFMEexception("Synchronous token is empty");
         }
 
@@ -179,27 +173,27 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                     HttpEntity entity = response.getEntity();
                     // We get an InputStream and copy it to the 'result' OutputStream
                     String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job execution ";
-                    if (!Utils.isNullStr(jobId)){
+                    if (!Utils.isNullStr(jobId)) {
                         logMessage += " for job id " + jobId;
                     }
-                    logMessage += " got response 200 OK From FME SERVER in :"+ count +" retry . Response is: " + response.toString();
+                    logMessage += " got response 200 OK From FME SERVER in :" + count + " retry . Response is: " + response.toString();
                     LOGGER.info(logMessage);
                     IOUtils.copy(entity.getContent(), result);
                 } else { // NOT Valid Result
                     // If the last retry fails a BLOCKER predefined error is returned
-                    if (count + 1 == retries){
+                    if (count + 1 == retries) {
                         String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job execution ";
-                        if (!Utils.isNullStr(jobId)){
+                        if (!Utils.isNullStr(jobId)) {
                             logMessage += " for job id " + jobId;
                         }
-                        logMessage += " failed with response code " + response.getStatusLine().getStatusCode() + " for last Retry  number :"+ count + ". Response is: " + response.toString();
+                        logMessage += " failed with response code " + response.getStatusLine().getStatusCode() + " for last Retry  number :" + count + ". Response is: " + response.toString();
                         LOGGER.error(logMessage);
 
                         IOUtils.copy(IOUtils.toInputStream("<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">The QC Process failed, please allow some time and re-run the process. If the issue persists please contact the dataflow helpdesk.</span>The QC Process failed, please allow some time and re-run the process. Please try again. If the issue persists please contact the dataflow helpdesk.</div>", "UTF-8"), result);
                     } else {
 
                         String logMessage = FMEQueryEngineServiceImpl.class.getName() + ": Synchronous job execution ";
-                        if (!Utils.isNullStr(jobId)){
+                        if (!Utils.isNullStr(jobId)) {
                             logMessage += " for job id " + jobId;
                         }
                         logMessage += " failed with response code " + response.getStatusLine().getStatusCode() + ". The application has encountered an error. The FME QC process request failed. -- Source file: " + script.getOrigFileUrl() + " -- FME workspace: " + script.getScriptSource() + " -- Response: " + response.toString() + "-- #Retry: " + count;
@@ -210,9 +204,9 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 }
                 count = retries;
             } catch (SocketTimeoutException e) { // Timeout Exceeded
-                FMEUtils.handleSynchronousLastRetryExceptionFailure(retries, count +1, jobId, "The FME request has exceeded the allotted timeout of :"+Properties.fmeSocketTimeout+" -- Source file: " + script.getOrigFileUrl() + " -- FME workspace: " + script.getScriptSource(), "SocketTimeoutException", result);
+                FMEUtils.handleSynchronousLastRetryExceptionFailure(retries, count + 1, jobId, "The FME request has exceeded the allotted timeout of :" + Properties.fmeSocketTimeout + " -- Source file: " + script.getOrigFileUrl() + " -- FME workspace: " + script.getScriptSource(), "SocketTimeoutException", result);
             } catch (Exception e) {
-                FMEUtils.handleSynchronousLastRetryExceptionFailure(retries, count +1, jobId, "Generic Exception handling. FME request error: " + e.getMessage(), "Exception", result);
+                FMEUtils.handleSynchronousLastRetryExceptionFailure(retries, count + 1, jobId, "Generic Exception handling. FME request error: " + e.getMessage(), "Exception", result);
             } finally {
                 if (runMethod != null) {
                     runMethod.releaseConnection();
@@ -226,13 +220,13 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
     protected void runQueryAsynchronous(Script script, OutputStream result, WorkerJobInfoRabbitMQResponseMessage response) throws IOException, DatabaseException {
         String folderName = FMEUtils.constructFMEFolderName(script.getOrigFileUrl(), this.getRandomStr());
         LOGGER.info("For job id " + script.getJobId() + " the folder we will create in FME server to get the asynchronous results is: " + folderName);
-        String fmeJobId="";
+        String fmeJobId = "";
         try {
 
             FmeServerCommunicator fmeServerCommunicator = this.getFmeServerCommunicator();
-            fmeJobId = fmeServerCommunicator.submitJob(script,new SynchronousSubmitJobRequest(script.getOrigFileUrl(),folderName));
+            fmeJobId = fmeServerCommunicator.submitJob(script, new SynchronousSubmitJobRequest(script.getOrigFileUrl(), folderName));
             sendFMEJobIdToConverters(fmeJobId, response);
-            if(!Utils.isNullStr(fmeJobId)){
+            if (!Utils.isNullStr(fmeJobId)) {
                 script.setFmeJobId(fmeJobId);
             }
             Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(Integer.parseInt(script.getJobId()));
@@ -241,7 +235,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 int retryMilisecs = this.getFmeRetryHoursProperty() * 60 * 60 * 1000;
                 int timeoutMilisecs = this.getFmeTimeoutProperty();
                 Integer retries = retryMilisecs / timeoutMilisecs;
-                FmeJobsAsync asyncEntry = new FmeJobsAsync(Integer.parseInt(script.getJobId())).setFmeJobId(fmeJobId!=null ? Integer.parseInt(fmeJobId) : null).setProcessing(true)
+                FmeJobsAsync asyncEntry = new FmeJobsAsync(Integer.parseInt(script.getJobId())).setFmeJobId(fmeJobId != null ? Integer.parseInt(fmeJobId) : null).setProcessing(true)
                         .setScript(mapper.writeValueAsString(script)).setRetries(retries <= 0 ? 1 : retries).setCount(0).setFmeJobId(Integer.parseInt(fmeJobId)).setFolderName(folderName);
                 fmeJobsAsyncService.save(asyncEntry);
             } else {
@@ -249,7 +243,8 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
                 fmeJobsAsyncService.save(fmeJobsAsync.get());
             }
             fmeQueryAsynchronousHandler.pollFmeServerForResults(script, folderName);
-        } catch (FmeAuthorizationException | FmeCommunicationException | DatabaseException | GenericFMEexception | RetryCountForGettingJobResultReachedException | InterruptedException | FMEBadRequestException e) {
+        } catch (FmeAuthorizationException | FmeCommunicationException | DatabaseException | GenericFMEexception |
+                 RetryCountForGettingJobResultReachedException | InterruptedException | FMEBadRequestException e) {
             fmeExceptionHandlerService.execute(script, fmeJobId, e.getMessage());
         }
     }
@@ -261,13 +256,13 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
      */
     private String getConnectionInfo(String jobId) throws Exception {
 
-        if(!Utils.isNullStr(this.fmeSynchronousTokenProperty)){
-            LOGGER.info("For job "+ jobId + " a semi-permanent synchronous token for FME will be used");
+        if (!Utils.isNullStr(this.fmeSynchronousTokenProperty)) {
+            LOGGER.info("For job " + jobId + " a semi-permanent synchronous token for FME will be used");
             return this.fmeSynchronousTokenProperty;
         }
         String synchronousToken = null;
 
-        LOGGER.info("For job "+ jobId + " no semi-permanent synchronous token for FME was found. A new one will be generated");
+        LOGGER.info("For job " + jobId + " no semi-permanent synchronous token for FME was found. A new one will be generated");
 
         HttpPost method = null;
         CloseableHttpResponse response = null;
@@ -275,7 +270,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         try {
             // We must first generate a security token for authentication
             // purposes
-            fmeUrl = "https://" + this.getFmeHostProperty()+ ":" + this.getFmePortProperty()
+            fmeUrl = "https://" + this.getFmeHostProperty() + ":" + this.getFmePortProperty()
                     + "/fmetoken/generate";
 
             java.net.URI uri = new URIBuilder(fmeUrl)
@@ -307,7 +302,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         }
     }
 
-    private void sendFMEJobIdToConverters(String fmeJobId, WorkerJobInfoRabbitMQResponseMessage response){
+    private void sendFMEJobIdToConverters(String fmeJobId, WorkerJobInfoRabbitMQResponseMessage response) {
         response.getScript().setFmeJobId(fmeJobId);
         response.setJobExecutorStatus(Constants.WORKER_RECEIVED_FME_JOB_ID);
         rabbitMQSender.sendMessage(response);
@@ -371,7 +366,7 @@ public class FMEQueryEngineServiceImpl extends ScriptEngineServiceImpl{
         return RandomStringUtils.randomAlphanumeric(5);
     }
 
-    public FmeServerCommunicator getFmeServerCommunicator(){
+    public FmeServerCommunicator getFmeServerCommunicator() {
         return (FmeServerCommunicator) SpringApplicationContext.getBean(FmeServerCommunicator.class);
     }
 

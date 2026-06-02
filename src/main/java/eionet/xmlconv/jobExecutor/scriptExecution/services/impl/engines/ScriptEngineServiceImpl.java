@@ -1,4 +1,5 @@
 package eionet.xmlconv.jobExecutor.scriptExecution.services.impl.engines;
+
 import eionet.xmlconv.jobExecutor.exceptions.ScriptExecutionException;
 import eionet.xmlconv.jobExecutor.models.Script;
 import eionet.xmlconv.jobExecutor.rabbitmq.model.WorkerJobInfoRabbitMQResponseMessage;
@@ -17,7 +18,6 @@ import java.util.HashMap;
 public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptEngineServiceImpl.class);
-    private String encoding = null;
     private String outputType = null;
 
     @Autowired
@@ -26,11 +26,12 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
 
     /**
      * Runs query
+     *
      * @param script Script to run
      * @param result Result
      * @throws Exception If an error occurs.
      */
-    protected abstract void runQuery(Script script, OutputStream result,  WorkerJobInfoRabbitMQResponseMessage response) throws Exception;
+    protected abstract void runQuery(Script script, OutputStream result, WorkerJobInfoRabbitMQResponseMessage response) throws Exception;
 
     @Override
     public void getResult(Script script, OutputStream out, WorkerJobInfoRabbitMQResponseMessage response) throws ScriptExecutionException {
@@ -38,15 +39,15 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
             setOutputType(script.getOutputType());
             runQuery(script, out, response);
             String message = "For job id " + script.getJobId() + " the script ";
-            if(!Utils.isNullStr(script.getScriptFileName())){
-                message+= script.getScriptFileName() + " file ";
+            if (!Utils.isNullStr(script.getScriptFileName())) {
+                message += script.getScriptFileName() + " file ";
             }
             message += "was executed.";
             LOGGER.info(message);
         } catch (Exception e) {
             String message = "For job id " + script.getJobId() + " the script ";
-            if(!Utils.isNullStr(script.getScriptFileName())){
-                message+= script.getScriptFileName() + " file ";
+            if (!Utils.isNullStr(script.getScriptFileName())) {
+                message += script.getScriptFileName() + " file ";
             }
             message += " was executed unsuccessfully. Exception message is: " + e.getMessage();
             LOGGER.error(message);
@@ -66,7 +67,7 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
         try {
             getResult(script, result, response);
         } catch (ScriptExecutionException see) {
-            LOGGER.error("For job id " + script.getJobId() + " could not execute getResult method. Exception message is: " + see.getMessage() );
+            LOGGER.error("For job id " + script.getJobId() + " could not execute getResult method. Exception message is: " + see.getMessage());
             StringBuilder errBuilder = new StringBuilder();
             errBuilder.append("<div class=\"feedbacktext\"><span id=\"feedbackStatus\" class=\"BLOCKER\" style=\"display:none\">Unexpected error occured!</span><h2>Unexpected error occured!</h2>");
             errBuilder.append(Utils.escapeXML(see.toString()));
@@ -103,6 +104,7 @@ public abstract class ScriptEngineServiceImpl implements ScriptEngineService {
 
     /**
      * Parses parameters
+     *
      * @param xqParams xquery parameters
      * @return Parameter map
      * @throws ScriptExecutionException If an error occurs.
