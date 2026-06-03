@@ -2,6 +2,7 @@ package eionet.xmlconv.jobExecutor.rabbitmq.listener;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.Channel;
 import eionet.xmlconv.jobExecutor.Constants;
 import eionet.xmlconv.jobExecutor.Properties;
 import eionet.xmlconv.jobExecutor.exceptions.DatabaseException;
@@ -22,11 +23,14 @@ import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -60,56 +64,85 @@ public class ScriptMessageListener {
         this.dataRetrieverService = dataRetrieverService;
     }
 
-    @RabbitListener(queues = "${job.rabbitmq.listeningQueue}")
-    public void consumeMessage(WorkerJobRabbitMQRequestMessage rabbitMQRequest) {
+    @RabbitListener(queues = "${job.rabbitmq.listeningQueue}", ackMode = "MANUAL")
+    public void consumeMessage(WorkerJobRabbitMQRequestMessage rabbitMQRequest,
+                               Channel channel,
+                               @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
         Script script = rabbitMQRequest.getScript();
-        LOGGER.info("Received job with id " + script.getJobId());
+        LOGGER.info("Received job with id {}", script.getJobId());
         WorkerJobInfoRabbitMQResponseMessage response = new WorkerJobInfoRabbitMQResponseMessage();
         StopWatch timer = new StopWatch();
         JobExecutorType jobExecutorType = JobExecutorType.Unknown;
         try {
             jobExecutorType = GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType);
 
-            LOGGER.info(String.format("For job id " + script.getJobId() + " pod name is %s", Properties.RANCHER_POD_NAME));
+            LOGGER.info("For job id {}, pod name is {}", script.getJobId(), Properties.RANCHER_POD_NAME);
             Integer jobExecutionStatus = dataRetrieverService.getJobStatus(script.getJobId());
-            LOGGER.info("Job status is " + jobExecutionStatus);
+            LOGGER.info("Job status is {}", jobExecutionStatus);
 
             if (jobExecutionStatus == Constants.JOB_NOT_FOUND) {
-                rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job not found",
-                        Constants.JOB_NOT_FOUND, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
-
-                sendMessageToDeadLetterQueue(rabbitMQRequest);
+                sendMessageToDeadLetterQueue(
+                        GenericHandlerUtils.createMessageForDeadLetterQueue(
+                                rabbitMQRequest,
+                    "Job not found",
+                                Constants.JOB_NOT_FOUND,
+                                Properties.RANCHER_POD_NAME,
+                                Constants.WORKER_READY
+                        )
+                );
                 if (jobExecutorType != null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
                     deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
                 }
             } else if (jobExecutionStatus == Constants.JOB_CANCELLED_BY_USER) {
-                rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job cancelled by user",
-                        Constants.JOB_CANCELLED_BY_USER, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
-
-                sendMessageToDeadLetterQueue(rabbitMQRequest);
+                sendMessageToDeadLetterQueue(
+                        GenericHandlerUtils.createMessageForDeadLetterQueue(
+                                rabbitMQRequest,
+                                "Job cancelled by user",
+                                Constants.JOB_CANCELLED_BY_USER,
+                                Properties.RANCHER_POD_NAME,
+                                Constants.WORKER_READY
+                        )
+                );
                 if (jobExecutorType != null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
                     deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
                 }
             } else if (jobExecutionStatus == Constants.JOB_INTERRUPTED) {
-                rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was interrupted because duration exceeded schema's maxExecutionTime",
-                        Constants.JOB_INTERRUPTED, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
-                sendMessageToDeadLetterQueue(rabbitMQRequest);
+
+                sendMessageToDeadLetterQueue(
+                        GenericHandlerUtils.createMessageForDeadLetterQueue(
+                                rabbitMQRequest,
+                                "Job was interrupted because duration exceeded schema's maxExecutionTime",
+                                Constants.JOB_INTERRUPTED,
+                                Properties.RANCHER_POD_NAME,
+                                Constants.WORKER_READY
+                        )
+                );
                 if (jobExecutorType != null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
                     deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
                 }
             } else if (jobExecutionStatus == Constants.JOB_DELETED) {
-                rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job was deleted",
-                        Constants.JOB_DELETED, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
-
-                sendMessageToDeadLetterQueue(rabbitMQRequest);
+                sendMessageToDeadLetterQueue(
+                        GenericHandlerUtils.createMessageForDeadLetterQueue(
+                                rabbitMQRequest,
+                                "Job was deleted",
+                                Constants.JOB_DELETED,
+                                Properties.RANCHER_POD_NAME,
+                                Constants.WORKER_READY
+                        )
+                );
                 if (jobExecutorType != null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
                     deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
                 }
             } else if (jobExecutionStatus == Constants.JOB_FATAL_ERROR || jobExecutionStatus == Constants.JOB_READY) {
-                rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, "Job has already been executed",
-                        Constants.JOB_READY, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
-
-                sendMessageToDeadLetterQueue(rabbitMQRequest);
+                sendMessageToDeadLetterQueue(
+                        GenericHandlerUtils.createMessageForDeadLetterQueue(
+                                rabbitMQRequest,
+                                "Job has already been executed",
+                                Constants.JOB_READY,
+                                Properties.RANCHER_POD_NAME,
+                                Constants.WORKER_READY
+                        )
+                );
                 if (jobExecutorType != null && jobExecutorType.equals(JobExecutorType.Async_fme)) {
                     deleteEntryFromJobsAsyncTable(Integer.parseInt(script.getJobId()));
                 }
@@ -132,7 +165,10 @@ public class ScriptMessageListener {
                     setWorkerJobStatus(script.getJobId(), Constants.JOB_PROCESSING);
                 }
                 response.setJobExecutorName(Properties.RANCHER_POD_NAME);
-                response.setErrorExists(false).setScript(script).setJobExecutorStatus(Constants.WORKER_RECEIVED).setHeartBeatQueue(RabbitMQConfig.queue)
+                response.setErrorExists(false)
+                        .setScript(script)
+                        .setJobExecutorStatus(Constants.WORKER_RECEIVED)
+                        .setHeartBeatQueue(RabbitMQConfig.queue)
                         .setJobExecutorType(jobExecutorType);
                 rabbitMQSender.sendMessage(response);
 
@@ -141,21 +177,18 @@ public class ScriptMessageListener {
                 scriptExecutionService.getResult(response);
                 timer.stop();
 
-                if (script.getScriptType().equals(FME_SCRIPT_TYPE)) {
-                    if (script.getAsynchronousExecution()) {
-                        WorkerStateRabbitMQResponseMessage workerStatus = new WorkerStateRabbitMQResponseMessage
-                                .WorkerStateRabbitMQResponseBuilder(Properties.RANCHER_POD_NAME, Constants.WORKER_READY)
-                                .setJobExecutorType(jobExecutorType).setHeartBeatQueue(RabbitMQConfig.queue).build();
-                        rabbitMQSender.sendWorkerStatus(workerStatus);
-                        return;
-                    }
+                if (script.getScriptType().equals(FME_SCRIPT_TYPE) && script.getAsynchronousExecution()) {
+                    WorkerStateRabbitMQResponseMessage workerStatus = new WorkerStateRabbitMQResponseMessage
+                            .WorkerStateRabbitMQResponseBuilder(Properties.RANCHER_POD_NAME, Constants.WORKER_READY)
+                            .setJobExecutorType(jobExecutorType).setHeartBeatQueue(RabbitMQConfig.queue).build();
+                    rabbitMQSender.sendWorkerStatus(workerStatus);
+                } else {
+                    LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[]{Properties.RANCHER_POD_NAME, script.getJobId(), timer.toString()}));
+                    response.setJobExecutorStatus(Constants.WORKER_READY);
+                    response.setScript(script);
+                    setWorkerJobStatus(script.getJobId(), Constants.JOB_READY);
+                    sendResponseToConverters(script.getJobId(), response, timer);
                 }
-
-                LOGGER.info(Properties.getMessage(Constants.WORKER_LOG_JOB_SUCCESS, new String[]{Properties.RANCHER_POD_NAME, script.getJobId(), timer.toString()}));
-                response.setJobExecutorStatus(Constants.WORKER_READY);
-                response.setScript(script);
-                setWorkerJobStatus(script.getJobId(), Constants.JOB_READY);
-                sendResponseToConverters(script.getJobId(), response, timer);
             }
         } catch (ScriptExecutionException e) {
             timer.stop();
@@ -165,26 +198,38 @@ public class ScriptMessageListener {
             setWorkerJobStatus(script.getJobId(), Constants.JOB_FATAL_ERROR);
             sendResponseToConverters(script.getJobId(), response, timer);
         } catch (Exception e) {
-            String message = e.getMessage();
-            if (message == null) {
-                message = "Unknown error";
-            }
-            message += " Job id is " + script.getJobId();
+            String message = (e.getMessage() == null ? "Unknown error." : e.getMessage()) +
+                    " Job id is " + script.getJobId();
             LOGGER.info(message);
-            rabbitMQRequest = GenericHandlerUtils.createMessageForDeadLetterQueue(rabbitMQRequest, message,
-                    Constants.JOB_EXCEPTION_ERROR, Properties.RANCHER_POD_NAME, Constants.WORKER_READY);
-            sendMessageToDeadLetterQueue(rabbitMQRequest);
+
+            sendMessageToDeadLetterQueue(
+                    GenericHandlerUtils.createMessageForDeadLetterQueue(
+                            rabbitMQRequest,
+                            message,
+                            Constants.JOB_EXCEPTION_ERROR,
+                            Properties.RANCHER_POD_NAME,
+                            Constants.WORKER_READY
+                    )
+            );
+        }
+        try {
+            channel.basicAck(deliveryTag, false);
+            LOGGER.info("Successfully acked message for job {}", script.getJobId());
+        } catch (IOException ex) {
+            // connection died during ACK
+            LOGGER.error("Failed to ACK job {} due to connection loss. Message will be automatically requeued by RabbitMQ.",
+                    script.getJobId(), ex);
         }
     }
 
     protected void sendResponseToConverters(String jobId, WorkerJobInfoRabbitMQResponseMessage response, StopWatch timer) {
-        LOGGER.info(String.format("Execution of job %s was completed, total time of execution: %s", jobId, timer.toString()));
+        LOGGER.info("Execution of job {} was completed, total time of execution: {}", jobId, timer);
         // The thread is forced to wait for 'timeoutMilisecs' before sending the message to converters in order for the result of the job to be written properly. Refs #140608
-        LOGGER.info("Job with id " + jobId + " is waiting for " + Properties.responseTimeoutMs.toString() + " ms");
+        LOGGER.info("Job with id {} is waiting for {} ms", jobId, Properties.responseTimeoutMs.toString());
         try {
             Thread.sleep(Properties.responseTimeoutMs);
         } catch (InterruptedException e) {
-            LOGGER.error("Job with id " + jobId + " failed to wait for " + Properties.responseTimeoutMs.toString() + " ms");
+            LOGGER.error("Job with id {} failed to wait for {} ms", jobId, Properties.responseTimeoutMs.toString());
         }
         rabbitMQSender.sendMessage(response);
     }
