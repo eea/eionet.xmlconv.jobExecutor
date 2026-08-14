@@ -41,30 +41,27 @@ public class HeartBeatMessageListener implements MessageListener {
         WorkerHeartBeatMessage response = null;
         try {
             response = mapper.readValue(message.getBody(), WorkerHeartBeatMessage.class);
-            LOGGER.info("Received heart beat message for job " + response.getJobId());
+            if (!response.getJobExecutorName().equals(Properties.RANCHER_POD_NAME)) {
+                return; // ignore heartbeat message for other worker
+            }
+            LOGGER.info("Received heart beat message for job {}", response.getJobId());
         } catch (IOException e) {
-            LOGGER.error("Error during processing of heart beat message, " + e.getMessage());
+            LOGGER.error("Error during processing of heart beat message: {}", e.getMessage());
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
 
         response.setJobExecutorType(GenericHandlerUtils.getJobExecutorType(Properties.rancherJobExecutorType));
         Integer jobStatus = ScriptMessageListener.getWorkerJobStatus().get(response.getJobId().toString());
 
-        if (!response.getJobExecutorName().equals(Properties.RANCHER_POD_NAME)) {
-            LOGGER.info(
-                    "Ignoring heartbeat message for worker {}. Current worker is {}.",
-                    response.getJobExecutorName(),
-                    Properties.RANCHER_POD_NAME
-            );
-        } else if (jobStatus == null) {
+        if (jobStatus == null) {
             Optional<FmeJobsAsync> fmeJobsAsync = fmeJobsAsyncService.findById(response.getJobId());
-            if (!fmeJobsAsync.isPresent()) {
+            if (fmeJobsAsync.isEmpty()) {
                 response.setJobStatus(Constants.JOB_NOT_FOUND_IN_WORKER);
             } else {
                 response.setJobStatus(Constants.JOB_PROCESSING);
             }
             sendHeartBeatResponse(response);
-        } else if (jobStatus != null) {
+        } else {
             response.setJobStatus(jobStatus);
             sendHeartBeatResponse(response);
         }
@@ -72,6 +69,9 @@ public class HeartBeatMessageListener implements MessageListener {
 
     protected void sendHeartBeatResponse(WorkerHeartBeatMessage jobExecInfo) {
         rabbitMQSender.sendHeartBeatMessageResponse(jobExecInfo);
-        LOGGER.info(jobExecInfo.getJobExecutorName() + " sent response for heart beat message of job " + jobExecInfo.getJobId() + ". Job status: " + jobExecInfo.getJobStatus());
+        LOGGER.info("{} sent response for heart beat message of job {}. Job status: {}",
+                jobExecInfo.getJobExecutorName(),
+                jobExecInfo.getJobId(),
+                jobExecInfo.getJobStatus());
     }
 }
